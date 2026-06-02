@@ -30,8 +30,9 @@ Each day I will:
 
 | Day | Date | Challenge | Status |
 |-----|------|-----------|--------|
-| 01  | June 01, 2026 | AI Personality Profile + Cinematic Portrait | ✅ |
+| 01  | May 31, 2026 | AI Personality Profile + Cinematic Portrait | ✅ |
 | 02  | June 01, 2026 | Lazy Prompt vs. Engineered Prompt Comparison | ✅ |
+| 03  | June 02, 2026 | Role-Based Prompting — Turn Claude into Any Expert | ✅ |
 
 *(I'll update this table as I go.)*
 
