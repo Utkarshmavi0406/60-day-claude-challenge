@@ -34,6 +34,7 @@ Each day I will:
 | 02  | June 01, 2026 | Lazy Prompt vs. Engineered Prompt Comparison | ✅ |
 | 03  | June 02, 2026 | Role-Based Prompting — Turn Claude into Any Expert | ✅ |
 | 04  | June 03, 2026 | Chain-of-Thought Prompting — AI Career Roadmap | ✅ |
+| 05  | June 04, 2026 | Context Engineering — Generic vs Personalized Roadmap | ✅ |
 
 *(I'll update this table as I go.)*
 
