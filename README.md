@@ -36,6 +36,7 @@ Each day I will:
 | 04  | June 03, 2026 | Chain-of-Thought Prompting — AI Career Roadmap | ✅ |
 | 05  | June 04, 2026 | Context Engineering — Generic vs Personalized Roadmap | ✅ |
 | 06  | June 05, 2026 | AI Resume Optimizer — ATS Score 71 to 93 | ✅ |
+| 07  | June 06, 2026 | Claude Model Selection & Reasoning Effort Strategy | ✅ |
 
 *(I'll update this table as I go.)*
 
