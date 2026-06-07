@@ -37,6 +37,8 @@ Each day I will:
 | 05  | June 04, 2026 | Context Engineering — Generic vs Personalized Roadmap | ✅ |
 | 06  | June 05, 2026 | AI Resume Optimizer — ATS Score 71 to 93 | ✅ |
 | 07  | June 06, 2026 | Claude Model Selection & Reasoning Effort Strategy | ✅ |
+| 08  | June 07, 2026 | Build Your First AI-Powered Dashboard — Environmental Health Analyzer | ✅ |
+
 
 *(I'll update this table as I go.)*
 
