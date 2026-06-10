@@ -40,6 +40,7 @@ Each day I will:
 | 08  | June 07, 2026 | Build Your First AI-Powered Dashboard — Environmental Health Analyzer | ✅ |
 | 09  | June 08, 2026 | Build & Enhance an AI Nutrition Analytics App — NutriScope MVP to Pro | ✅ |
 | 10  | June 09, 2026 | Build Your Personal Portfolio Website — Deployed on Netlify | ✅ |
+| 11  | June 10, 2026 | ATS Resume Optimizer & Resume Generator — 74 to 91 ATS Score | ✅ |
 
 
 *(I'll update this table as I go.)*
