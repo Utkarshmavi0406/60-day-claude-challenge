@@ -43,6 +43,7 @@ Each day I will:
 | 11  | June 10, 2026 | ATS Resume Optimizer & Resume Generator — 74 to 91 ATS Score | ✅ |
 | 12  | June 11, 2026 | Build Your Complete Job Search & Personal Branding Toolkit — 12 Career Assets | ✅ |
 | 13  | June 12, 2026 | Build Your AI Job Search Assistant — Indeed Connector Live Search | ✅ |
+| 14  | June 13, 2026 | AI Job Red Flag Detector — Citi GenAI Role Risk Analysis (38/100) | ✅ |
 
 *(I'll update this table as I go.)*
 
