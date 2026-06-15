@@ -45,6 +45,7 @@ Each day I will:
 | 13  | June 12, 2026 | Build Your AI Job Search Assistant — Indeed Connector Live Search | ✅ |
 | 14  | June 13, 2026 | AI Job Red Flag Detector — Citi GenAI Role Risk Analysis (38/100) | ✅ |
 | 15  | June 14, 2026 | Build a Personal Life Analysis Consultant — Vedic Birth Chart Report | ✅ |
+| 16  | June 15, 2026 | Build Your First Stock Research Skill — HDFC Bank vs Tata Motors + Bajaj Finance Data-Variance Case | ✅ |
 
 *(I'll update this table as I go.)*
 
