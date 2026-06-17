@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quarterly Growth Strategy Meeting - Brain Dump Action Planner</title>
+</head>
+<body style="margin:0;background:#0f1117;">
+<style>
+  :root{
+    --bg:#0f1117;
+    --panel:#171a23;
+    --panel-light:#1d2029;
+    --border:rgba(255,255,255,0.08);
+    --text:#e9eaf0;
+    --text-dim:#9ca0ae;
+    --text-faint:#5e6272;
+    --accent:#6e8bff;
+    --red:#ff5c6c;
+    --red-bg:rgba(255,92,108,0.12);
+    --orange:#ff9f43;
+    --orange-bg:rgba(255,159,67,0.12);
+    --green:#2dd4a7;
+    --green-bg:rgba(45,212,167,0.12);
+    --yellow:#f0c93b;
+    --yellow-bg:rgba(240,201,59,0.12);
+    --purple:#a78bfa;
+    --purple-bg:rgba(167,139,250,0.12);
+    --radius:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  .bdap-root{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding:24px 18px 50px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .bdap-wrap{max-width:1180px;margin:0 auto;}
+
+  .bdap-header{
+    background:linear-gradient(135deg, rgba(110,139,255,0.12), rgba(167,139,250,0.06));
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:24px 26px;
+    margin-bottom:20px;
+  }
+  .bdap-header .eyebrow{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    color:var(--accent);
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .bdap-header h1{
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:6px;
+    letter-spacing:-0.01em;
+  }
+  .bdap-header .meta-row{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-top:14px;
+    font-size:12px;
+    color:var(--text-dim);
+  }
+  .bdap-header .meta-item{display:flex;align-items:center;gap:6px;}
+  .bdap-header .meta-item .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+
+  .bdap-section{margin-bottom:22px;}
+  .bdap-section-title{
+    font-size:13px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--text-dim);
+    margin-bottom:12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .bdap-section-title .count-badge{
+    background:var(--panel-light);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:1px 8px;
+    font-size:11px;
+    color:var(--text-faint);
+    font-weight:600;
+  }
+
+  .bdap-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:18px 20px;
+  }
+
+  /* Summary */
+  .bdap-summary-text{font-size:14px;line-height:1.7;color:var(--text);}
+
+  /* Takeaway cards */
+  .bdap-takeaway-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .bdap-takeaway-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    transition:transform 0.15s, border-color 0.15s;
+  }
+  .bdap-takeaway-card:hover{transform:translateY(-2px);border-color:rgba(110,139,255,0.35);}
+  .bdap-takeaway-card .tk-label{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-faint);margin-bottom:8px;font-weight:700;}
+  .bdap-takeaway-card .tk-value{font-size:20px;font-weight:700;margin-bottom:4px;}
+  .bdap-takeaway-card .tk-sub{font-size:12px;color:var(--text-dim);line-height:1.5;}
+  .tk-red .tk-value{color:var(--red);}
+  .tk-green .tk-value{color:var(--green);}
+  .tk-orange .tk-value{color:var(--orange);}
+
+  /* Badges */
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    font-size:11px;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .badge-high{background:var(--red-bg);color:var(--red);}
+  .badge-medium{background:var(--orange-bg);color:var(--orange);}
+  .badge-low{background:var(--green-bg);color:var(--green);}
+  .badge-conflict{background:var(--red-bg);color:var(--red);}
+  .badge-question{background:var(--purple-bg);color:var(--purple);}
+  .badge-completed{background:var(--green-bg);color:var(--green);}
+  .badge-pending{background:var(--yellow-bg);color:var(--yellow);}
+
+  /* Speaker summary */
+  .speaker-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  .speaker-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;}
+  .speaker-card .sp-name{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .speaker-card .sp-avatar{width:26px;height:26px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0f1117;flex-shrink:0;}
+  .speaker-card .sp-points{font-size:12.5px;color:var(--text-dim);line-height:1.6;}
+  .speaker-card .sp-points li{margin-bottom:5px;list-style:none;padding-left:14px;position:relative;}
+  .speaker-card .sp-points li::before{content:'—';position:absolute;left:0;color:var(--text-faint);}
+
+  /* Tables */
+  .bdap-table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);}
+  table.bdap-table{width:100%;border-collapse:collapse;background:var(--panel);font-size:13px;min-width:640px;}
+  table.bdap-table th{
+    text-align:left;
+    padding:12px 16px;
+    background:var(--panel-light);
+    color:var(--text-faint);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    font-weight:700;
+    border-bottom:1px solid var(--border);
+  }
+  table.bdap-table td{
+    padding:13px 16px;
+    border-bottom:1px solid var(--border);
+    color:var(--text);
+    vertical-align:top;
+  }
+  table.bdap-table tr:last-child td{border-bottom:none;}
+  table.bdap-table tbody tr{transition:background 0.15s;}
+  table.bdap-table tbody tr:hover{background:rgba(255,255,255,0.02);}
+  .task-owner{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-dim);}
+  .owner-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+
+  /* Open questions / risks list */
+  .item-list{display:flex;flex-direction:column;gap:10px;}
+  .item-row{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:13px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:14px;
+  }
+  .item-row .item-text{font-size:13px;color:var(--text);line-height:1.55;flex:1;}
+  .item-row .item-meta{font-size:11px;color:var(--text-faint);margin-top:4px;}
+
+  /* Conflicts */
+  .conflict-card{
+    background:var(--red-bg);
+    border:1px solid rgba(255,92,108,0.3);
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:10px;
+  }
+  .conflict-card .cf-title{font-size:13px;font-weight:700;color:var(--red);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+  .conflict-card .cf-detail{font-size:12.5px;color:var(--text);line-height:1.6;}
+
+  /* Collapsible */
+  details.bdap-collapsible{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:14px 18px;
+  }
+  details.bdap-collapsible summary{
+    cursor:pointer;
+    font-size:13px;
+    font-weight:700;
+    color:var(--text);
+    list-style:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  details.bdap-collapsible summary::-webkit-details-marker{display:none;}
+  details.bdap-collapsible summary::after{
+    content:'+';
+    font-size:18px;
+    color:var(--text-faint);
+    transition:transform 0.2s;
+  }
+  details.bdap-collapsible[open] summary::after{transform:rotate(45deg);}
+  details.bdap-collapsible .bdap-collapse-body{margin-top:14px;font-size:13px;color:var(--text-dim);line-height:1.7;}
+
+  @media (max-width:760px){
+    .bdap-takeaway-grid{grid-template-columns:1fr;}
+    .speaker-grid{grid-template-columns:1fr;}
+    .bdap-header h1{font-size:19px;}
+  }
+</style>
+
+<div class="bdap-root">
+<div class="bdap-wrap">
+
+  <!-- HEADER -->
+  <div class="bdap-header">
+    <div class="eyebrow">Transcript Mode &middot; Brain Dump Action Planner</div>
+    <h1>Quarterly Growth Strategy Meeting</h1>
+    <div class="meta-row">
+      <div class="meta-item"><span class="dot"></span>7 speakers identified</div>
+      <div class="meta-item"><span class="dot"></span>5 action items</div>
+      <div class="meta-item"><span class="dot"></span>3 open questions</div>
+      <div class="meta-item"><span class="dot"></span>2 conflicts flagged</div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="bdap-section">
+    <div class="bdap-section-title">Summary</div>
+    <div class="bdap-card">
+      <div class="bdap-summary-text">
+        Leadership reviewed Q2 performance against the annual growth target. Revenue grew 12% versus an 18% target, driven primarily by enterprise deals slipping into next quarter (9 of 14 expected contracts closed, due to procurement delays and additional client-requested security reviews). Marketing reported a 34% increase in website traffic but lower-than-expected conversion rates, prompting a planned website redesign. Engineering capacity emerged as a recurring constraint across multiple initiatives — the August analytics dashboard release, a possible website redesign, and ongoing reporting-performance issues affecting both customer support tickets and sales prospects. Customer retention remains strong at 94%, though support ticket volume has increased significantly. Several decisions were explicitly postponed: hiring headcount (until Q3 forecasts are finalized), the customer conference budget (pending vendor proposals), and any public commitment to the August dashboard release date (pending an engineering milestone review). Open items will be revisited at next week's leadership meeting.
+      </div>
+    </div>
+  </div>
+
+  <!-- KEY TAKEAWAYS -->
+  <div class="bdap-section">
+    <div class="bdap-section-title">Key Takeaways</div>
+    <div class="bdap-takeaway-grid">
+      <div class="bdap-takeaway-card tk-red">
+        <div class="tk-label">Revenue vs Target</div>
+        <div class="tk-value">12% vs 18%</div>
+        <div class="tk-sub">Q2 growth missed the annual target; gap driven by enterprise deal slippage (9 of 14 contracts closed)</div>
+      </div>
+      <div class="bdap-takeaway-card tk-green">
+        <div class="tk-label">Website Traffic</div>
+        <div class="tk-value">+34%</div>
+        <div class="tk-sub">Increased vs last quarter, but conversion rates remain lower than expected</div>
+      </div>
+      <div class="bdap-takeaway-card tk-green">
+        <div class="tk-label">Customer Retention</div>
+        <div class="tk-value">94%</div>
+        <div class="tk-sub">Remains strong, though support ticket volume has increased significantly</div>
+      </div>
+      <div class="bdap-takeaway-card tk-orange">
+        <div class="tk-label">Engineering Capacity</div>
+        <div class="tk-value">At Capacity</div>
+        <div class="tk-sub">Team is close to capacity; website redesign work may require additional contractors</div>
+      </div>
+      <div class="bdap-takeaway-card tk-orange">
+        <div class="tk-label">Reporting Performance</div>
+        <div class="tk-value">Priority Issue</div>
+        <div class="tk-sub">Driving support tickets and mentioned by sales prospects; engineering has begun investigating</div>
+      </div>
+      <div class="bdap-takeaway-card tk-red">
+        <div class="tk-label">August Dashboard Date</div>
+        <div class="tk-value">Unconfirmed</div>
+        <div class="tk-sub">CTO cannot currently guarantee the August release date; no public commitments to be made</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION ITEMS -->
+  <div class="bdap-section">
+    <div class="bdap-section-title">Action Items <span class="count-badge">5</span></div>
+    <div class="bdap-table-wrap">
+      <table class="bdap-table">
+        <thead>
+          <tr><th>Task</th><th>Owner</th><th>Deadline</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Complete architecture review and provide cost estimate for website redesign</td>
+            <td><div class="task-owner"><span class="owner-dot"></span>CTO</div></td>
+            <td>Not specified</td>
+            <td><span class="badge badge-pending">⏳ Pending</span></td>
+          </tr>
+          <tr>
+            <td>Investigate and resolve reporting performance / dashboard loading time issues</td>
+            <td><div class="task-owner"><span class="owner-dot"></span>Engineering (CTO)</div></td>
+            <td>Not specified</td>
+            <td><span class="badge badge-pending">⏳ Pending</span></td>
+          </tr>
+          <tr>
+            <td>Plan website redesign and simplify demo-request process to improve conversion</td>
+            <td><div class="task-owner"><span class="owner-dot"></span>VP Marketing</div></td>
+            <td>Not specified</td>
+            <td><span class="badge badge-pending">⏳ Pending</span></td>
+          </tr>
+          <tr>
+            <td>Submit final vendor proposals for annual customer conference</td>
+            <td><div class="task-owner"><span class="owner-dot"></span>Not specified</div></td>
+            <td>Before next month's budget revisit</td>
+            <td><span class="badge badge-pending">⏳ Pending</span></td>
+          </tr>
+          <tr>
+            <td>Complete engineering milestone review before any public commitment on dashboard release</td>
+            <td><div class="task-owner"><span class="owner-dot"></span>Engineering / CTO</div></td>
+            <td>Not specified</td>
+            <td><span class="badge badge-pending">⏳ Pending</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- OPEN QUESTIONS -->
+  <div class="bdap-section">
+    <div class="bdap-section-title">Open Questions <span class="count-badge">3</span></div>
+    <div class="item-list">
+      <div class="item-row">
+        <div>
+          <div class="item-text">Why did the remaining enterprise deals slip? (Partially answered: procurement delays and additional security review requests — but full resolution/timeline not specified)</div>
+          <div class="item-meta">Raised by: CEO</div>
+        </div>
+        <span class="badge badge-question">❓ Open Question</span>
+      </div>
+      <div class="item-row">
+        <div>
+          <div class="item-text">What is the cost estimate for additional website redesign work / contractors?</div>
+          <div class="item-meta">Raised by: CFO</div>
+        </div>
+        <span class="badge badge-question">❓ Open Question</span>
+      </div>
+      <div class="item-row">
+        <div>
+          <div class="item-text">Should the new analytics dashboard be announced at the customer conference?</div>
+          <div class="item-meta">Raised by: Head of Sales &middot; Unresolved pending August date confirmation</div>
+        </div>
+        <span class="badge badge-question">❓ Open Question</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RISKS / BLOCKERS -->
+  <div class="bdap-section">
+    <div class="bdap-section-title">Risks / Blockers <span class="count-badge">5</span></div>
+    <div class="item-list">
+      <div class="item-row">
+        <div class="item-text">If slipped enterprise deals move again, the company may miss its annual revenue target.</div>
+        <span class="badge badge-high">🔴 High Priority</span>
+      </div>
+      <div class="item-row">
+        <div class="item-text">Engineering is operating close to capacity; the August analytics dashboard and any website redesign work compete for the same resources.</div>
+        <span class="badge badge-high">🔴 High Priority</span>
+      </div>
+      <div class="item-row">
+        <div class="item-text">Website redesign cost cannot be estimated until the architecture review is complete, blocking spending approval.</div>
+        <span class="badge badge-medium">🟠 Medium Priority</span>
+      </div>
+      <div class="item-row">
+        <div class="item-text">Reporting performance and dashboard loading time issues are driving both increased support tickets and concerns raised directly by sales prospects.</div>
+        <span class="badge badge-high">🔴 High Priority</span>
+      </div>
+      <div class="item-row">
+        <div class="item-text">The August release date for the analytics dashboard cannot currently be guaranteed by the CTO, creating risk for any public announcement plans.</div>
+        <span class="badge badge-medium">🟠 Medium Priority</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFLICTS -->
+  <div class="bdap-section">
+    <div class="bdap-section-title">Conflicts <span class="count-badge">2</span></div>
+    <div class="conflict-card">
+      <div class="cf-title">⚠️ Conflict — Headcount Requests</div>
+      <div class="cf-detail">CFO noted that department heads submitted <em>different</em> headcount requests for next year's hiring plan. The specific conflicting numbers were not provided in the transcript. CEO decided to postpone all hiring decisions until Q3 forecasts are finalized — the underlying conflict between department requests remains unresolved.</div>
+    </div>
+    <div class="conflict-card">
+      <div class="cf-title">⚠️ Conflict — Dashboard Announcement vs. Release Confidence</div>
+      <div class="cf-detail">Head of Sales asked whether the new analytics dashboard should be announced at the customer conference. Product Director said this should only happen "if we're confident about the August release date." CTO immediately stated he <em>cannot guarantee that date</em> at the moment. CEO resolved this by directing the team to avoid any public commitments until engineering completes its milestone review — but the underlying tension between sales/marketing's desire to announce and engineering's inability to confirm the timeline is not fully resolved.</div>
+    </div>
+  </div>
+
+  <!-- SPEAKER SUMMARY -->
+  <div class="bdap-section">
+    <div class="bdap-section-title">Speaker Summary</div>
+    <div class="speaker-grid">
+      <div class="speaker-card">
+        <div class="sp-name"><span class="sp-avatar">CE</span>CEO</div>
+        <ul class="sp-points">
+          <li>Opened by noting Q2 revenue grew 12% against an 18% target</li>
+          <li>Asked why remaining deals slipped</li>
+          <li>Directed team to get a cost estimate before approving website spending</li>
+          <li>Flagged reporting performance as a priority issue</li>
+          <li>Postponed hiring decisions until Q3 forecasts are finalized</li>
+          <li>Postponed conference budget approval until next month</li>
+          <li>Directed team to avoid public commitments on the dashboard date until milestone review is complete</li>
+          <li>Closed by deferring open items to next week's leadership meeting</li>
+        </ul>
+      </div>
+      <div class="speaker-card">
+        <div class="sp-name"><span class="sp-avatar">HS</span>Head of Sales</div>
+        <ul class="sp-points">
+          <li>Reported 9 of 14 expected enterprise contracts closed in Q2</li>
+          <li>Cited procurement delays as the biggest reason for slippage</li>
+          <li>Noted 2 clients requested additional security reviews</li>
+          <li>Mentioned prospects have raised reporting performance during sales calls</li>
+          <li>Asked whether the dashboard should be announced at the conference</li>
+        </ul>
+      </div>
+      <div class="speaker-card">
+        <div class="sp-name"><span class="sp-avatar">CF</span>CFO</div>
+        <ul class="sp-points">
+          <li>Flagged that deal slippage affects the revenue forecast and annual target</li>
+          <li>Asked for a cost estimate on website redesign work</li>
+          <li>Raised the need for clarity on next year's hiring plan, noting conflicting headcount requests from department heads</li>
+          <li>Stated vendor proposals are still needed before approving the conference budget</li>
+        </ul>
+      </div>
+      <div class="speaker-card">
+        <div class="sp-name"><span class="sp-avatar">VM</span>VP Marketing</div>
+        <ul class="sp-points">
+          <li>Reported website traffic increased 34% versus last quarter</li>
+          <li>Noted conversion rates remain lower than expected</li>
+          <li>Proposed a website redesign and simplified demo-request process</li>
+          <li>Raised the need for approval on the annual customer conference budget</li>
+        </ul>
+      </div>
+      <div class="speaker-card">
+        <div class="sp-name"><span class="sp-avatar">PD</span>Product Director</div>
+        <ul class="sp-points">
+          <li>Cautioned that engineering is already focused on the August analytics dashboard</li>
+          <li>Agreed reporting performance may have a larger business impact than some planned feature releases</li>
+          <li>Stated the dashboard should only be announced at the conference if confident about the August date</li>
+        </ul>
+      </div>
+      <div class="speaker-card">
+        <div class="sp-name"><span class="sp-avatar">CT</span>CTO</div>
+        <ul class="sp-points">
+          <li>Confirmed engineering is operating close to capacity</li>
+          <li>Noted additional website work may require additional contractors</li>
+          <li>Stated no cost estimate exists yet; architecture review is incomplete</li>
+          <li>Confirmed engineering has already started investigating the reporting performance issue</li>
+          <li>Stated he cannot currently guarantee the August release date</li>
+        </ul>
+      </div>
+      <div class="speaker-card">
+        <div class="sp-name"><span class="sp-avatar">CS</span>Customer Success Lead</div>
+        <ul class="sp-points">
+          <li>Reported customer retention remains strong at 94%</li>
+          <li>Noted support ticket volume has increased significantly</li>
+          <li>Identified reporting performance and dashboard loading times as the main driver of complaints</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- DECISIONS BY SPEAKER -->
+  <div class="bdap-section">
+    <div class="bdap-section-title">Decisions by Speaker</div>
+    <div class="bdap-card">
+      <ul class="sp-points" style="font-size:13px;">
+        <li><strong>CEO:</strong> Get a cost estimate before approving any additional website spending</li>
+        <li><strong>CEO:</strong> Postpone all hiring decisions until Q3 forecasts are finalized</li>
+        <li><strong>CEO:</strong> Revisit the conference budget next month after vendor proposals are received</li>
+        <li><strong>CEO:</strong> Avoid any public commitments on the August dashboard date until the engineering milestone review is complete</li>
+        <li><strong>CFO:</strong> Will not approve the conference budget until final vendor proposals are received</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ATTRIBUTION NOTES -->
+  <div class="bdap-section">
+    <div class="bdap-section-title">Attribution Notes</div>
+    <div class="bdap-card">
+      <div style="font-size:13px;color:var(--text-dim);line-height:1.7;">
+        Several action items have no individually named owner in the transcript and were attributed to a function or role group rather than a single person: the website redesign cost estimate and milestone review are attributed to the CTO/Engineering broadly, since the CTO speaks on engineering's behalf throughout but no single named engineer is specified. The vendor proposal submission for the conference budget has no owner specified at all in the transcript — marked "Not specified" rather than assumed.
+      </div>
+    </div>
+  </div>
+
+  <!-- ADDITIONAL NOTES -->
+  <div class="bdap-section">
+    <details class="bdap-collapsible">
+      <summary>Additional Notes</summary>
+      <div class="bdap-collapse-body">
+        All open items discussed in this meeting are scheduled to be followed up on during next week's leadership meeting, per the CEO's closing statement. No specific date, time, or attendee list for that follow-up meeting was provided in the transcript.
+      </div>
+    </details>
+  </div>
+
+</div>
+</div>
+
+</body>
+</html>
