@@ -49,6 +49,7 @@ Each day I will:
 | 17  | June 16, 2026 | AI Vehicle Cost & Fuel Analysis Dashboard — Nissan Pathfinder + E85 Paradox | ✅ |
 | 18  | June 17, 2026 | Build a Brain Dump Action Planner Skill — Multi-Speaker Meeting Transcript Dashboard | ✅ |
 | 19  | June 18, 2026 | Build a Football Intelligence Hub — WC 2026 Predictions + Football IQ + Personality Match | ✅ |
+| 20  | June 18, 2026 | Build an AI Face Puzzle Game — Single-file webcam puzzle with drag-drop, timer & leaderboard | ✅ |
 
 *(I'll update this table as I go.)*
 
