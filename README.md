@@ -50,6 +50,7 @@ Each day I will:
 | 18  | June 17, 2026 | Build a Brain Dump Action Planner Skill — Multi-Speaker Meeting Transcript Dashboard | ✅ |
 | 19  | June 18, 2026 | Build a Football Intelligence Hub — WC 2026 Predictions + Football IQ + Personality Match | ✅ |
 | 20  | June 18, 2026 | Build an AI Face Puzzle Game — Single-file webcam puzzle with drag-drop, timer & leaderboard | ✅ |
+| 21  | June 19, 2026 | Build a Digital Privacy Intelligence Dashboard — 15-Service Footprint Analysis | ✅ |
 
 *(I'll update this table as I go.)*
 
