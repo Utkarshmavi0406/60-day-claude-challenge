@@ -51,6 +51,7 @@ Each day I will:
 | 19  | June 18, 2026 | Build a Football Intelligence Hub — WC 2026 Predictions + Football IQ + Personality Match | ✅ |
 | 20  | June 18, 2026 | Build an AI Face Puzzle Game — Single-file webcam puzzle with drag-drop, timer & leaderboard | ✅ |
 | 21  | June 19, 2026 | Build a Digital Privacy Intelligence Dashboard — 15-Service Footprint Analysis | ✅ |
+| 22 | June 21, 2026 | AI-First Schools India — Startup Validation Like a VC | ✅ |
 
 *(I'll update this table as I go.)*
 

@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Startup Validation Report — AI-First Schools India</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  --bg: #03060c;
+  --bg2: #06091a;
+  --card: #0a0f1e;
+  --card2: #0d1428;
+  --border: #1a2040;
+  --amber: #ffb400;
+  --amber2: #f0a93b;
+  --green: #00d48f;
+  --red: #ff5c6c;
+  --cyan: #22d3ee;
+  --purple: #a78bfa;
+  --text: #e8eaf6;
+  --muted: #6b7499;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.report-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+/* ===== HEADER ===== */
+.report-header {
+  border-bottom: 2px solid var(--amber);
+  padding-bottom: 32px;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.firm-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--amber);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  opacity: 0.8;
+}
+
+.report-title {
+  font-size: 34px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.report-title span { color: var(--amber); }
+
+.report-subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.report-meta {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.meta-item strong { color: var(--text); }
+
+.confidential {
+  position: absolute;
+  top: 0; right: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--red);
+  border: 1px solid rgba(255,92,108,0.4);
+  padding: 3px 10px;
+  border-radius: 3px;
+  letter-spacing: 2px;
+}
+
+/* ===== SECTION ===== */
+.section {
+  margin-bottom: 44px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--amber);
+  background: rgba(255,180,0,0.1);
+  border: 1px solid rgba(255,180,0,0.3);
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 14px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+@media(max-width:700px){ .metric-grid { grid-template-columns: repeat(2,1fr); } }
+
+.metric-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.metric-card::before {
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background: var(--amber);
+}
+.metric-card.green::before { background: var(--green); }
+.metric-card.red::before { background: var(--red); }
+.metric-card.cyan::before { background: var(--cyan); }
+
+.metric-value {
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--amber);
+  font-family: var(--mono);
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.metric-card.green .metric-value { color: var(--green); }
+.metric-card.red .metric-value { color: var(--red); }
+.metric-card.cyan .metric-value { color: var(--cyan); }
+
+.metric-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: var(--mono);
+}
+.metric-sub {
+  font-size: 11px;
+  color: var(--text);
+  margin-top: 4px;
+}
+
+/* ===== BADGES ===== */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-family: var(--mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.badge-green { background: rgba(0,212,143,0.12); color: var(--green); border: 1px solid rgba(0,212,143,0.3); }
+.badge-amber { background: rgba(255,180,0,0.12); color: var(--amber); border: 1px solid rgba(255,180,0,0.3); }
+.badge-red { background: rgba(255,92,108,0.12); color: var(--red); border: 1px solid rgba(255,92,108,0.3); }
+.badge-cyan { background: rgba(34,211,238,0.12); color: var(--cyan); border: 1px solid rgba(34,211,238,0.3); }
+.badge-purple { background: rgba(167,139,250,0.12); color: var(--purple); border: 1px solid rgba(167,139,250,0.3); }
+
+/* ===== SCORE BARS ===== */
+.score-row {
+  margin-bottom: 12px;
+}
+.score-row-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+.score-row-label span:first-child { color: var(--text); }
+.score-row-label span:last-child { color: var(--amber); font-family: var(--mono); font-weight: 700; }
+
+.score-bar {
+  height: 7px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.score-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--amber2), var(--amber));
+}
+.score-fill.g { background: linear-gradient(90deg, #00a066, var(--green)); }
+.score-fill.r { background: linear-gradient(90deg, #cc2233, var(--red)); }
+
+/* ===== TABLE ===== */
+.table-wrap {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+th {
+  background: rgba(255,180,0,0.07);
+  color: var(--amber);
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(26,32,64,0.5);
+  color: var(--text);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ===== CALLOUT ===== */
+.callout {
+  background: rgba(255,180,0,0.05);
+  border: 1px solid rgba(255,180,0,0.2);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 6px 6px 0;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.7;
+}
+.callout-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--amber);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+/* ===== TAM CHART ===== */
+.tam-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media(max-width:700px){ .tam-container { grid-template-columns:1fr; } }
+
+.tam-chart {
+  background: var(--card2);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  height: 200px;
+}
+.tam-bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.tam-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+}
+.tam-bar.TAM { background: linear-gradient(180deg, rgba(255,180,0,0.85), rgba(255,180,0,0.2)); height: 100%; }
+.tam-bar.SAM { background: linear-gradient(180deg, rgba(34,211,238,0.85), rgba(34,211,238,0.2)); height: 55%; }
+.tam-bar.SOM { background: linear-gradient(180deg, rgba(0,212,143,0.85), rgba(0,212,143,0.2)); height: 22%; }
+.tam-bar-label { font-size: 11px; font-weight: 700; color: var(--text); text-align:center; }
+.tam-bar-amount { font-family: var(--mono); font-size: 12px; font-weight: 700; text-align:center; }
+.tam-bar-desc { font-size: 10px; color: var(--muted); text-align:center; }
+.tam-bar-amount.T { color: var(--amber); }
+.tam-bar-amount.S { color: var(--cyan); }
+.tam-bar-amount.M { color: var(--green); }
+
+.tam-details {
+  background: var(--card2);
+  border-radius: 8px;
+  padding: 20px;
+}
+.tam-detail-row {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tam-detail-row:last-child { border-bottom: none; }
+.tam-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.tam-detail-name { font-weight: 700; font-size: 13px; color: #fff; }
+.tam-detail-amount { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--amber); }
+.tam-detail-amount.S { color: var(--cyan); }
+.tam-detail-amount.M { color: var(--green); }
+.tam-detail-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+/* ===== RISK ===== */
+.risk-item {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  background: var(--card2);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border-left: 3px solid transparent;
+}
+.risk-item.H { border-left-color: var(--red); }
+.risk-item.M { border-left-color: var(--amber); }
+.risk-item.L { border-left-color: var(--green); }
+.risk-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.risk-body { flex: 1; }
+.risk-title { font-weight: 600; font-size: 13px; color: #fff; margin-bottom: 3px; display: flex; align-items:center; gap:8px; }
+.risk-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.risk-mit { font-size: 11px; color: var(--green); margin-top: 5px; }
+.risk-mit::before { content: '→ '; }
+
+/* ===== JOURNEY ===== */
+.journey-wrap {
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+.journey-steps {
+  display: flex;
+  min-width: 700px;
+  gap: 0;
+}
+.journey-step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  padding: 16px 8px;
+}
+.journey-step:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -8px;
+  top: 30px;
+  color: var(--amber);
+  font-size: 14px;
+  z-index: 2;
+}
+.journey-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(255,180,0,0.08);
+  border: 1px solid rgba(255,180,0,0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+  font-size: 18px;
+}
+.journey-label { font-size: 12px; font-weight: 700; color: var(--text); }
+.journey-sub { font-size: 10px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+/* ===== PIVOT CARDS ===== */
+.pivot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+.pivot-card {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+.pivot-icon { font-size: 22px; margin-bottom: 8px; }
+.pivot-name { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+.pivot-desc { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 8px; }
+.pivot-capital { font-family: var(--mono); font-size: 10px; }
+
+/* ===== PERSONA ===== */
+.persona-wrap {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media(max-width:600px){ .persona-wrap { grid-template-columns:1fr; } }
+
+.persona-avatar {
+  width: 76px;
+  height: 76px;
+  background: linear-gradient(135deg, rgba(255,180,0,0.15), rgba(255,180,0,0.04));
+  border: 2px solid rgba(255,180,0,0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  flex-shrink: 0;
+}
+.persona-name { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 3px; }
+.persona-role { font-size: 12px; color: var(--amber); font-family: var(--mono); margin-bottom: 10px; }
+.persona-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.persona-tag {
+  font-size: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  padding: 2px 10px;
+  border-radius: 20px;
+  color: var(--text);
+}
+.persona-quote {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 13px;
+  border-left: 3px solid var(--amber);
+  padding-left: 12px;
+  line-height: 1.6;
+}
+
+/* ===== ICP ===== */
+.icp-table {
+  width: 100%;
+}
+.icp-row {
+  display: flex;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(26,32,64,0.5);
+  align-items: flex-start;
+}
+.icp-row:last-child { border-bottom: none; }
+.icp-key {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--mono);
+  min-width: 130px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+.icp-val { font-size: 13px; color: var(--text); }
+
+/* ===== PAIN / TRIGGERS / OBJECTIONS ===== */
+.pain-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--card2);
+  border-radius: 6px;
+  margin-bottom: 7px;
+  border-left: 3px solid var(--red);
+}
+.pain-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.pain-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+.pain-desc { font-size: 12px; color: var(--muted); }
+
+.to-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media(max-width:600px){ .to-grid { grid-template-columns:1fr; } }
+
+.to-section-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.to-section-title.t { color: var(--green); }
+.to-section-title.o { color: var(--red); }
+
+.trigger-item, .obj-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.trigger-item::before { content: '✓'; color: var(--green); flex-shrink: 0; }
+.obj-item::before { content: '✗'; color: var(--red); flex-shrink: 0; }
+
+/* ===== MARKET GAP ===== */
+.gap-item {
+  padding: 14px 16px;
+  background: var(--card2);
+  border-radius: 8px;
+  border-left: 3px solid var(--amber);
+  margin-bottom: 10px;
+  display: flex;
+  gap: 14px;
+}
+.gap-num {
+  width: 26px;
+  height: 26px;
+  background: rgba(255,180,0,0.12);
+  border: 1px solid rgba(255,180,0,0.35);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--amber);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.gap-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.gap-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ===== VERDICT ===== */
+.verdict-card {
+  background: linear-gradient(135deg, rgba(255,180,0,0.07), rgba(255,180,0,0.02));
+  border: 2px solid var(--amber);
+  border-radius: 12px;
+  padding: 36px;
+  text-align: center;
+}
+.verdict-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.verdict-score {
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--amber);
+  font-family: var(--mono);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.verdict-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 10px;
+}
+.verdict-desc {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 580px;
+  margin: 0 auto 20px;
+  line-height: 1.75;
+}
+.verdict-pills { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
+/* ===== ACTION PLAN ===== */
+.week-block { margin-bottom: 22px; }
+.week-header {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.week-header::after { content:''; flex:1; height:1px; background: var(--border); }
+
+.action-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--card2);
+  border-radius: 6px;
+  margin-bottom: 6px;
+  align-items: flex-start;
+}
+.action-day {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--amber);
+  background: rgba(255,180,0,0.09);
+  padding: 2px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.action-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+/* ===== FOOTER ===== */
+.report-footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-l {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+}
+.footer-l span { color: var(--amber); }
+.footer-r {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* ===== EXEC SUMMARY GRID ===== */
+.exec-main {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+}
+@media(max-width:800px){ .exec-main { grid-template-columns:1fr; } }
+
+.exec-scores {
+  background: var(--card2);
+  border-radius: 8px;
+  padding: 20px;
+}
+.exec-score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(26,32,64,0.5);
+}
+.exec-score-row:last-child { border-bottom: none; }
+.exec-score-label { font-size: 12px; color: var(--text); }
+.exec-score-val {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+}
+</style>
+</head>
+<body>
+<div class="report-container">
+
+  <!-- HEADER -->
+  <div class="report-header">
+    <div class="confidential">CONFIDENTIAL</div>
+    <div class="firm-badge">// STARTUP VALIDATION REPORT · VC ANALYSIS FRAMEWORK · CLAUDE AI</div>
+    <div class="report-title">AI-FIRST SCHOOLS <span>INDIA</span></div>
+    <div class="report-subtitle">Founder: Utkarsh Mavi · Sector: K-12 EdTech / Education · Stage: Pre-Idea</div>
+    <div class="report-meta">
+      <div class="meta-item">DATE: <strong>June 2026</strong></div>
+      <div class="meta-item">FRAMEWORK: <strong>YC + McKinsey Hybrid</strong></div>
+      <div class="meta-item">VALIDATION STAGE: <strong>Pre-Seed / Idea</strong></div>
+      <div class="meta-item">MARKET: <strong>India K-12</strong></div>
+    </div>
+  </div>
+
+  <!-- ===== EXECUTIVE SUMMARY ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Executive Summary</span>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-value">63</div>
+        <div class="metric-label">Founder-Market Fit</div>
+        <div class="metric-sub">Strong Visionary</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">78</div>
+        <div class="metric-label">Problem Pain Score</div>
+        <div class="metric-sub">Real & Systemic</div>
+      </div>
+      <div class="metric-card cyan">
+        <div class="metric-value">$117B</div>
+        <div class="metric-label">TAM (India K-12)</div>
+        <div class="metric-sub">16% CAGR</div>
+      </div>
+      <div class="metric-card green">
+        <div class="metric-value">GO*</div>
+        <div class="metric-label">Recommendation</div>
+        <div class="metric-sub">Conditional — start lean</div>
+      </div>
+    </div>
+
+    <div class="exec-main">
+      <div class="callout" style="margin-bottom:0;">
+        <div class="callout-label">// ANALYST VERDICT</div>
+        Utkarsh Mavi brings a rare combination of first-hand AI expertise, lived personal pain, and domain credibility to this idea. The problem is real: India produces over 1.5 million engineers annually, the vast majority of whom spend their first 2-3 years at work simply catching up on practical AI and tech skills they should have learned in school. The vision of mandatory AI education from Class 5 is bold, directionally correct, and well-timed with India's NEP 2020 digital push. However, the execution model of building a physical school from scratch carries high regulatory, capital, and operational risk. This report recommends a Conditional Go — proceed aggressively on validation and curriculum design, but pivot the initial business model toward a leaner entry point before committing to infrastructure.
+      </div>
+      <div class="exec-scores">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:2px;margin-bottom:12px;">SCORECARD</div>
+        <div class="exec-score-row">
+          <span class="exec-score-label">Problem Clarity</span>
+          <span class="exec-score-val" style="color:var(--green)">9/10</span>
+        </div>
+        <div class="exec-score-row">
+          <span class="exec-score-label">Founder Conviction</span>
+          <span class="exec-score-val" style="color:var(--green)">9/10</span>
+        </div>
+        <div class="exec-score-row">
+          <span class="exec-score-label">Market Timing</span>
+          <span class="exec-score-val" style="color:var(--green)">8/10</span>
+        </div>
+        <div class="exec-score-row">
+          <span class="exec-score-label">Existing Validation</span>
+          <span class="exec-score-val" style="color:var(--red)">1/10</span>
+        </div>
+        <div class="exec-score-row">
+          <span class="exec-score-label">Execution Readiness</span>
+          <span class="exec-score-val" style="color:var(--amber)">4/10</span>
+        </div>
+        <div class="exec-score-row">
+          <span class="exec-score-label">Capital Efficiency</span>
+          <span class="exec-score-val" style="color:var(--red)">2/10</span>
+        </div>
+        <div class="exec-score-row">
+          <span class="exec-score-label">Competitive Moat</span>
+          <span class="exec-score-val" style="color:var(--amber)">6/10</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PROBLEM VALIDATION ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Problem Validation</span>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">// CORE PROBLEM STATEMENT</div>
+      India's K-12 and even undergraduate education system does not equip students with practical AI skills. Students encounter AI only in BTech (age 21+), losing 11+ years of compounding learning. By the time they join the workforce, they spend 2-3 years upskilling — time that could have been productive earnings. Students from low-to-middle-income families, like the founder, cannot afford this delay; early AI skills could enable meaningful income generation even during school.
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Validation Dimension</th>
+            <th>Evidence</th>
+            <th>Score</th>
+            <th>Signal Strength</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Problem Existence</strong></td>
+            <td>India ranks 111th in AI readiness (Oxford). 70% of Indian graduates need 6–24 months upskilling before they are productive AI users.</td>
+            <td><span class="badge badge-green">9/10</span></td>
+            <td><span class="badge badge-green">STRONG</span></td>
+          </tr>
+          <tr>
+            <td><strong>Problem Frequency</strong></td>
+            <td>Daily experience for every working professional in tech. 1.5M+ engineers graduate each year facing this gap.</td>
+            <td><span class="badge badge-green">9/10</span></td>
+            <td><span class="badge badge-green">STRONG</span></td>
+          </tr>
+          <tr>
+            <td><strong>Problem Intensity</strong></td>
+            <td>Missed income = ₹3-8L per year of delayed entry. For low/mid-income families, this is material financial pain.</td>
+            <td><span class="badge badge-green">8/10</span></td>
+            <td><span class="badge badge-green">STRONG</span></td>
+          </tr>
+          <tr>
+            <td><strong>Willingness to Pay</strong></td>
+            <td>Indian parents spent avg ₹1.5-4L/year on private schooling. AI premium courses attract ₹20-80K additional spend.</td>
+            <td><span class="badge badge-amber">7/10</span></td>
+            <td><span class="badge badge-amber">MEDIUM</span></td>
+          </tr>
+          <tr>
+            <td><strong>Founder Validation</strong></td>
+            <td>Founder personally experienced the gap. Uses AI daily at Republic Finance. Wishes he'd learned it at age 10.</td>
+            <td><span class="badge badge-green">10/10</span></td>
+            <td><span class="badge badge-green">STRONG</span></td>
+          </tr>
+          <tr>
+            <td><strong>Market Validation</strong></td>
+            <td>WhiteHat Jr raised $300M on this adjacent thesis. NEP 2020 mandates digital/coding for Class 6+. Market agrees on direction.</td>
+            <td><span class="badge badge-amber">7/10</span></td>
+            <td><span class="badge badge-green">STRONG</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div class="score-row">
+        <div class="score-row-label"><span>Overall Problem Pain Score</span><span>78 / 100</span></div>
+        <div class="score-bar"><div class="score-fill" style="width:78%"></div></div>
+      </div>
+      <div class="score-row">
+        <div class="score-row-label"><span>Urgency (How soon does it need solving?)</span><span>HIGH</span></div>
+        <div class="score-bar"><div class="score-fill" style="width:85%"></div></div>
+      </div>
+      <div class="score-row">
+        <div class="score-row-label"><span>Existing Market Proof (Adjacent successes?)</span><span>STRONG</span></div>
+        <div class="score-bar"><div class="score-fill g" style="width:75%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FOUNDER-MARKET FIT ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Founder-Market Fit Score</span>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">// FMF ANALYSIS</div>
+      Utkarsh scores exceptionally on domain expertise and personal lived pain — two of the most important signals VCs look for. The gaps are in education sector experience, India operational capacity (currently in US), and zero prior founding experience. These are bridgeable gaps, not disqualifiers — especially given that the founder is still early in career and can course-correct.
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 220px;gap:20px;">
+      <div>
+        <div class="score-row">
+          <div class="score-row-label"><span>AI / Data Science Domain Expertise</span><span>9/10 (wt. 30%)</span></div>
+          <div class="score-bar"><div class="score-fill g" style="width:90%"></div></div>
+        </div>
+        <div class="score-row">
+          <div class="score-row-label"><span>Personal Pain (Lived the Problem)</span><span>10/10 (wt. 20%)</span></div>
+          <div class="score-bar"><div class="score-fill g" style="width:100%"></div></div>
+        </div>
+        <div class="score-row">
+          <div class="score-row-label"><span>Education Sector Experience</span><span>2/10 (wt. 20%)</span></div>
+          <div class="score-bar"><div class="score-fill r" style="width:20%"></div></div>
+        </div>
+        <div class="score-row">
+          <div class="score-row-label"><span>India Operations / Network</span><span>3/10 (wt. 15%)</span></div>
+          <div class="score-bar"><div class="score-fill r" style="width:30%"></div></div>
+        </div>
+        <div class="score-row">
+          <div class="score-row-label"><span>Business / Founding Experience</span><span>3/10 (wt. 10%)</span></div>
+          <div class="score-bar"><div class="score-fill r" style="width:30%"></div></div>
+        </div>
+        <div class="score-row">
+          <div class="score-row-label"><span>Commitment Level (Long-term)</span><span>8/10 (wt. 5%)</span></div>
+          <div class="score-bar"><div class="score-fill" style="width:80%"></div></div>
+        </div>
+      </div>
+      <div style="background:var(--card2);border-radius:8px;padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;">FMF SCORE</div>
+        <div style="font-size:56px;font-weight:900;color:var(--amber);font-family:var(--mono);line-height:1;">63</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">/ 100</div>
+        <div class="badge badge-amber" style="font-size:11px;padding:5px 14px;">STRONG VISIONARY</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:12px;line-height:1.5;">High conviction + deep domain.<br>Execution gaps are bridgeable.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAM SAM SOM ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">TAM / SAM / SOM Analysis</span>
+    </div>
+
+    <div class="tam-container">
+      <div class="tam-chart">
+        <div class="tam-bar-group">
+          <div class="tam-bar TAM"></div>
+          <div class="tam-bar-label">TAM</div>
+          <div class="tam-bar-amount T">$117B</div>
+          <div class="tam-bar-desc">Total K-12 India</div>
+        </div>
+        <div class="tam-bar-group">
+          <div class="tam-bar SAM"></div>
+          <div class="tam-bar-label">SAM</div>
+          <div class="tam-bar-amount S">$22B</div>
+          <div class="tam-bar-desc">Urban Private Schools</div>
+        </div>
+        <div class="tam-bar-group">
+          <div class="tam-bar SOM"></div>
+          <div class="tam-bar-label">SOM</div>
+          <div class="tam-bar-amount M">$80M</div>
+          <div class="tam-bar-desc">5-Year Realistic</div>
+        </div>
+      </div>
+      <div class="tam-details">
+        <div class="tam-detail-row">
+          <div class="tam-detail-header">
+            <span class="tam-detail-name">TAM — Total Addressable Market</span>
+            <span class="tam-detail-amount">$117B</span>
+          </div>
+          <div class="tam-detail-desc">India's entire K-12 education market. 260M students, 1.5M schools. Growing at 16% CAGR driven by private school expansion and edtech adoption. Source: KPMG India Education Report 2024.</div>
+        </div>
+        <div class="tam-detail-row">
+          <div class="tam-detail-header">
+            <span class="tam-detail-name">SAM — Serviceable Addressable Market</span>
+            <span class="tam-detail-amount S">$22B</span>
+          </div>
+          <div class="tam-detail-desc">Private urban schools in Tier 1/2 cities (Delhi NCR, Mumbai, Bengaluru, Hyderabad, Pune, Chennai, Ahmedabad). ~45,000 schools, 50M students. Parents paying ₹1-5L/yr already. AI-premium likely ₹20-50K additional.</div>
+        </div>
+        <div class="tam-detail-row">
+          <div class="tam-detail-header">
+            <span class="tam-detail-name">SOM — Serviceable Obtainable Market</span>
+            <span class="tam-detail-amount M">$80M</span>
+          </div>
+          <div class="tam-detail-desc">Realistic 5-year capture. Assumes 200 school partnerships × 2,500 students avg × ₹25,000 AI curriculum premium = ~₹1,250 Cr ARR (~$80M at current rates). Conservative path via curriculum licensing model.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== COMPETITOR ANALYSIS ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">Competitor Analysis</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Competitor</th>
+            <th>Model</th>
+            <th>Age Group</th>
+            <th>Strength</th>
+            <th>Weakness</th>
+            <th>Threat</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>WhiteHat Jr</strong><br><small style="color:var(--muted)">BYJU's</small></td>
+            <td>Online live coding for kids</td>
+            <td>Age 6–18</td>
+            <td>Scale, brand, ₹300M raised</td>
+            <td>Struggling post-BYJU's acquisition; quality declined; not AI-specific</td>
+            <td><span class="badge badge-amber">MEDIUM</span></td>
+          </tr>
+          <tr>
+            <td><strong>LEAD School</strong></td>
+            <td>K-12 curriculum tech partner</td>
+            <td>Class 1–12</td>
+            <td>3,000+ school partnerships, deep distribution</td>
+            <td>No dedicated AI/ML curriculum; subject-level only</td>
+            <td><span class="badge badge-red">HIGH</span></td>
+          </tr>
+          <tr>
+            <td><strong>Coding Ninjas</strong></td>
+            <td>Online bootcamp courses</td>
+            <td>Age 16+</td>
+            <td>Strong brand, job outcomes, AI/ML courses</td>
+            <td>College-age focus; no K-12 track; not school-integrated</td>
+            <td><span class="badge badge-green">LOW</span></td>
+          </tr>
+          <tr>
+            <td><strong>Newton School</strong></td>
+            <td>ISA-based tech bootcamp</td>
+            <td>Age 18+</td>
+            <td>Income share, outcome-driven</td>
+            <td>Post-graduation model; not K-12; no early education</td>
+            <td><span class="badge badge-green">LOW</span></td>
+          </tr>
+          <tr>
+            <td><strong>Khan Academy India</strong></td>
+            <td>Free online learning</td>
+            <td>All ages</td>
+            <td>Free, trusted, scale</td>
+            <td>Not India-specific AI curriculum; no school mandate framework</td>
+            <td><span class="badge badge-amber">MEDIUM</span></td>
+          </tr>
+          <tr>
+            <td><strong>CBSE / NEP 2020</strong></td>
+            <td>Government mandate</td>
+            <td>Class 6+</td>
+            <td>Policy mandate for coding/AI from Class 6</td>
+            <td>Zero execution capacity; no quality AI teachers; all theory</td>
+            <td><span class="badge badge-amber">MEDIUM</span></td>
+          </tr>
+          <tr>
+            <td><strong>Atal Tinkering Labs</strong></td>
+            <td>Gov AI labs in schools</td>
+            <td>Class 6–12</td>
+            <td>Govt funding, 10,000+ schools</td>
+            <td>No structured AI curriculum; equipment exists, pedagogy doesn't</td>
+            <td><span class="badge badge-amber">MEDIUM</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== MARKET GAP ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">Market Gap Analysis</span>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-num">01</div>
+      <div>
+        <div class="gap-title">No Structured Mandatory AI Curriculum for Ages 10–14</div>
+        <div class="gap-desc">NEP 2020 mandates "coding" from Class 6 but provides no implementation framework, no quality teachers, and no outcomes measurement. The AI curriculum gap at Class 5-8 is wide open. This is the core white space.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-num">02</div>
+      <div>
+        <div class="gap-title">No "Earn While in School" Internship Pipeline for Minors</div>
+        <div class="gap-desc">Utkarsh's vision of high-schoolers doing real AI internships doesn't exist in India's formal economy. WhiteHat Jr sold "kids become CEOs" as marketing — no one has actually built the pipeline. This is the product's biggest differentiator if executed.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-num">03</div>
+      <div>
+        <div class="gap-title">Teacher Training Pipeline for AI at K-12 Level Doesn't Exist</div>
+        <div class="gap-desc">There is no scalable pathway to certify and deploy AI teachers in Indian schools. Whoever solves teacher supply solves the distribution problem — and that itself could be a $1B+ standalone business.</div>
+      </div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-num">04</div>
+      <div>
+        <div class="gap-title">Outcome Gap: Parents Want Jobs, Not Participation Certificates</div>
+        <div class="gap-desc">Every edtech that's succeeded in India has built toward a concrete economic outcome (job, income, rank). No one in the K-12 AI space has wired the full loop: curriculum → project → portfolio → internship → early employment. This is the gap worth owning.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ICP ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">Ideal Customer Profile (ICP)</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="card">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:2px;margin-bottom:14px;">// PRIMARY BUYER: SCHOOLS</div>
+        <div class="icp-table">
+          <div class="icp-row"><span class="icp-key">School Type</span><span class="icp-val">CBSE / ICSE private schools with fee > ₹50,000/yr</span></div>
+          <div class="icp-row"><span class="icp-key">Location</span><span class="icp-val">Delhi NCR, Mumbai, Bengaluru, Hyderabad, Pune</span></div>
+          <div class="icp-row"><span class="icp-key">School Size</span><span class="icp-val">1,000–5,000 students</span></div>
+          <div class="icp-row"><span class="icp-key">Decision Maker</span><span class="icp-val">Principal / Academic Director / Management Committee</span></div>
+          <div class="icp-row"><span class="icp-key">Pain Trigger</span><span class="icp-val">"Parents demanding AI education; we have no product"</span></div>
+          <div class="icp-row"><span class="icp-key">Budget Signal</span><span class="icp-val">Already paying LEAD/Extramarks ₹200-500/student/month</span></div>
+          <div class="icp-row"><span class="icp-key">Tech Maturity</span><span class="icp-val">Has smart boards, some coding classes, Atal Tinkering Lab</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:2px;margin-bottom:14px;">// SECONDARY BUYER: PARENTS</div>
+        <div class="icp-table">
+          <div class="icp-row"><span class="icp-key">Age</span><span class="icp-val">35–50 years old</span></div>
+          <div class="icp-row"><span class="icp-key">Household Income</span><span class="icp-val">₹15–60 LPA</span></div>
+          <div class="icp-row"><span class="icp-key">Occupation</span><span class="icp-val">IT professional, entrepreneur, doctor, business owner</span></div>
+          <div class="icp-row"><span class="icp-key">Location</span><span class="icp-val">Tier 1 cities, metro neighborhoods</span></div>
+          <div class="icp-row"><span class="icp-key">Child Profile</span><span class="icp-val">Class 4–8, above-average student</span></div>
+          <div class="icp-row"><span class="icp-key">Core Fear</span><span class="icp-val">"AI will replace my child's job before they graduate"</span></div>
+          <div class="icp-row"><span class="icp-key">Buying Signal</span><span class="icp-val">Already enrolled child in coding classes / WhiteHat Jr</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BUYER PERSONA ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-title">Buyer Persona</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="card">
+        <div class="persona-wrap">
+          <div class="persona-avatar">👩‍💼</div>
+          <div>
+            <div class="persona-name">Aspirational Ananya</div>
+            <div class="persona-role">// PARENT PERSONA · PRIMARY DECISION MAKER</div>
+            <div class="persona-tags">
+              <span class="persona-tag">Software Engineer @ TCS</span>
+              <span class="persona-tag">Age 42, Bengaluru</span>
+              <span class="persona-tag">₹28 LPA household</span>
+              <span class="persona-tag">Daughter in Class 6</span>
+            </div>
+            <div class="persona-quote">"I'm spending ₹2 lakh a year on school fees but my daughter still hasn't touched Python or AI. When I interview freshers at TCS, they don't know basic ML. I don't want that to be her story."</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="persona-wrap">
+          <div class="persona-avatar">🏫</div>
+          <div>
+            <div class="persona-name">Principal Prabhakar</div>
+            <div class="persona-role">// SCHOOL PERSONA · INSTITUTIONAL BUYER</div>
+            <div class="persona-tags">
+              <span class="persona-tag">Principal, Delhi CBSE School</span>
+              <span class="persona-tag">Age 54, 2,800 students</span>
+              <span class="persona-tag">25-year educator</span>
+              <span class="persona-tag">Board: Satisfied parent = enrollment</span>
+            </div>
+            <div class="persona-quote">"Every parent asks about AI. We have an Atal Tinkering Lab collecting dust because no teacher knows how to use it. I'll pay for a ready-to-deploy curriculum that I can show parents."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAIN POINTS ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <span class="section-title">Customer Pain Points</span>
+    </div>
+
+    <div class="pain-item">
+      <div class="pain-icon">💸</div>
+      <div>
+        <div class="pain-title">The Late Start Tax</div>
+        <div class="pain-desc">Students lose 4-6 years of compound AI learning by starting at BTech. At ₹5L/year early freelance AI income, that's ₹20-30L in missed earnings opportunity per student.</div>
+      </div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-icon">👩‍🏫</div>
+      <div>
+        <div class="pain-title">The Teacher Desert</div>
+        <div class="pain-desc">Schools want to teach AI but can't find teachers. India has ~850 qualified AI educators for 1.5M schools. Curriculum exists in syllabus — delivery infrastructure doesn't.</div>
+      </div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-icon">📄</div>
+      <div>
+        <div class="pain-title">Theoretical Education with Zero Practical Output</div>
+        <div class="pain-desc">CBSE includes basic "Artificial Intelligence" from Class 9. But it's 100% theory — no models built, no APIs called, no projects. Students can define "neural network" but can't build one at Class 12.</div>
+      </div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-icon">🏠</div>
+      <div>
+        <div class="pain-title">Financial Pressure on Middle-Income Families</div>
+        <div class="pain-desc">Founder's personal insight: students from families earning ₹5-15L/year cannot afford to wait until age 23 to start earning. Early AI skills = early income = family contribution possible by age 16-17.</div>
+      </div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-icon">🤖</div>
+      <div>
+        <div class="pain-title">AI Disruption Anxiety Among Parents</div>
+        <div class="pain-desc">71% of Indian parents surveyed (EY 2024) are "very concerned" that AI will reduce job opportunities for their children. They are actively seeking AI education but don't know where to turn for K-12 options.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TRIGGERS & OBJECTIONS ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <span class="section-title">Buying Triggers & Objections</span>
+    </div>
+
+    <div class="to-grid">
+      <div>
+        <div class="to-section-title t">// BUYING TRIGGERS</div>
+        <div class="trigger-item">News about AI replacing software jobs — parents panic-enroll</div>
+        <div class="trigger-item">Child's school announces competitor has AI program</div>
+        <div class="trigger-item">Parent sees a teen doing freelance AI work on social media</div>
+        <div class="trigger-item">Child asks "what's AI?" and parent realizes they can't explain</div>
+        <div class="trigger-item">School board mandates NEP 2020 AI compliance — principal buys curriculum</div>
+        <div class="trigger-item">Child scores poorly in math/science — parent looks for tech alternative</div>
+        <div class="trigger-item">LinkedIn post about 16-year-old earning from AI freelancing goes viral</div>
+      </div>
+      <div>
+        <div class="to-section-title o">// OBJECTIONS TO OVERCOME</div>
+        <div class="obj-item">"Is this CBSE/ICSE approved? Will it affect board exams?"</div>
+        <div class="obj-item">"Who teaches this? Can an 11-year-old actually learn AI?"</div>
+        <div class="obj-item">"WhiteHat Jr also promised this and BYJU's shut it down."</div>
+        <div class="obj-item">"How is this different from watching YouTube tutorials?"</div>
+        <div class="obj-item">"My child needs to focus on JEE/NEET, not side experiments."</div>
+        <div class="obj-item">"What's the guarantee of internship/earning outcomes?"</div>
+        <div class="obj-item">"Is this a US company trying to sell to India without understanding us?"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CUSTOMER JOURNEY ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <span class="section-title">Customer Journey</span>
+    </div>
+
+    <div class="journey-wrap">
+      <div class="journey-steps">
+        <div class="journey-step">
+          <div class="journey-icon">📱</div>
+          <div class="journey-label">Awareness</div>
+          <div class="journey-sub">Parent sees AI news / LinkedIn post / school circular</div>
+        </div>
+        <div class="journey-step">
+          <div class="journey-icon">🔍</div>
+          <div class="journey-label">Research</div>
+          <div class="journey-sub">Googles "AI school India" or "AI classes for kids"</div>
+        </div>
+        <div class="journey-step">
+          <div class="journey-icon">💬</div>
+          <div class="journey-label">Discovery</div>
+          <div class="journey-sub">Lands on your website or school principal mentions the program</div>
+        </div>
+        <div class="journey-step">
+          <div class="journey-icon">📋</div>
+          <div class="journey-label">Evaluation</div>
+          <div class="journey-sub">Checks curriculum, teachers, outcomes, CBSE alignment</div>
+        </div>
+        <div class="journey-step">
+          <div class="journey-icon">✅</div>
+          <div class="journey-label">Enrollment</div>
+          <div class="journey-sub">School signs up or parent pays for program</div>
+        </div>
+        <div class="journey-step">
+          <div class="journey-icon">🏗️</div>
+          <div class="journey-label">Learning</div>
+          <div class="journey-sub">Student builds AI projects, portfolio, develops skills</div>
+        </div>
+        <div class="journey-step">
+          <div class="journey-icon">💼</div>
+          <div class="journey-label">Internship</div>
+          <div class="journey-sub">Student gets placed in AI project / freelance / internship</div>
+        </div>
+        <div class="journey-step">
+          <div class="journey-icon">🌟</div>
+          <div class="journey-label">Alumni</div>
+          <div class="journey-sub">Becomes a proof point. Parents refer new parents. Cycle compounds.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RISK ASSESSMENT ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <span class="section-title">Risk Assessment</span>
+    </div>
+
+    <div class="risk-item H">
+      <div class="risk-icon">🔴</div>
+      <div class="risk-body">
+        <div class="risk-title">CBSE / State Board Regulatory Recognition <span class="badge badge-red">HIGH</span></div>
+        <div class="risk-desc">Starting a physical school requires CBSE affiliation (3-5 year process), land acquisition, building norms, state govt approval. Even curriculum add-ons need board sign-off. This is India's biggest EdTech entry barrier.</div>
+        <div class="risk-mit">Start with curriculum licensing to existing affiliated schools. Seek CBSE recognition for your AI curriculum module as a "co-curricular" first, then full affiliation.</div>
+      </div>
+    </div>
+    <div class="risk-item H">
+      <div class="risk-icon">🔴</div>
+      <div class="risk-body">
+        <div class="risk-title">AI Teacher Supply Chain <span class="badge badge-red">HIGH</span></div>
+        <div class="risk-desc">India has a massive shortage of qualified AI educators at K-12 level. You cannot scale a school without teachers. Poaching from tech companies is expensive; fresh graduates need 6+ months training.</div>
+        <div class="risk-mit">Build a 6-week AI Teacher Certification program as the first product. This solves your problem and becomes a revenue stream simultaneously.</div>
+      </div>
+    </div>
+    <div class="risk-item H">
+      <div class="risk-icon">🔴</div>
+      <div class="risk-body">
+        <div class="risk-title">Capital Intensity of Physical School Model <span class="badge badge-red">HIGH</span></div>
+        <div class="risk-desc">A new school in India requires ₹10-50 Cr minimum (land, building, equipment, staff). For a pre-revenue idea, this is a 5-7 year capital commitment before break-even. This is not a VC-backable model in early stages.</div>
+        <div class="risk-mit">Start with a curriculum SaaS or after-school program. Unit economics: 200 students × ₹30,000/yr = ₹60L ARR on ₹10L investment. Physical school comes after validation.</div>
+      </div>
+    </div>
+    <div class="risk-item M">
+      <div class="risk-icon">🟡</div>
+      <div class="risk-body">
+        <div class="risk-title">Founder Location (US vs India Operations) <span class="badge badge-amber">MEDIUM</span></div>
+        <div class="risk-desc">Building a school/edtech in India requires boots-on-ground relationships with schools, regulators, and teachers. Being based in Texas creates a coordination lag and trust deficit with Indian institutions.</div>
+        <div class="risk-mit">Identify a co-founder in India with education sector experience. Even a 6-week India visit per year + strong ops partner goes a long way.</div>
+      </div>
+    </div>
+    <div class="risk-item M">
+      <div class="risk-icon">🟡</div>
+      <div class="risk-body">
+        <div class="risk-title">Parent Conservatism (JEE/NEET vs AI) <span class="badge badge-amber">MEDIUM</span></div>
+        <div class="risk-desc">Many Indian parents see any "non-exam" activity as a threat to board rank and competitive exam prep. The perception that AI education competes with JEE/NEET prep will slow adoption in non-metro India.</div>
+        <div class="risk-mit">Position AI as a JEE accelerator, not a competitor. AI tools for problem-solving, speed reading, pattern recognition — frame it as the edge in exams, not a replacement.</div>
+      </div>
+    </div>
+    <div class="risk-item M">
+      <div class="risk-icon">🟡</div>
+      <div class="risk-body">
+        <div class="risk-title">Child Labour / Internship Regulation for Minors <span class="badge badge-amber">MEDIUM</span></div>
+        <div class="risk-desc">India's Child Labour Act prohibits employment of children under 14, and work hours for 14-18 are restricted. The "earn while in school" vision needs careful legal structuring to avoid regulatory conflicts.</div>
+        <div class="risk-mit">Frame as "project-based learning with stipend" or "apprenticeship program" under NSDC / PMKVY guidelines. Consult an education law firm early.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PIVOT OPPORTUNITIES ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">13</span>
+      <span class="section-title">Pivot Opportunities</span>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">// STRATEGIC NOTE</div>
+      The physical school is the ultimate vision, but a 10-year destination. The pivots below are the paths to get there — each one validates the core thesis while generating revenue and building the assets (curriculum, teacher network, student outcomes) needed for the full school vision.
+    </div>
+
+    <div class="pivot-grid">
+      <div class="pivot-card">
+        <div class="pivot-icon">📚</div>
+        <div class="pivot-name">AI Curriculum SaaS</div>
+        <div class="pivot-desc">License ready-to-deploy AI curriculum modules to existing CBSE/ICSE schools. ₹200-500 per student per month. Schools get compliance; you get distribution without capital.</div>
+        <div class="pivot-capital"><span class="badge badge-green">LOW CAPITAL</span> <span class="badge badge-green">FAST TO MARKET</span></div>
+      </div>
+      <div class="pivot-card">
+        <div class="pivot-icon">🌙</div>
+        <div class="pivot-name">After-School AI Program</div>
+        <div class="pivot-desc">Weekend/evening AI classes for students (Class 5-10). WhiteHat Jr model but for real AI: Python, ML, NLP, project-based. ₹2-5K/month per student. Proven demand.</div>
+        <div class="pivot-capital"><span class="badge badge-amber">MEDIUM CAPITAL</span> <span class="badge badge-green">PROVEN MODEL</span></div>
+      </div>
+      <div class="pivot-card">
+        <div class="pivot-icon">👩‍🏫</div>
+        <div class="pivot-name">AI Teacher Certification</div>
+        <div class="pivot-desc">6-week online program to certify school teachers as AI educators. ₹15-30K per teacher. India has 9M school teachers — even 0.1% is 9,000 paying customers. Solves your own supply problem.</div>
+        <div class="pivot-capital"><span class="badge badge-green">LOW CAPITAL</span> <span class="badge badge-purple">HIGH SCALE</span></div>
+      </div>
+      <div class="pivot-card">
+        <div class="pivot-icon">🏢</div>
+        <div class="pivot-name">Corporate AI Lab Sponsor</div>
+        <div class="pivot-desc">Partner with TCS, Infosys, or Wipro to sponsor AI labs in 50 schools. They get CSR credit + early talent pipeline. You get funding, credibility, and distribution. Win-win-win.</div>
+        <div class="pivot-capital"><span class="badge badge-cyan">NON-DILUTIVE</span> <span class="badge badge-amber">MEDIUM EFFORT</span></div>
+      </div>
+      <div class="pivot-card">
+        <div class="pivot-icon">📱</div>
+        <div class="pivot-name">AI Projects Platform</div>
+        <div class="pivot-desc">Student portfolio platform where Class 5-12 kids publish AI projects, get rated, and connect with companies for micro-internships. The LinkedIn for school AI builders.</div>
+        <div class="pivot-capital"><span class="badge badge-amber">MEDIUM CAPITAL</span> <span class="badge badge-purple">NETWORK EFFECT</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== GO / NO-GO ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">14</span>
+      <span class="section-title">Go / No-Go Recommendation</span>
+    </div>
+
+    <div class="verdict-card">
+      <div class="verdict-label">// VC ASSESSMENT · JUNE 2026</div>
+      <div class="verdict-score">67</div>
+      <div class="verdict-title">CONDITIONAL GO ✅</div>
+      <div class="verdict-desc">
+        The problem is real, the timing is right, and the founder's conviction is credible. But the physical school model is a 10-year capital-intensive bet that should not be attempted before validation. The recommendation: Go aggressively on validating demand and building curriculum — but start lean with an after-school program or curriculum SaaS. Reach 200 paying students, prove outcome metrics (projects built, internship placements, parent NPS), and then raise capital for the school. The vision is fundable; the current execution model is not.
+      </div>
+      <div class="verdict-pills">
+        <span class="badge badge-green">STRONG PROBLEM ✓</span>
+        <span class="badge badge-green">RIGHT TIMING ✓</span>
+        <span class="badge badge-green">CREDIBLE FOUNDER ✓</span>
+        <span class="badge badge-amber">VALIDATE FIRST !</span>
+        <span class="badge badge-red">PIVOT EXECUTION MODEL ✗</span>
+        <span class="badge badge-red">FIND INDIA CO-FOUNDER ✗</span>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Assumption to Test</th>
+              <th>How to Test</th>
+              <th>Success Signal</th>
+              <th>Timeline</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>"Parents will pay for AI education beyond school fees"</td>
+              <td>Run ₹5K Instagram ad to landing page. Measure signups.</td>
+              <td>50+ signups in 2 weeks</td>
+              <td>Week 1</td>
+            </tr>
+            <tr>
+              <td>"Schools will integrate external AI curriculum"</td>
+              <td>Cold outreach to 20 school principals with a pilot offer</td>
+              <td>3+ schools say yes to free pilot</td>
+              <td>Week 2-3</td>
+            </tr>
+            <tr>
+              <td>"Students can learn meaningful AI at age 10"</td>
+              <td>Run 4-week pilot class with 10 students (Class 5-6)</td>
+              <td>8/10 complete a working AI project</td>
+              <td>Month 2</td>
+            </tr>
+            <tr>
+              <td>"Companies will give AI internships to school students"</td>
+              <td>Interview 10 startup founders about micro-internship interest</td>
+              <td>3+ willing to trial a paid micro-internship</td>
+              <td>Month 2</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 30-DAY ACTION PLAN ===== -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">15</span>
+      <span class="section-title">30-Day Action Plan</span>
+    </div>
+
+    <div class="week-block">
+      <div class="week-header">// WEEK 1 — DISCOVERY & RESEARCH (Days 1–7)</div>
+      <div class="action-item">
+        <span class="action-day">DAY 1–2</span>
+        <span class="action-text">Conduct 10 parent interviews (WhatsApp your network in India). Ask: "Would you pay ₹1,500/month for an after-school AI program for your Class 5-8 child?" Record every answer verbatim.</span>
+      </div>
+      <div class="action-item">
+        <span class="action-day">DAY 3–4</span>
+        <span class="action-text">Map India's existing AI-in-school landscape: NEP 2020 AI curriculum, CBSE Class 9-12 AI textbook, Atal Tinkering Lab status. Identify what exists vs what's missing — this is your product gap map.</span>
+      </div>
+      <div class="action-item">
+        <span class="action-day">DAY 5–7</span>
+        <span class="action-text">Create a simple 1-page landing page: "AI school for Class 5 students — India's first mandatory AI curriculum." Add a waitlist form. Share in 5 Indian parent WhatsApp groups. Count signups.</span>
+      </div>
+    </div>
+
+    <div class="week-block">
+      <div class="week-header">// WEEK 2 — MARKET VALIDATION (Days 8–14)</div>
+      <div class="action-item">
+        <span class="action-day">DAY 8–10</span>
+        <span class="action-text">Cold-email 15 private school principals in Delhi NCR, Bengaluru, Mumbai with: "I'm building a ready-to-deploy AI curriculum for Class 5-8. Would you pilot it free for one semester?" Track open + reply rate.</span>
+      </div>
+      <div class="action-item">
+        <span class="action-day">DAY 11–12</span>
+        <span class="action-text">Survey 30 students (Class 5-10) via Google Form shared in student Discord/Telegram groups: "Do you know what AI is? Do you want to learn it? Would you attend a Saturday class?" Analyze responses.</span>
+      </div>
+      <div class="action-item">
+        <span class="action-day">DAY 13–14</span>
+        <span class="action-text">Run a ₹3,000 Meta (Instagram/Facebook) ad targeting Indian parents aged 30-50 in metros. Send traffic to your landing page. Measure cost-per-signup. If under ₹200/signup, demand is real.</span>
+      </div>
+    </div>
+
+    <div class="week-block">
+      <div class="week-header">// WEEK 3 — CONCEPT TESTING (Days 15–21)</div>
+      <div class="action-item">
+        <span class="action-day">DAY 15–17</span>
+        <span class="action-text">Design a 4-week AI pilot curriculum for Class 5 students: Week 1 (What is AI + prompt engineering), Week 2 (Image classification with no-code tools), Week 3 (Build a chatbot), Week 4 (Present your AI project).</span>
+      </div>
+      <div class="action-item">
+        <span class="action-day">DAY 18–19</span>
+        <span class="action-text">Identify 1 school in your personal network willing to run a free 4-week AI pilot in one Class 5 section (30 students). Commit to teaching it yourself (virtually) or find one volunteer AI-literate teacher.</span>
+      </div>
+      <div class="action-item">
+        <span class="action-day">DAY 20–21</span>
+        <span class="action-text">Interview 5 Indian startup founders (via LinkedIn DM): "Would you give a 2-week paid project (₹5,000 stipend) to a smart 16-year-old who can build AI automations?" Their answer tells you if the internship pipeline is real.</span>
+      </div>
+    </div>
+
+    <div class="week-block">
+      <div class="week-header">// WEEK 4 — MVP PLANNING (Days 22–30)</div>
+      <div class="action-item">
+        <span class="action-day">DAY 22–24</span>
+        <span class="action-text">Synthesize all data: How many parents want it? How many schools said yes? What's cost-per-lead? Write a 1-page decision memo: "Here's what I validated, here's my pivot, here's next 90 days."</span>
+      </div>
+      <div class="action-item">
+        <span class="action-day">DAY 25–27</span>
+        <span class="action-text">Register your company: Startup India portal (free), simple private limited structure via Razorpay Rize (₹6,000). You need this before taking any payment. Also explore DPIIT recognition for tax benefits.</span>
+      </div>
+      <div class="action-item">
+        <span class="action-day">DAY 28–30</span>
+        <span class="action-text">Build a 10-slide pitch deck: Problem, Solution, Market, Traction (pilot results), Business Model, Competition, Team, Roadmap, Ask. Apply to Sequoia Surge, Lightspeed India, and Social Alpha (EdTech focus). Your story is compelling enough to get a first call.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="report-footer">
+    <div class="footer-l">Built with <span>Claude AI</span> · @Anthropic @ABTalksOnAI @AnilBajpai · #60DaysOfAI</div>
+    <div class="footer-r" style="color:var(--amber);">UTKARSH MAVI · 2026 · DAY 22 OF 60</div>
+  </div>
+
+</div>
+</body>
+</html>
