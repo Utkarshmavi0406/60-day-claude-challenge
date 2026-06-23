@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Strategy Report — AIcademy India</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  --bg:#03060c; --bg2:#06091a; --card:#0a0f1e; --card2:#0d1428;
+  --border:#1a2040; --amber:#ffb400; --amber2:#f0a93b;
+  --green:#00d48f; --red:#ff5c6c; --cyan:#22d3ee; --purple:#a78bfa;
+  --text:#e8eaf6; --muted:#6b7499;
+  --mono:'JetBrains Mono',monospace; --sans:'Inter',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 24px;}
+
+/* HEADER */
+.header{border-bottom:2px solid var(--amber);padding-bottom:28px;margin-bottom:40px;position:relative;}
+.stamp{position:absolute;top:0;right:0;font-family:var(--mono);font-size:10px;color:var(--amber);border:1px solid rgba(255,180,0,0.4);padding:3px 10px;border-radius:3px;letter-spacing:2px;}
+.eyebrow{font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;opacity:.8;}
+.h-title{font-size:32px;font-weight:900;color:#fff;line-height:1.1;margin-bottom:6px;}
+.h-title span{color:var(--amber);}
+.h-sub{font-size:13px;color:var(--muted);margin-bottom:18px;}
+.h-meta{display:flex;gap:28px;flex-wrap:wrap;}
+.mi{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.mi strong{color:var(--text);}
+
+/* SECTION */
+.sec{margin-bottom:44px;}
+.sec-hd{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.sn{font-family:var(--mono);font-size:10px;color:var(--amber);background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.25);padding:2px 8px;border-radius:3px;}
+.st{font-size:17px;font-weight:700;color:#fff;}
+
+/* CALLOUT */
+.callout{background:rgba(255,180,0,0.05);border:1px solid rgba(255,180,0,0.2);border-left:3px solid var(--amber);border-radius:0 6px 6px 0;padding:14px 18px;margin-bottom:18px;font-size:13px;color:var(--text);line-height:1.7;}
+.callout.g{background:rgba(0,212,143,0.05);border-color:rgba(0,212,143,0.2);border-left-color:var(--green);}
+.callout.r{background:rgba(255,92,108,0.05);border-color:rgba(255,92,108,0.2);border-left-color:var(--red);}
+.cl{font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+.callout.g .cl{color:var(--green);}
+.callout.r .cl{color:var(--red);}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:10px;font-family:var(--mono);font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.bg{background:rgba(0,212,143,0.1);color:var(--green);border:1px solid rgba(0,212,143,0.3);}
+.ba{background:rgba(255,180,0,0.1);color:var(--amber);border:1px solid rgba(255,180,0,0.3);}
+.br{background:rgba(255,92,108,0.1);color:var(--red);border:1px solid rgba(255,92,108,0.3);}
+.bc{background:rgba(34,211,238,0.1);color:var(--cyan);border:1px solid rgba(34,211,238,0.3);}
+.bp{background:rgba(167,139,250,0.1);color:var(--purple);border:1px solid rgba(167,139,250,0.3);}
+
+/* SCORE BARS */
+.sbar{margin-bottom:12px;}
+.sbar-hd{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
+.sbar-hd span:last-child{font-family:var(--mono);font-weight:700;color:var(--amber);}
+.sbar-track{height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
+.sbar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--amber2),var(--amber));}
+.sbar-fill.g{background:linear-gradient(90deg,#00a066,var(--green));}
+.sbar-fill.r{background:linear-gradient(90deg,#cc1122,var(--red));}
+
+/* TABLE */
+.tw{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th{background:rgba(255,180,0,0.07);color:var(--amber);font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:10px 12px;border-bottom:1px solid rgba(26,32,64,0.5);color:var(--text);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+
+/* BUSINESS MODEL CANVAS */
+.canvas-grid{display:grid;grid-template-columns:1fr 1fr 1.2fr 1fr 1fr;grid-template-rows:auto auto;gap:4px;margin-bottom:18px;}
+.canvas-cell{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:14px;}
+.canvas-cell.vp{background:rgba(255,180,0,0.06);border-color:rgba(255,180,0,0.3);}
+.canvas-cell.span2{grid-row:span 2;}
+.canvas-cell-title{font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.canvas-cell-title.g{color:var(--green);}
+.canvas-cell-title.c{color:var(--cyan);}
+.canvas-cell-title.p{color:var(--purple);}
+.canvas-item{font-size:11px;color:var(--muted);margin-bottom:5px;display:flex;gap:6px;line-height:1.4;}
+.canvas-item::before{content:'·';color:var(--amber);flex-shrink:0;}
+.canvas-item strong{color:var(--text);}
+
+/* REVENUE PHASES */
+.rev-phases{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+@media(max-width:700px){.rev-phases{grid-template-columns:repeat(2,1fr);}}
+.rev-phase{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:16px;position:relative;overflow:hidden;}
+.rev-phase::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--amber);}
+.rev-phase:nth-child(2)::before{background:var(--green);}
+.rev-phase:nth-child(3)::before{background:var(--cyan);}
+.rev-phase:nth-child(4)::before{background:var(--purple);}
+.rev-phase-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.rev-phase-amount{font-size:22px;font-weight:900;font-family:var(--mono);color:var(--amber);margin-bottom:4px;}
+.rev-phase:nth-child(2) .rev-phase-amount{color:var(--green);}
+.rev-phase:nth-child(3) .rev-phase-amount{color:var(--cyan);}
+.rev-phase:nth-child(4) .rev-phase-amount{color:var(--purple);}
+.rev-phase-period{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.rev-phase-note{font-size:11px;color:var(--text);line-height:1.4;}
+
+/* GTM FUNNEL */
+.gtm-funnel{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;}
+.gtm-step{display:flex;align-items:stretch;gap:12px;}
+.gtm-phase{width:90px;flex-shrink:0;background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.25);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 4px;font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:1px;font-weight:700;text-transform:uppercase;}
+.gtm-body{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;}
+.gtm-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;}
+.gtm-items{font-size:12px;color:var(--muted);line-height:1.6;}
+.gtm-metric{font-family:var(--mono);font-size:11px;color:var(--amber);margin-top:5px;}
+
+/* FIRST 100 USERS */
+.u100-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+@media(max-width:700px){.u100-steps{grid-template-columns:repeat(2,1fr);}}
+.u100-step{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;position:relative;}
+.u100-count{font-size:26px;font-weight:900;font-family:var(--mono);color:var(--amber);line-height:1;margin-bottom:4px;}
+.u100-range{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;}
+.u100-channel{font-size:12px;font-weight:700;color:#fff;margin-bottom:4px;}
+.u100-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.u100-cac{font-family:var(--mono);font-size:10px;color:var(--green);margin-top:6px;}
+
+/* MOAT */
+.moat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+@media(max-width:600px){.moat-grid{grid-template-columns:1fr;}}
+.moat-item{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.moat-icon{font-size:20px;margin-bottom:6px;}
+.moat-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;}
+.moat-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.moat-strength{margin-top:8px;font-family:var(--mono);font-size:10px;}
+
+/* REVERSE SWOT */
+.rswot-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+@media(max-width:600px){.rswot-grid{grid-template-columns:1fr;}}
+.rswot-box{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:16px;}
+.rswot-title{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.rswot-title.s{color:var(--green);}
+.rswot-title.w{color:var(--red);}
+.rswot-title.o{color:var(--cyan);}
+.rswot-title.t{color:var(--amber);}
+.rswot-item{display:flex;gap:8px;margin-bottom:8px;font-size:12.5px;line-height:1.5;align-items:flex-start;}
+.rswot-item.flip{color:var(--green);}
+.rswot-item.flip::before{content:'↗';color:var(--green);flex-shrink:0;font-weight:700;}
+.rswot-item.risk::before{content:'→';color:var(--amber);flex-shrink:0;}
+
+/* INVESTMENT SCORECARD */
+.iscore-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px;}
+@media(max-width:800px){.iscore-grid{grid-template-columns:repeat(3,1fr);}}
+.iscore-card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;position:relative;overflow:hidden;}
+.iscore-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--amber);}
+.iscore-val{font-size:32px;font-weight:900;font-family:var(--mono);color:var(--amber);line-height:1;margin-bottom:4px;}
+.iscore-lbl{font-size:10px;color:var(--muted);font-family:var(--mono);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;}
+.iscore-note{font-size:10px;color:var(--text);line-height:1.4;}
+
+/* PITCH */
+.pitch-box{background:linear-gradient(135deg,rgba(255,180,0,0.07),rgba(255,180,0,0.02));border:1px solid rgba(255,180,0,0.3);border-radius:10px;padding:24px;margin-bottom:14px;}
+.pitch-label{font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:2px;margin-bottom:8px;}
+.pitch-text{font-size:14px;color:var(--text);line-height:1.75;font-style:italic;}
+
+/* REALITY CHECK */
+.rcheck-item{display:flex;gap:14px;padding:14px;background:var(--card2);border-radius:6px;margin-bottom:8px;align-items:flex-start;}
+.rcheck-q{font-family:var(--mono);font-size:10px;color:var(--amber);background:rgba(255,180,0,0.1);border:1px solid rgba(255,180,0,0.3);padding:4px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:2px;letter-spacing:1px;}
+.rcheck-body{}
+.rcheck-a{font-size:13px;color:var(--text);margin-bottom:4px;line-height:1.5;}
+.rcheck-note{font-size:11px;color:var(--muted);}
+
+/* ACTION SHEET */
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:600px){.action-grid{grid-template-columns:1fr;}}
+.action-item{display:flex;gap:12px;padding:12px 14px;background:var(--card2);border-radius:6px;align-items:flex-start;}
+.action-n{font-family:var(--mono);font-size:11px;color:var(--amber);background:rgba(255,180,0,0.1);border:1px solid rgba(255,180,0,0.25);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;}
+.action-t{font-size:13px;color:var(--text);line-height:1.5;}
+.action-t strong{color:#fff;display:block;margin-bottom:2px;}
+
+/* VERDICT */
+.verdict{background:linear-gradient(135deg,rgba(255,180,0,0.07),rgba(255,180,0,0.02));border:2px solid var(--amber);border-radius:12px;padding:32px;text-align:center;}
+.verdict-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;}
+.verdict-emoji{font-size:36px;margin-bottom:6px;}
+.verdict-score{font-size:56px;font-weight:900;color:var(--amber);font-family:var(--mono);line-height:1;margin-bottom:6px;}
+.verdict-name{font-size:22px;font-weight:800;color:#fff;margin-bottom:10px;}
+.verdict-desc{font-size:13px;color:var(--muted);max-width:600px;margin:0 auto 16px;line-height:1.75;}
+.verdict-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+
+/* SUSTAINABILITY */
+.sustain{background:rgba(0,212,143,0.06);border:1px solid rgba(0,212,143,0.2);border-radius:8px;padding:20px;margin-top:16px;}
+.sustain-label{font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:2px;margin-bottom:8px;}
+.sustain-text{font-size:13px;color:var(--text);line-height:1.75;}
+
+/* BULLETS */
+.bullet-list{margin-bottom:14px;}
+.bullet-item{display:flex;gap:10px;margin-bottom:8px;font-size:13px;line-height:1.5;align-items:flex-start;}
+.bullet-item::before{content:'→';color:var(--amber);flex-shrink:0;margin-top:1px;}
+
+/* FOOTER */
+.footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.footer-l{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.footer-l span{color:var(--amber);}
+.footer-r{font-family:var(--mono);font-size:10px;color:var(--amber);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="stamp">DAY 24 · BUSINESS STRATEGY</div>
+    <div class="eyebrow">// STARTUP BUSINESS STRATEGY REPORT · YC + MCKINSEY FRAMEWORK · CLAUDE AI</div>
+    <div class="h-title">AICADEMY <span>INDIA</span> — BUSINESS STRATEGY</div>
+    <div class="h-sub">Business Viability · Revenue Model · Go-To-Market · Investment Readiness</div>
+    <div class="h-meta">
+      <div class="mi">SOURCE: <strong>Day 22-23 Validation + MVP Blueprint</strong></div>
+      <div class="mi">FRAMEWORK: <strong>AI Co-Founder + YC Advisor + Growth Strategist</strong></div>
+      <div class="mi">STAGE: <strong>Pre-Revenue / Idea Stage</strong></div>
+      <div class="mi">FOCUS: <strong>Revenue over Vanity · Evidence over Assumptions</strong></div>
+    </div>
+  </div>
+
+  <!-- 01 STARTUP SUMMARY -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">00</span><span class="st">Startup Summary — 10 Bullets from Days 22-23</span></div>
+    <div class="bullet-item">AIcademy India: online weekend AI program for Class 5–8 students (ages 10–13), taught by the founder via Zoom on Saturdays</div>
+    <div class="bullet-item">Core problem: India's 260M students don't encounter real AI until BTech (age 21+) — 11 years of compounding learning lost</div>
+    <div class="bullet-item">MVP: 12-week after-school program, 15-20 students per batch, ₹1,499/month × 3 months = ₹4,497 per student</div>
+    <div class="bullet-item">Dual customer: Parent (buyer, afraid of AI job displacement) + Student (user, wants to build cool things)</div>
+    <div class="bullet-item">PMF signal: 80%+ of students present a working AI project at Week 12 Demo Day</div>
+    <div class="bullet-item">Revenue path: B2C after-school → B2B school curriculum SaaS → Teacher certification → Physical school (long-term)</div>
+    <div class="bullet-item">TAM $117B (India K-12), SAM $22B (urban private schools), SOM $80M in 5 years</div>
+    <div class="bullet-item">Founder: Utkarsh Mavi, Credit Risk Analyst at Republic Finance, MS Business Analytics & AI (UT Dallas), ex-Data Scientist at Bajaj Finance</div>
+    <div class="bullet-item">Day 22 verdict: 67/100 Conditional Go. Day 23 verdict: 66/100 Promising but Unvalidated</div>
+    <div class="bullet-item">Critical risk: Founder is sole instructor — cannot scale beyond 20 students without hiring a co-facilitator</div>
+  </div>
+
+  <!-- 02 BUSINESS REALITY CHECK -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">01</span><span class="st">Business Reality Check</span></div>
+
+    <div class="callout r">
+      <div class="cl">// HONEST ASSESSMENT BEFORE STRATEGY</div>
+      This section prioritises evidence over enthusiasm. Every answer below is based on what has been proven vs. what is assumed. Assumptions are flagged explicitly.
+    </div>
+
+    <div class="rcheck-item">
+      <div class="rcheck-q">WHO PAYS?</div>
+      <div class="rcheck-body">
+        <div class="rcheck-a"><strong>B2C (now):</strong> Indian parents in metro cities, ₹1,499/month. They pay because of AI anxiety and FOMO, not because they've seen outcomes. <strong>B2B (Phase 2):</strong> Private school management committees, ₹300/student/month for curriculum licensing. They pay to satisfy parent demand and NEP 2020 compliance. <strong>B2G (Phase 3):</strong> State education boards — long sales cycle (18–36 months), but highest scale.</div>
+        <div class="rcheck-note">⚠️ Assumption: Parents will pay ₹1,499/month without seeing a track record. This is the #1 assumption to validate via demo class conversion rate.</div>
+      </div>
+    </div>
+    <div class="rcheck-item">
+      <div class="rcheck-q">WHY THEY PAY?</div>
+      <div class="rcheck-body">
+        <div class="rcheck-a">Parents pay because: (1) AI displacement anxiety is acute and real, (2) no credible structured alternative exists for ages 10–13, (3) WhiteHat Jr left a gap in the market, (4) the founder's personal story creates trust that a brand never could.</div>
+        <div class="rcheck-note">⚠️ Assumption: The "working AI project in 12 weeks" promise is the primary conversion trigger. If parents care more about CBSE alignment, the messaging needs rework.</div>
+      </div>
+    </div>
+    <div class="rcheck-item">
+      <div class="rcheck-q">HOW DISCOVERED?</div>
+      <div class="rcheck-body">
+        <div class="rcheck-a"><strong>Phase 1:</strong> Founder LinkedIn post → WhatsApp parent group sharing → Free demo registration. <strong>Phase 2:</strong> Demo Day videos as UGC → Instagram reels → Batch 2 applications. <strong>Phase 3:</strong> School principal LinkedIn outreach + EdTech India conferences + Demo Day outcomes data.</div>
+        <div class="rcheck-note">⚠️ Assumption: Founder's LinkedIn reach is sufficient for Batch 1 without paid ads. Need minimum 5,000+ LinkedIn connections or 3 viral posts to generate 50+ demo registrations.</div>
+      </div>
+    </div>
+    <div class="rcheck-item">
+      <div class="rcheck-q">GROWTH RISKS?</div>
+      <div class="rcheck-body">
+        <div class="rcheck-a"><strong>1.</strong> Founder bottleneck — can't teach more than 20 students as sole instructor. <strong>2.</strong> No India operational presence — founder based in US (Texas). <strong>3.</strong> WhiteHat Jr trust scar — market is sceptical of EdTech promises for kids. <strong>4.</strong> JEE/NEET parent mindset — any "distraction" from competitive exams faces automatic rejection. <strong>5.</strong> Low LinkedIn reach limits organic Batch 1 discovery.</div>
+        <div class="rcheck-note">Mitigation roadmap included in GTM and Action Sheet sections.</div>
+      </div>
+    </div>
+    <div class="rcheck-item">
+      <div class="rcheck-q">MONETISATION RISKS?</div>
+      <div class="rcheck-body">
+        <div class="rcheck-a"><strong>1.</strong> Indian parents already spend ₹8–15K/month on tuitions — AI program is additive spend, not a switch. Spend fatigue is real. <strong>2.</strong> School B2B sales cycle is 12–18 months minimum. Revenue from schools is Year 2+ only. <strong>3.</strong> Teacher certification market needs proof of student outcomes first. <strong>4.</strong> Price below ₹999/month kills perceived quality; price above ₹2,999 without outcomes kills conversion.</div>
+      </div>
+    </div>
+    <div class="rcheck-item">
+      <div class="rcheck-q">WEAK ASSUMPTIONS?</div>
+      <div class="rcheck-body">
+        <div class="rcheck-a"><strong>Weakest → validate urgently:</strong><br>
+        (1) Parents will convert at 40%+ from demo to paid — test with first demo class<br>
+        (2) Class 5 students can complete a working AI project in 12 weeks — test with pilot<br>
+        (3) School principals will respond to cold LinkedIn outreach — test with 20 outreach attempts<br>
+        (4) The teacher playbook can be built from Batch 1 and used by a co-facilitator — test in Batch 2<br>
+        (5) Demo Day videos become organic marketing — test with first Demo Day video</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 BUSINESS MODEL CANVAS -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">02</span><span class="st">Business Model Canvas</span></div>
+
+    <div class="canvas-grid">
+      <!-- Row 1 -->
+      <div class="canvas-cell span2">
+        <div class="canvas-cell-title">KEY PARTNERS</div>
+        <div class="canvas-item"><span><strong>Google Workspace EDU</strong> — free tools for students</span></div>
+        <div class="canvas-item"><span><strong>NSDC / PMKVY</strong> — internship framework for minors</span></div>
+        <div class="canvas-item"><span><strong>India co-facilitator</strong> — MS CS student, paid ₹25K/mo</span></div>
+        <div class="canvas-item"><span><strong>CBSE consultants</strong> — curriculum alignment advisors</span></div>
+        <div class="canvas-item"><span><strong>TCS/Infosys CSR</strong> — corporate lab sponsorship (Phase 2)</span></div>
+      </div>
+      <div class="canvas-cell" style="grid-row:span 1;">
+        <div class="canvas-cell-title">KEY ACTIVITIES</div>
+        <div class="canvas-item"><span>Live Saturday instruction (Zoom)</span></div>
+        <div class="canvas-item"><span>Curriculum design & iteration</span></div>
+        <div class="canvas-item"><span>Demo Day production (Week 12)</span></div>
+        <div class="canvas-item"><span>Founder LinkedIn content marketing</span></div>
+        <div class="canvas-item"><span>Parent community management (WhatsApp)</span></div>
+      </div>
+      <div class="canvas-cell vp span2">
+        <div class="canvas-cell-title">VALUE PROPOSITION</div>
+        <div class="canvas-item"><span><strong>For Parents:</strong> "Your child builds a working AI project by Week 12 — or money back. 11 years earlier than BTech."</span></div>
+        <div class="canvas-item"><span><strong>For Students:</strong> "Build real AI, not just learn about it."</span></div>
+        <div class="canvas-item"><span><strong>For Schools (B2B):</strong> "NEP 2020 AI compliance. Parent retention. Zero teacher training needed."</span></div>
+      </div>
+      <div class="canvas-cell">
+        <div class="canvas-cell-title c">CUSTOMER RELATIONS</div>
+        <div class="canvas-item"><span>High-touch live instruction (personal)</span></div>
+        <div class="canvas-item"><span>WhatsApp community (weekly updates)</span></div>
+        <div class="canvas-item"><span>Public Demo Day (commitment device)</span></div>
+        <div class="canvas-item"><span>Founder story (trust anchored to person)</span></div>
+      </div>
+      <div class="canvas-cell">
+        <div class="canvas-cell-title">KEY RESOURCES</div>
+        <div class="canvas-item"><span>Founder's AI/ML expertise</span></div>
+        <div class="canvas-item"><span>12-week curriculum IP</span></div>
+        <div class="canvas-item"><span>Student project portfolio (social proof)</span></div>
+        <div class="canvas-item"><span>Founder's brand + credibility</span></div>
+        <div class="canvas-item"><span>India parent + school network</span></div>
+      </div>
+      <!-- Row 2 -->
+      <div class="canvas-cell" style="grid-column:span 2;">
+        <div class="canvas-cell-title p">COST STRUCTURE</div>
+        <div class="canvas-item"><span>Founder time (opportunity cost) — primary cost</span></div>
+        <div class="canvas-item"><span>Zoom Pro + Google Workspace — ~₹2,500/month</span></div>
+        <div class="canvas-item"><span>Content tools (Canva, Loom) — ~₹2,000/month</span></div>
+        <div class="canvas-item"><span>India co-facilitator (Phase 2) — ₹25,000/month</span></div>
+        <div class="canvas-item"><span>Demo Day production — ₹5,000/batch</span></div>
+      </div>
+      <div class="canvas-cell" style="grid-column:span 1;">
+        <div class="canvas-cell-title c">CHANNELS</div>
+        <div class="canvas-item"><span>LinkedIn (founder content)</span></div>
+        <div class="canvas-item"><span>WhatsApp parent groups</span></div>
+        <div class="canvas-item"><span>Demo Day UGC (video referral)</span></div>
+        <div class="canvas-item"><span>School principal outreach (Phase 2)</span></div>
+        <div class="canvas-item"><span>EdTech India conferences</span></div>
+      </div>
+      <div class="canvas-cell" style="grid-column:span 2;">
+        <div class="canvas-cell-title g">REVENUE STREAMS</div>
+        <div class="canvas-item"><span><strong>Stream 1 (Now):</strong> B2C tuition — ₹1,499/month × 3 months per student</span></div>
+        <div class="canvas-item"><span><strong>Stream 2 (Year 2):</strong> B2B school license — ₹300/student/month</span></div>
+        <div class="canvas-item"><span><strong>Stream 3 (Year 2):</strong> Teacher certification — ₹15–30K per teacher</span></div>
+        <div class="canvas-item"><span><strong>Stream 4 (Year 3+):</strong> Curriculum IP licensing — revenue share with partners</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 REVENUE & PRICING -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">03</span><span class="st">Revenue & Pricing Strategy</span></div>
+
+    <div class="rev-phases">
+      <div class="rev-phase">
+        <div class="rev-phase-label">YEAR 1 · B2C ONLY</div>
+        <div class="rev-phase-amount">₹3.6L</div>
+        <div class="rev-phase-period">4 batches × 20 students</div>
+        <div class="rev-phase-note">₹4,497/student. Founder as sole teacher. Break-even at 10 students/batch.</div>
+      </div>
+      <div class="rev-phase">
+        <div class="rev-phase-label">YEAR 2 · B2C + B2B</div>
+        <div class="rev-phase-amount">₹37L</div>
+        <div class="rev-phase-period">100 B2C + 3 school pilots</div>
+        <div class="rev-phase-note">B2C: ₹4.5L. B2B: 3 schools × 300 students × ₹300 × 12 = ₹32.4L ARR.</div>
+      </div>
+      <div class="rev-phase">
+        <div class="rev-phase-label">YEAR 3 · SCALE</div>
+        <div class="rev-phase-amount">₹1.2Cr</div>
+        <div class="rev-phase-period">20 schools + teacher certs</div>
+        <div class="rev-phase-note">B2B: 20 schools × 1,500 students × ₹300 × 12. Teacher cert: 200 × ₹20K.</div>
+      </div>
+      <div class="rev-phase">
+        <div class="rev-phase-label">YEAR 5 · SOM</div>
+        <div class="rev-phase-amount">₹80M</div>
+        <div class="rev-phase-period">200 school partnerships</div>
+        <div class="rev-phase-note">Curriculum SaaS at scale. Teacher network of 2,000+. First physical school opens.</div>
+      </div>
+    </div>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Revenue Stream</th><th>Model</th><th>Price</th><th>Year 1 Target</th><th>Unit Economics</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>B2C Tuition</strong></td>
+            <td>3-month subscription, online classes</td>
+            <td>₹1,499/month<br>₹4,497 per batch</td>
+            <td>80 students<br>₹3.6L</td>
+            <td>CAC: ~₹0 (organic)<br>LTV: ₹8,994 (2 batches avg)<br>Margin: ~85%</td>
+          </tr>
+          <tr>
+            <td><strong>B2B School License</strong></td>
+            <td>Annual per-student license, curriculum + facilitation</td>
+            <td>₹300/student/month<br>Min 100 students</td>
+            <td>0 (Year 1)<br>₹32.4L (Year 2)</td>
+            <td>CAC: ₹15-30K (sales cost)<br>LTV: ₹3.6L/school/year<br>Margin: ~70%</td>
+          </tr>
+          <tr>
+            <td><strong>Teacher Certification</strong></td>
+            <td>6-week online program for school teachers</td>
+            <td>₹15-30K per teacher</td>
+            <td>0 (Year 1)<br>₹30L (Year 2)</td>
+            <td>CAC: ~₹2,000 (LinkedIn ads)<br>LTV: ₹22.5K average<br>Margin: ~80%</td>
+          </tr>
+          <tr>
+            <td><strong>Curriculum IP License</strong></td>
+            <td>White-label curriculum to EdTech partners</td>
+            <td>Revenue share (15–25%)</td>
+            <td>0 (Year 1-2)<br>Explore Year 3</td>
+            <td>Near-zero marginal cost<br>Pure margin once built</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 05 GTM STRATEGY -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">04</span><span class="st">Go-To-Market Strategy</span></div>
+
+    <div class="gtm-funnel">
+      <div class="gtm-step">
+        <div class="gtm-phase">PHASE 1<br>MONTH 1–3</div>
+        <div class="gtm-body">
+          <div class="gtm-title">Founder-Led Organic Growth</div>
+          <div class="gtm-items">LinkedIn founder story post → WhatsApp parent group sharing → Free 60-min demo class → Batch 1 enrollment (₹1,499/month). Zero marketing budget. Founder IS the brand.</div>
+          <div class="gtm-metric">Target: 20 paying students · CAC: ₹0 · Channel: LinkedIn + WhatsApp</div>
+        </div>
+      </div>
+      <div class="gtm-step">
+        <div class="gtm-phase">PHASE 2<br>MONTH 4–12</div>
+        <div class="gtm-body">
+          <div class="gtm-title">Community-Led + Demo Day UGC</div>
+          <div class="gtm-items">Batch 1 Demo Day video shared by parents → Instagram Reels + LinkedIn posts → Batch 2-4 applications. Each satisfied parent refers avg 1.5 new parents (viral coefficient: 0.75 → near-viral). Hire India co-facilitator to run parallel batches.</div>
+          <div class="gtm-metric">Target: 100 students · CAC: ~₹500 · Channel: UGC + Referral</div>
+        </div>
+      </div>
+      <div class="gtm-step">
+        <div class="gtm-phase">PHASE 3<br>YEAR 2</div>
+        <div class="gtm-body">
+          <div class="gtm-title">B2B School Outreach (Distribution Unlock)</div>
+          <div class="gtm-items">Cold LinkedIn outreach to school principals with Demo Day video + outcome data. Offer free 1-semester pilot. Target: 3 school pilots. This is the distribution moat — each school partnership reaches 500–2,000 students at once vs. individual parent acquisition.</div>
+          <div class="gtm-metric">Target: 3 school pilots · CAC: ₹15-30K/school · Channel: LinkedIn DM + warm intros</div>
+        </div>
+      </div>
+      <div class="gtm-step">
+        <div class="gtm-phase">PHASE 4<br>YEAR 3</div>
+        <div class="gtm-body">
+          <div class="gtm-title">Teacher Certification as Distribution Engine</div>
+          <div class="gtm-items">Every certified teacher is a distribution channel — they recommend AIcademy to their school and student parents. Teacher certification program = supply chain for curriculum delivery at scale. Target: 200 certified teachers in 50 schools.</div>
+          <div class="gtm-metric">Target: 20 schools · CAC via teachers: ~₹2K/teacher · Unlocks ₹1.2Cr ARR</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 CUSTOMER ACQUISITION -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">05</span><span class="st">Customer Acquisition Strategy</span></div>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Channel</th><th>Tactic</th><th>CAC</th><th>Volume</th><th>Timeline</th><th>Priority</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>LinkedIn Content</strong></td>
+            <td>Founder story posts, student project showcases, AI education insights</td>
+            <td>₹0</td>
+            <td>20–50 students/batch</td>
+            <td>Now</td>
+            <td><span class="badge bg">PRIMARY</span></td>
+          </tr>
+          <tr>
+            <td><strong>WhatsApp Parent Groups</strong></td>
+            <td>Share demo class link in 10+ parent groups in Bengaluru, Delhi NCR</td>
+            <td>₹0</td>
+            <td>10–30 students</td>
+            <td>Now</td>
+            <td><span class="badge bg">PRIMARY</span></td>
+          </tr>
+          <tr>
+            <td><strong>Demo Day UGC</strong></td>
+            <td>Student project videos shared by parents on Instagram + WhatsApp → organic virality</td>
+            <td>₹200/student</td>
+            <td>20–100 students</td>
+            <td>Month 4+</td>
+            <td><span class="badge ba">SECONDARY</span></td>
+          </tr>
+          <tr>
+            <td><strong>Parent Referral</strong></td>
+            <td>"Refer a friend" — one month free for both parent and referral. No platform needed: WhatsApp DM tracking.</td>
+            <td>₹500/student</td>
+            <td>10–30 students</td>
+            <td>Month 2+</td>
+            <td><span class="badge ba">SECONDARY</span></td>
+          </tr>
+          <tr>
+            <td><strong>School Principal Outreach</strong></td>
+            <td>LinkedIn cold DM + email. Share curriculum + Demo Day video. Offer free pilot.</td>
+            <td>₹15–30K/school</td>
+            <td>3–5 schools</td>
+            <td>Year 2</td>
+            <td><span class="badge bc">PHASE 2</span></td>
+          </tr>
+          <tr>
+            <td><strong>Meta Ads (Instagram)</strong></td>
+            <td>Target Indian parents, 30-50, metro cities, interested in "education" and "coding for kids"</td>
+            <td>₹800–1,500/lead</td>
+            <td>50–200 students</td>
+            <td>Year 2 (after proof)</td>
+            <td><span class="badge bc">PHASE 2</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 07 FIRST 100 USERS -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">06</span><span class="st">First 100 Users Plan</span></div>
+
+    <div class="u100-steps">
+      <div class="u100-step">
+        <div class="u100-count">20</div>
+        <div class="u100-range">USERS 1–20</div>
+        <div class="u100-channel">LinkedIn Founder Story</div>
+        <div class="u100-desc">One 1,000-word LinkedIn post: "I'm a Credit Risk Analyst using AI daily. I wish I'd learned it at 10." Drive to free demo landing page. Expect 80–150 profile visits, 15–30 demo registrations, 8–12 conversions at 40% close rate.</div>
+        <div class="u100-cac">CAC: ₹0 · Timeline: Week 1-2</div>
+      </div>
+      <div class="u100-step">
+        <div class="u100-count">40</div>
+        <div class="u100-range">USERS 21–40</div>
+        <div class="u100-channel">Batch 1 Parent Referrals</div>
+        <div class="u100-desc">After Demo Day, each satisfied parent gets a "refer a friend" WhatsApp message: "Your friend's child gets Week 1 free." Every parent knows 5+ parents with kids the same age. Target: 20 students × 1 referral each = 20 new students.</div>
+        <div class="u100-cac">CAC: ₹0–500 · Timeline: Month 4</div>
+      </div>
+      <div class="u100-step">
+        <div class="u100-count">70</div>
+        <div class="u100-range">USERS 41–70</div>
+        <div class="u100-channel">Demo Day Video + LinkedIn Post 2</div>
+        <div class="u100-desc">Post Demo Day video highlights: "10-year-old builds a monsoon-prediction AI in 12 weeks." This content performs 3-5x better than any text post. Target: 200–400 LinkedIn engagements, 40–60 demo applications, 20–30 conversions.</div>
+        <div class="u100-cac">CAC: ₹0 · Timeline: Month 4-6</div>
+      </div>
+      <div class="u100-step">
+        <div class="u100-count">100</div>
+        <div class="u100-range">USERS 71–100</div>
+        <div class="u100-channel">First School Pilot</div>
+        <div class="u100-desc">Approach 1 school (personal connection preferred). Offer free 1-semester AI pilot for one Class 5 section (30–40 students). School gets compliance story, founder gets 30+ new students in one deal. This unlocks the B2B model proof.</div>
+        <div class="u100-cac">CAC: ₹0 (free pilot) · Timeline: Month 6-9</div>
+      </div>
+    </div>
+
+    <div class="callout g">
+      <div class="cl">// IMPORTANT: WHY 100 USERS MATTERS</div>
+      The first 100 students are not just customers — they are the evidence base for everything that follows. Their project completion rate, parent NPS, testimonials, and Demo Day video become the pitch deck that convinces investors, the social proof that drives paid acquisition, and the outcomes data that unlocks school B2B contracts. Every interaction with students 1–100 must be documented obsessively.
+    </div>
+  </div>
+
+  <!-- 08 COMPETITIVE POSITION & MOAT -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">07</span><span class="st">Competitive Position & Moat</span></div>
+
+    <div class="tw" style="margin-bottom:18px;">
+      <table>
+        <thead><tr><th>Competitor</th><th>Model</th><th>Gap vs AIcademy</th><th>Our Advantage</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>WhiteHat Jr (BYJU's)</strong></td>
+            <td>Online coding for ages 6–18</td>
+            <td>No AI-specific track; quality collapsed; brand trust destroyed</td>
+            <td>Real AI outcomes; founder credibility; money-back guarantee</td>
+          </tr>
+          <tr>
+            <td><strong>LEAD School</strong></td>
+            <td>K-12 curriculum tech partner (3,000+ schools)</td>
+            <td>No dedicated AI/ML curriculum; subject-level only; not outcome-driven</td>
+            <td>Project-based outcomes; Demo Day; direct distribution</td>
+          </tr>
+          <tr>
+            <td><strong>CBSE NEP 2020 AI</strong></td>
+            <td>Government AI mandate, Class 9+</td>
+            <td>100% theory; no qualified teachers; no outcomes measurement</td>
+            <td>Starts Class 5; practical projects; real-world AI tools used</td>
+          </tr>
+          <tr>
+            <td><strong>Coding Ninjas / Newton School</strong></td>
+            <td>College-age bootcamp (18+)</td>
+            <td>No K-12 focus; not school-integrated; post-graduation model</td>
+            <td>Starting 11 years earlier; compounding advantage for students</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="moat-grid">
+      <div class="moat-item">
+        <div class="moat-icon">🎯</div>
+        <div class="moat-title">Founder Credibility</div>
+        <div class="moat-desc">A real AI practitioner (Credit Risk Analyst, Bajaj Finance Data Scientist, UT Dallas MS) teaching Class 5 students. No company brand can replicate personal credibility.</div>
+        <div class="moat-strength"><span class="badge bg">STRONG NOW</span></div>
+      </div>
+      <div class="moat-item">
+        <div class="moat-icon">🏆</div>
+        <div class="moat-title">Outcome Guarantee</div>
+        <div class="moat-desc">"Working AI project by Week 12 or money back." No competitor makes this promise. Outcomes-backed guarantee is the most powerful trust signal in post-WhiteHat Jr India.</div>
+        <div class="moat-strength"><span class="badge bg">STRONG NOW</span></div>
+      </div>
+      <div class="moat-item">
+        <div class="moat-icon">🎬</div>
+        <div class="moat-title">Demo Day Flywheel</div>
+        <div class="moat-desc">Week 12 Demo Day creates UGC (parent-shared videos) that becomes organic marketing. Each cohort's Demo Day seeds the next cohort's enrollment. Self-reinforcing loop.</div>
+        <div class="moat-strength"><span class="badge ba">BUILDS OVER TIME</span></div>
+      </div>
+      <div class="moat-item">
+        <div class="moat-icon">📚</div>
+        <div class="moat-title">Curriculum IP</div>
+        <div class="moat-desc">A proprietary 12-week AI curriculum tested on real students, with outcome data, is licensable IP. After 3 cohorts, this becomes a defensible asset that takes competitors 18+ months to replicate.</div>
+        <div class="moat-strength"><span class="badge ba">BUILDS OVER TIME</span></div>
+      </div>
+      <div class="moat-item">
+        <div class="moat-icon">🌱</div>
+        <div class="moat-title">Alumni Network</div>
+        <div class="moat-desc">Students who build AI projects at age 10 become the most credible advocates at age 16 — when their peers' parents are frantically looking for AI education options. Alumni referrals compound.</div>
+        <div class="moat-strength"><span class="badge bc">YEAR 3+</span></div>
+      </div>
+      <div class="moat-item">
+        <div class="moat-icon">👩‍🏫</div>
+        <div class="moat-title">Teacher Supply Chain</div>
+        <div class="moat-desc">Whoever certifies India's AI teachers for K-12 controls the distribution pipeline. The teacher certification program (Phase 3) is a moat that controls curriculum delivery across thousands of schools.</div>
+        <div class="moat-strength"><span class="badge bc">YEAR 2-3</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 09 REVERSE SWOT -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">08</span><span class="st">Reverse SWOT Analysis</span></div>
+    <div class="callout">
+      <div class="cl">// REVERSE SWOT METHODOLOGY</div>
+      Traditional SWOT lists problems. Reverse SWOT converts each weakness and threat into a strategy. Every vulnerability becomes a product decision or market opportunity.
+    </div>
+    <div class="rswot-grid">
+      <div class="rswot-box">
+        <div class="rswot-title s">✓ STRENGTHS (Leverage These)</div>
+        <div class="rswot-item flip">Real AI practitioner as founder → "Taught by someone who does this at work" is the #1 trust signal missing from every EdTech competitor</div>
+        <div class="rswot-item flip">Personal origin story → Founder's "I wish I'd learned this at 10, I could have helped my family" is the authentic marketing that no agency can manufacture</div>
+        <div class="rswot-item flip">No overhead, no campus → 85%+ margins from Day 1 means profitability on 10 students</div>
+        <div class="rswot-item flip">Domain expertise in AI/ML → Can design curriculum that actually works, not a reskinned Python course</div>
+      </div>
+      <div class="rswot-box">
+        <div class="rswot-title w">✗ WEAKNESSES → STRATEGIES</div>
+        <div class="rswot-item risk">"Founder is sole teacher, can't scale" → Document everything in Batch 1 → The teaching playbook IS the product IP → Becomes licensable curriculum</div>
+        <div class="rswot-item risk">"No India presence, founder in US" → Fully online MVP eliminates geographic constraint → India ops needed only for Phase 3 (physical school)</div>
+        <div class="rswot-item risk">"No EdTech brand recognition" → Founder's personal LinkedIn is more trustworthy than a branded company post-WhiteHat Jr</div>
+        <div class="rswot-item risk">"Zero students / no track record" → Free demo class eliminates this objection before the first Rupee is charged</div>
+      </div>
+      <div class="rswot-box">
+        <div class="rswot-title o">↗ OPPORTUNITIES (Prioritize These)</div>
+        <div class="rswot-item flip">NEP 2020 AI mandate → Schools need curriculum NOW but have no products → Enter B2B before competitors build</div>
+        <div class="rswot-item flip">Teacher supply gap → Certify AI teachers → Controls distribution for the entire K-12 AI education market</div>
+        <div class="rswot-item flip">Post-BYJU's credibility vacuum → Authentic, outcome-guaranteed product fills the trust gap left by scale-and-fail EdTechs</div>
+        <div class="rswot-item flip">India's 9M school teachers can't teach AI → Teacher certification is a ₹1,000 Cr standalone market</div>
+      </div>
+      <div class="rswot-box">
+        <div class="rswot-title t">⚡ THREATS → COUNTER-STRATEGIES</div>
+        <div class="rswot-item risk">BYJU's trust scar in EdTech → Show, don't tell. Free demo + money-back guarantee eliminates the "another EdTech" objection</div>
+        <div class="rswot-item risk">JEE/NEET parent mindset → Position AI as a JEE accelerator, not a competitor. "AI helps students solve 3x more problems in the same time"</div>
+        <div class="rswot-item risk">Government enters AI education → Partner before competing. Offer curriculum to Atal Tinkering Labs. Government scale = distribution</div>
+        <div class="rswot-item risk">WhiteHat Jr re-launches / LEAD adds AI → First-mover in outcomes-based AI education with Alumni data is 18-month head start</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 INVESTOR PITCH -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">09</span><span class="st">Investor One-Liner & 30-Second Pitch</span></div>
+
+    <div class="pitch-box">
+      <div class="pitch-label">// INVESTOR ONE-LINER</div>
+      <div class="pitch-text">"AIcademy is India's first outcomes-guaranteed AI program for Class 5–8 students — delivering a working AI project in 12 weeks — capturing the 11 compounding learning years lost before BTech, in a $117B market where nobody delivers results."</div>
+    </div>
+
+    <div class="pitch-box" style="border-color:rgba(0,212,143,0.3);background:rgba(0,212,143,0.04);">
+      <div class="pitch-label" style="color:var(--green);">// 30-SECOND FOUNDER PITCH</div>
+      <div class="pitch-text">"I'm Utkarsh Mavi. I'm a Credit Risk Analyst who builds AI models at a US finance firm. I started my career 11 years late — my first real AI project wasn't until BTech. India graduates 1.5 million engineers a year who spend 2–3 years catching up on skills they should have learned at 10. I'm fixing that. AIcademy is a 12-week online AI program for Class 5–8 students in India. Students build working AI projects — not earn participation certificates. We teach on Saturdays, charge ₹1,499 a month, and the first batch launches in 4 weeks. After Batch 1, we license the curriculum to private schools at ₹300 per student per month. With 200 schools, that's ₹80M ARR. We're not asking you to fund a school. We're asking you to fund proof of concept — 20 students, 12 weeks, one Demo Day."</div>
+    </div>
+  </div>
+
+  <!-- 11 INVESTMENT SCORECARD -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">10</span><span class="st">Investment Scorecard</span></div>
+
+    <div class="iscore-grid">
+      <div class="iscore-card">
+        <div class="iscore-val">65</div>
+        <div class="iscore-lbl">Business Viability</div>
+        <div class="iscore-note">Clear revenue model, strong unit economics. Unproven execution and zero traction today.</div>
+      </div>
+      <div class="iscore-card">
+        <div class="iscore-val">72</div>
+        <div class="iscore-lbl">Revenue Potential</div>
+        <div class="iscore-note">Clear path ₹3.6L → ₹1.2Cr → ₹80M. B2B school licensing is the scale lever.</div>
+      </div>
+      <div class="iscore-card">
+        <div class="iscore-val">68</div>
+        <div class="iscore-lbl">GTM Strength</div>
+        <div class="iscore-note">Founder-led content is powerful. Requires consistent output. Demo Day UGC is the key multiplier.</div>
+      </div>
+      <div class="iscore-card">
+        <div class="iscore-val">71</div>
+        <div class="iscore-lbl">Competitive Strength</div>
+        <div class="iscore-note">Credible differentiation via outcomes guarantee + founder credibility. Moat builds with data.</div>
+      </div>
+      <div class="iscore-card">
+        <div class="iscore-val">42</div>
+        <div class="iscore-lbl">Investor Readiness</div>
+        <div class="iscore-note">Compelling story. Zero traction. Need: Batch 1 data, outcome proof, school pilot, India co-founder.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:4px;">
+      <div class="sbar"><div class="sbar-hd"><span>Business Viability</span><span>65/100</span></div><div class="sbar-track"><div class="sbar-fill" style="width:65%"></div></div></div>
+      <div class="sbar"><div class="sbar-hd"><span>Revenue Potential</span><span>72/100</span></div><div class="sbar-track"><div class="sbar-fill g" style="width:72%"></div></div></div>
+      <div class="sbar"><div class="sbar-hd"><span>GTM Strength</span><span>68/100</span></div><div class="sbar-track"><div class="sbar-fill" style="width:68%"></div></div></div>
+      <div class="sbar"><div class="sbar-hd"><span>Competitive Strength</span><span>71/100</span></div><div class="sbar-track"><div class="sbar-fill g" style="width:71%"></div></div></div>
+      <div class="sbar"><div class="sbar-hd"><span>Investor Readiness</span><span>42/100</span></div><div class="sbar-track"><div class="sbar-fill r" style="width:42%"></div></div></div>
+    </div>
+  </div>
+
+  <!-- 12 FOUNDER ACTION SHEET -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">11</span><span class="st">Founder Action Sheet — Top 10 Actions</span></div>
+    <div class="action-grid">
+      <div class="action-item"><div class="action-n">1</div><div class="action-t"><strong>Run demo class within 14 days</strong>Track conversion rate obsessively. 40%+ means messaging works. Below 25% means rewrite the landing page headline. This single number tells you if the business is real.</div></div>
+      <div class="action-item"><div class="action-n">2</div><div class="action-t"><strong>Post your founder story on LinkedIn this week</strong>1,000 words. Raw, honest, personal. "I'm the founder who wishes he'd learned AI at 10 so he could help his parents." This generates Batch 1 students at ₹0 CAC.</div></div>
+      <div class="action-item"><div class="action-n">3</div><div class="action-t"><strong>Build the "Teaching Playbook" from Day 1</strong>Document every session: what worked, what confused students, which exercises landed. By Week 12, you have licensable curriculum IP. By Month 4, you can hand it to a co-facilitator.</div></div>
+      <div class="action-item"><div class="action-n">4</div><div class="action-t"><strong>Measure 3 metrics only in Batch 1</strong>(1) Demo-to-paid conversion rate, (2) Week 12 project completion rate, (3) Parent NPS post-Demo Day. Everything else is noise until you have 100 students.</div></div>
+      <div class="action-item"><div class="action-n">5</div><div class="action-t"><strong>Identify and recruit your India co-facilitator</strong>LinkedIn search: "MS Computer Science India AI". Find 1 person willing to co-teach Batch 2 for 10% revenue share + portfolio credit. You need this before Month 4 or growth stops at 20 students.</div></div>
+      <div class="action-item"><div class="action-n">6</div><div class="action-t"><strong>Send 20 school principal LinkedIn DMs with Demo Day video</strong>After Week 12. Short message: "My students built working AI projects in 12 weeks. 100% completion rate. Would you pilot this in your Class 5 section — free?" Even 1 yes = B2B proof.</div></div>
+      <div class="action-item"><div class="action-n">7</div><div class="action-t"><strong>Apply to Sequoia Surge / Lightspeed India after Batch 1</strong>Your pitch at that point: "I have 20 students, 80%+ project completion, 3 parent testimonials, and 1 school pilot in negotiation." That's fundable. Before Batch 1: it's just a pitch deck.</div></div>
+      <div class="action-item"><div class="action-n">8</div><div class="action-t"><strong>Protect your curriculum IP from Day 1</strong>Save all session recordings, curriculum files, and exercise PDFs to a timestamped Google Drive. Register with India Copyright Office once curriculum is complete. This is your asset for school licensing.</div></div>
+      <div class="action-item"><div class="action-n">9</div><div class="action-t"><strong>Design the Demo Day as a marketing event</strong>Week 12 showcase: parents invited, students present projects on Zoom, recording shared on LinkedIn. Each Demo Day video is worth ₹50K+ in organic marketing reach. Budget ₹5,000 for production quality.</div></div>
+      <div class="action-item"><div class="action-n">10</div><div class="action-t"><strong>Contact TCS/Infosys CSR teams now</strong>Email subject: "Free AI education for 500 school students — need ₹5L in lab equipment support." TCS has a ₹1,500 Cr CSR budget. AI education for kids aligns perfectly. This funds your first B2B pilot without diluting equity.</div></div>
+    </div>
+  </div>
+
+  <!-- 13 FINAL VERDICT -->
+  <div class="sec">
+    <div class="sec-hd"><span class="sn">12</span><span class="st">Final Verdict</span></div>
+    <div class="verdict">
+      <div class="verdict-lbl">// INVESTMENT & SUSTAINABILITY VERDICT · JUNE 2026</div>
+      <div class="verdict-emoji">🟡</div>
+      <div class="verdict-score">64</div>
+      <div class="verdict-name">VALIDATE — Strong Foundation, Zero Proof</div>
+      <div class="verdict-desc">The business model is coherent, the market is real, and the founder's story is the most authentic pitch in Indian EdTech. The path from ₹3.6L to ₹80M ARR is clear and precedented — LEAD School proved the B2B curriculum SaaS model works. What's missing is not strategy; it's evidence. Batch 1 completion data, parent testimonials, and one school pilot conversation would move this from 64 to 80+ and make it genuinely investable.</div>
+      <div class="verdict-pills">
+        <span class="badge bg">COHERENT MODEL ✓</span>
+        <span class="badge bg">FOUNDER CREDIBILITY ✓</span>
+        <span class="badge bg">CLEAR GROWTH PATH ✓</span>
+        <span class="badge ba">NEEDS TRACTION !</span>
+        <span class="badge br">NOT FUNDABLE YET ✗</span>
+        <span class="badge br">RUN BATCH 1 FIRST ✗</span>
+      </div>
+    </div>
+    <div class="sustain">
+      <div class="sustain-label">// SUSTAINABILITY VERDICT</div>
+      <div class="sustain-text">AIcademy India is sustainably viable <em>if</em> the Demo Day flywheel works — one cohort's output becomes the next cohort's marketing, reducing CAC toward zero while revenue compounds. The teacher certification business embedded within the model creates a second revenue stream that controls its own distribution channel, making the long-term competitive position defensible at scale. The only path risk is a founder who attempts to build everything before validating the one thing that matters: whether parents will pay, and whether students will complete.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-l">Built with <span>Claude AI</span> · @Anthropic @ABTalksOnAI @AnilBajpai · #60DaysOfAI</div>
+    <div class="footer-r">UTKARSH MAVI · 2026 · DAY 24 OF 60</div>
+  </div>
+</div>
+</body>
+</html>

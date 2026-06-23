@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strategy Dashboard — AIcademy India</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#03060c;color:#e8eaf6;font-family:'Inter',sans-serif;padding:24px;}
+.dashboard{max-width:1080px;margin:0 auto;}
+
+.dash-header{text-align:center;margin-bottom:28px;padding:20px;border:1px solid rgba(255,180,0,0.2);border-radius:10px;background:rgba(255,180,0,0.03);}
+.dash-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,180,0,0.7);letter-spacing:3px;margin-bottom:8px;}
+.dash-title{font-size:26px;font-weight:900;color:#fff;margin-bottom:4px;}
+.dash-title span{color:#ffb400;}
+.dash-sub{font-size:12px;color:#6b7499;font-family:'JetBrains Mono',monospace;}
+
+.grid{display:grid;gap:12px;}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-2{grid-template-columns:1fr 1fr;}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+@media(max-width:800px){.grid-3,.grid-4{grid-template-columns:1fr 1fr;} .grid-2{grid-template-columns:1fr;}}
+
+.panel{background:#0a0f1e;border:1px solid #1a2040;border-radius:8px;padding:16px;}
+.panel-title{font-family:'JetBrains Mono',monospace;font-size:10px;color:#ffb400;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.panel-title.g{color:#00d48f;}
+.panel-title.c{color:#22d3ee;}
+.panel-title.p{color:#a78bfa;}
+.panel-title.r{color:#ff5c6c;}
+.panel-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.05);}
+
+/* SCORES */
+.score-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(26,32,64,0.5);}
+.score-row:last-child{border-bottom:none;}
+.score-name{font-size:12px;color:#a0a8c0;}
+.score-bar-wrap{flex:1;margin:0 12px;height:6px;background:#1a2040;border-radius:3px;overflow:hidden;}
+.score-bar-inner{height:100%;border-radius:3px;}
+.score-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#ffb400;width:35px;text-align:right;}
+
+/* REVENUE CHART */
+.rev-chart{display:flex;align-items:flex-end;gap:14px;height:140px;padding:0 8px;}
+.rev-bar-group{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;gap:5px;}
+.rev-bar{width:100%;border-radius:4px 4px 0 0;}
+.rev-lbl{font-size:10px;font-weight:700;color:#e8eaf6;text-align:center;}
+.rev-amt{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-align:center;}
+.rev-period{font-size:9px;color:#6b7499;text-align:center;}
+
+/* GTM FLOW */
+.gtm-flow{display:flex;flex-direction:column;gap:6px;}
+.gtm-row{display:flex;gap:8px;align-items:center;}
+.gtm-phase-tag{font-family:'JetBrains Mono',monospace;font-size:9px;color:#ffb400;background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.2);padding:2px 8px;border-radius:3px;white-space:nowrap;flex-shrink:0;letter-spacing:1px;}
+.gtm-arrow{color:#ffb400;font-size:14px;flex-shrink:0;}
+.gtm-content{flex:1;font-size:11px;color:#a0a8c0;line-height:1.4;}
+.gtm-content strong{color:#e8eaf6;display:block;margin-bottom:1px;font-size:11px;}
+
+/* U100 */
+.u100-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.u100-item{background:#0d1428;border:1px solid #1a2040;border-radius:6px;padding:10px;text-align:center;}
+.u100-n{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:#ffb400;line-height:1;margin-bottom:3px;}
+.u100-r{font-family:'JetBrains Mono',monospace;font-size:8px;color:#6b7499;margin-bottom:5px;}
+.u100-c{font-size:10px;font-weight:700;color:#fff;margin-bottom:3px;}
+.u100-d{font-size:9px;color:#6b7499;line-height:1.4;}
+
+/* MOAT RADAR-style */
+.moat-list{display:flex;flex-direction:column;gap:7px;}
+.moat-row{display:flex;align-items:center;gap:8px;}
+.moat-label{font-size:11px;color:#a0a8c0;min-width:130px;}
+.moat-bar{flex:1;height:6px;background:#1a2040;border-radius:3px;overflow:hidden;}
+.moat-fill{height:100%;border-radius:3px;}
+.moat-timing{font-family:'JetBrains Mono',monospace;font-size:9px;color:#6b7499;white-space:nowrap;}
+
+/* RISKS */
+.risk-list{display:flex;flex-direction:column;gap:7px;}
+.risk-row{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:#0d1428;border-radius:5px;border-left:2px solid transparent;}
+.risk-row.H{border-left-color:#ff5c6c;}
+.risk-row.M{border-left-color:#ffb400;}
+.risk-icon{font-size:12px;flex-shrink:0;margin-top:1px;}
+.risk-text{font-size:11px;color:#a0a8c0;line-height:1.4;}
+.risk-text strong{color:#e8eaf6;display:block;margin-bottom:1px;}
+
+/* REVENUE STREAMS */
+.stream-list{display:flex;flex-direction:column;gap:7px;}
+.stream-item{display:flex;gap:10px;align-items:center;}
+.stream-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.stream-name{font-size:12px;color:#e8eaf6;min-width:160px;}
+.stream-bar{flex:1;height:7px;background:#1a2040;border-radius:3px;overflow:hidden;}
+.stream-bar-fill{height:100%;border-radius:3px;}
+.stream-phase{font-family:'JetBrains Mono',monospace;font-size:9px;color:#6b7499;white-space:nowrap;}
+
+/* BM CANVAS mini */
+.canvas-mini{display:grid;grid-template-columns:1fr 1fr 1.2fr 1fr 1fr;gap:3px;}
+.cmini-cell{background:#0d1428;border:1px solid #1a2040;border-radius:4px;padding:8px;}
+.cmini-cell.vp{background:rgba(255,180,0,0.05);border-color:rgba(255,180,0,0.2);}
+.cmini-title{font-family:'JetBrains Mono',monospace;font-size:8px;color:#ffb400;letter-spacing:1px;margin-bottom:5px;}
+.cmini-title.g{color:#00d48f;}
+.cmini-title.c{color:#22d3ee;}
+.cmini-item{font-size:9px;color:#6b7499;margin-bottom:3px;line-height:1.3;}
+
+/* VERDICT */
+.verdict-panel{background:linear-gradient(135deg,rgba(255,180,0,0.07),rgba(255,180,0,0.02));border:2px solid #ffb400;border-radius:10px;padding:24px;text-align:center;}
+.v-emoji{font-size:32px;margin-bottom:6px;}
+.v-score{font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:700;color:#ffb400;line-height:1;margin-bottom:4px;}
+.v-name{font-size:18px;font-weight:800;color:#fff;margin-bottom:8px;}
+.v-desc{font-size:12px;color:#6b7499;line-height:1.7;max-width:500px;margin:0 auto 14px;}
+.v-pills{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;}
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:9px;font-family:'JetBrains Mono',monospace;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.pg{background:rgba(0,212,143,0.1);color:#00d48f;border:1px solid rgba(0,212,143,0.3);}
+.pa{background:rgba(255,180,0,0.1);color:#ffb400;border:1px solid rgba(255,180,0,0.3);}
+.pr{background:rgba(255,92,108,0.1);color:#ff5c6c;border:1px solid rgba(255,92,108,0.3);}
+
+/* FOOTER */
+.dash-footer{margin-top:16px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:#4a5070;letter-spacing:1px;}
+.dash-footer span{color:#ffb400;}
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  <div class="dash-header">
+    <div class="dash-eyebrow">// VISUAL STRATEGY DASHBOARD · DAY 24 OF 60 · CLAUDE AI</div>
+    <div class="dash-title">AICADEMY <span>INDIA</span></div>
+    <div class="dash-sub">Business Strategy Report · Investment Scorecard · GTM Flow · First 100 Users · Verdict</div>
+  </div>
+
+  <!-- ROW 1: SCORES + REVENUE -->
+  <div class="grid grid-2" style="margin-bottom:12px;">
+    <div class="panel">
+      <div class="panel-title">INVESTMENT SCORECARD</div>
+      <div class="score-row"><span class="score-name">Business Viability</span><div class="score-bar-wrap"><div class="score-bar-inner" style="width:65%;background:linear-gradient(90deg,#c88000,#ffb400);"></div></div><span class="score-val">65</span></div>
+      <div class="score-row"><span class="score-name">Revenue Potential</span><div class="score-bar-wrap"><div class="score-bar-inner" style="width:72%;background:linear-gradient(90deg,#00a066,#00d48f);"></div></div><span class="score-val" style="color:#00d48f;">72</span></div>
+      <div class="score-row"><span class="score-name">GTM Strength</span><div class="score-bar-wrap"><div class="score-bar-inner" style="width:68%;background:linear-gradient(90deg,#c88000,#ffb400);"></div></div><span class="score-val">68</span></div>
+      <div class="score-row"><span class="score-name">Competitive Strength</span><div class="score-bar-wrap"><div class="score-bar-inner" style="width:71%;background:linear-gradient(90deg,#00a066,#00d48f);"></div></div><span class="score-val" style="color:#00d48f;">71</span></div>
+      <div class="score-row"><span class="score-name">Investor Readiness</span><div class="score-bar-wrap"><div class="score-bar-inner" style="width:42%;background:linear-gradient(90deg,#cc1122,#ff5c6c);"></div></div><span class="score-val" style="color:#ff5c6c;">42</span></div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid #1a2040;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:11px;color:#6b7499;">Overall Score</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:#ffb400;">64 / 100</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title g">REVENUE PROJECTION</div>
+      <div class="rev-chart">
+        <div class="rev-bar-group">
+          <div class="rev-bar" style="background:linear-gradient(180deg,rgba(255,180,0,0.9),rgba(255,180,0,0.2));height:8%;"></div>
+          <div class="rev-lbl">Year 1</div>
+          <div class="rev-amt" style="color:#ffb400;">₹3.6L</div>
+          <div class="rev-period">B2C only</div>
+        </div>
+        <div class="rev-bar-group">
+          <div class="rev-bar" style="background:linear-gradient(180deg,rgba(0,212,143,0.9),rgba(0,212,143,0.2));height:35%;"></div>
+          <div class="rev-lbl">Year 2</div>
+          <div class="rev-amt" style="color:#00d48f;">₹37L</div>
+          <div class="rev-period">B2C + B2B</div>
+        </div>
+        <div class="rev-bar-group">
+          <div class="rev-bar" style="background:linear-gradient(180deg,rgba(34,211,238,0.9),rgba(34,211,238,0.2));height:60%;"></div>
+          <div class="rev-lbl">Year 3</div>
+          <div class="rev-amt" style="color:#22d3ee;">₹1.2Cr</div>
+          <div class="rev-period">Scale + TCert</div>
+        </div>
+        <div class="rev-bar-group">
+          <div class="rev-bar" style="background:linear-gradient(180deg,rgba(167,139,250,0.9),rgba(167,139,250,0.2));height:100%;"></div>
+          <div class="rev-lbl">Year 5</div>
+          <div class="rev-amt" style="color:#a78bfa;">₹80M</div>
+          <div class="rev-period">SOM target</div>
+        </div>
+      </div>
+      <div class="stream-list" style="margin-top:12px;">
+        <div class="stream-item"><div class="stream-dot" style="background:#ffb400;"></div><span class="stream-name">B2C Tuition</span><div class="stream-bar"><div class="stream-bar-fill" style="width:25%;background:#ffb400;"></div></div><span class="stream-phase">NOW</span></div>
+        <div class="stream-item"><div class="stream-dot" style="background:#00d48f;"></div><span class="stream-name">B2B School License</span><div class="stream-bar"><div class="stream-bar-fill" style="width:75%;background:#00d48f;"></div></div><span class="stream-phase">YEAR 2</span></div>
+        <div class="stream-item"><div class="stream-dot" style="background:#22d3ee;"></div><span class="stream-name">Teacher Certification</span><div class="stream-bar"><div class="stream-bar-fill" style="width:55%;background:#22d3ee;"></div></div><span class="stream-phase">YEAR 2</span></div>
+        <div class="stream-item"><div class="stream-dot" style="background:#a78bfa;"></div><span class="stream-name">Curriculum IP License</span><div class="stream-bar"><div class="stream-bar-fill" style="width:40%;background:#a78bfa;"></div></div><span class="stream-phase">YEAR 3+</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: GTM + FIRST 100 -->
+  <div class="grid grid-2" style="margin-bottom:12px;">
+    <div class="panel">
+      <div class="panel-title c">GTM FLOW</div>
+      <div class="gtm-flow">
+        <div class="gtm-row">
+          <div class="gtm-phase-tag">M1-3</div>
+          <div class="gtm-arrow">→</div>
+          <div class="gtm-content"><strong>Founder-Led Organic</strong>LinkedIn post → WhatsApp groups → Free demo → Batch 1 (20 students, ₹0 CAC)</div>
+        </div>
+        <div class="gtm-row">
+          <div class="gtm-phase-tag">M4-12</div>
+          <div class="gtm-arrow">→</div>
+          <div class="gtm-content"><strong>Demo Day UGC Flywheel</strong>Demo Day video shared by parents → Instagram/LinkedIn → Batch 2-4 (100 students, ~₹500 CAC)</div>
+        </div>
+        <div class="gtm-row">
+          <div class="gtm-phase-tag">YR 2</div>
+          <div class="gtm-arrow">→</div>
+          <div class="gtm-content"><strong>B2B School Distribution</strong>Principal LinkedIn outreach + Demo Day proof → 3 school pilots (300-1,500 students/school)</div>
+        </div>
+        <div class="gtm-row">
+          <div class="gtm-phase-tag">YR 3</div>
+          <div class="gtm-arrow">→</div>
+          <div class="gtm-content"><strong>Teacher Certification Engine</strong>Each certified teacher = distribution channel → 200 teachers → 50+ school partnerships</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">FIRST 100 USERS PLAN</div>
+      <div class="u100-grid">
+        <div class="u100-item">
+          <div class="u100-n">20</div>
+          <div class="u100-r">USERS 1–20</div>
+          <div class="u100-c">LinkedIn Post</div>
+          <div class="u100-d">Founder story → free demo → 40% conversion</div>
+        </div>
+        <div class="u100-item">
+          <div class="u100-n">40</div>
+          <div class="u100-r">USERS 21–40</div>
+          <div class="u100-c">Parent Referrals</div>
+          <div class="u100-d">Batch 1 parents each refer 1 new family</div>
+        </div>
+        <div class="u100-item">
+          <div class="u100-n">70</div>
+          <div class="u100-r">USERS 41–70</div>
+          <div class="u100-c">Demo Day Video</div>
+          <div class="u100-d">"10yr-old builds monsoon AI" → LinkedIn viral</div>
+        </div>
+        <div class="u100-item">
+          <div class="u100-n">100</div>
+          <div class="u100-r">USERS 71–100</div>
+          <div class="u100-c">School Pilot</div>
+          <div class="u100-d">1 school × 1 Class 5 section = 30-40 students</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:10px;background:#0d1428;border-radius:6px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#ffb400;letter-spacing:2px;margin-bottom:6px;">// ACQUISITION ECONOMICS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div style="text-align:center;"><div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:#00d48f;">₹0</div><div style="font-size:9px;color:#6b7499;">CAC Batch 1</div></div>
+          <div style="text-align:center;"><div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:#ffb400;">₹500</div><div style="font-size:9px;color:#6b7499;">CAC Batch 2+</div></div>
+          <div style="text-align:center;"><div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:#a78bfa;">₹8,994</div><div style="font-size:9px;color:#6b7499;">LTV (2 batches)</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: MOAT + RISKS -->
+  <div class="grid grid-2" style="margin-bottom:12px;">
+    <div class="panel">
+      <div class="panel-title g">COMPETITIVE MOAT</div>
+      <div class="moat-list">
+        <div class="moat-row"><span class="moat-label">Founder Credibility</span><div class="moat-bar"><div class="moat-fill" style="width:90%;background:linear-gradient(90deg,#00a066,#00d48f);"></div></div><span class="moat-timing">NOW ✓</span></div>
+        <div class="moat-row"><span class="moat-label">Outcome Guarantee</span><div class="moat-bar"><div class="moat-fill" style="width:85%;background:linear-gradient(90deg,#00a066,#00d48f);"></div></div><span class="moat-timing">NOW ✓</span></div>
+        <div class="moat-row"><span class="moat-label">Demo Day Flywheel</span><div class="moat-bar"><div class="moat-fill" style="width:60%;background:linear-gradient(90deg,#c88000,#ffb400);"></div></div><span class="moat-timing">MONTH 4</span></div>
+        <div class="moat-row"><span class="moat-label">Curriculum IP</span><div class="moat-bar"><div class="moat-fill" style="width:55%;background:linear-gradient(90deg,#c88000,#ffb400);"></div></div><span class="moat-timing">MONTH 6</span></div>
+        <div class="moat-row"><span class="moat-label">Student Outcome Data</span><div class="moat-bar"><div class="moat-fill" style="width:45%;background:linear-gradient(90deg,#c88000,#ffb400);"></div></div><span class="moat-timing">MONTH 3</span></div>
+        <div class="moat-row"><span class="moat-label">Teacher Supply Chain</span><div class="moat-bar"><div class="moat-fill" style="width:30%;background:linear-gradient(90deg,#22a0bb,#22d3ee);"></div></div><span class="moat-timing">YEAR 2</span></div>
+        <div class="moat-row"><span class="moat-label">Alumni Network</span><div class="moat-bar"><div class="moat-fill" style="width:20%;background:linear-gradient(90deg,#7a60e0,#a78bfa);"></div></div><span class="moat-timing">YEAR 3+</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title r">KEY RISKS</div>
+      <div class="risk-list">
+        <div class="risk-row H"><div class="risk-icon">🔴</div><div class="risk-text"><strong>Founder Bottleneck</strong>Can't teach >20 students solo. Must build co-facilitator pipeline from Batch 1 → deploy Batch 2.</div></div>
+        <div class="risk-row H"><div class="risk-icon">🔴</div><div class="risk-text"><strong>Low Demo Conversion</strong>If <25% of demo attendees pay, messaging is broken. Survey every non-converter immediately.</div></div>
+        <div class="risk-row M"><div class="risk-icon">🟡</div><div class="risk-text"><strong>US Timezone Fatigue</strong>Saturday 10AM IST = Friday 11:30PM CST. Sustainable for 1-2 batches only.</div></div>
+        <div class="risk-row M"><div class="risk-icon">🟡</div><div class="risk-text"><strong>JEE/NEET Objection</strong>40% of parents see weekend classes as "JEE prep time lost." Must reframe AI as accelerator.</div></div>
+        <div class="risk-row M"><div class="risk-icon">🟡</div><div class="risk-text"><strong>Student Dropout</strong>Online classes for 10-yr-olds have natural dropout risk. Demo Day commitment = retention device.</div></div>
+        <div class="risk-row M"><div class="risk-icon">🟡</div><div class="risk-text"><strong>B2B Sales Cycle</strong>School partnerships take 12-18 months. Revenue from schools is Year 2+ only. Don't depend on it earlier.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERDICT -->
+  <div style="margin-bottom:12px;">
+    <div class="verdict-panel">
+      <div class="v-emoji">🟡</div>
+      <div class="v-score">64</div>
+      <div class="v-name">VALIDATE — Strong Foundation, Zero Proof</div>
+      <div class="v-desc">The business model is coherent, the market is real ($117B India K-12), and the path from ₹3.6L to ₹80M ARR via B2B curriculum SaaS is clear and precedented. What's missing is not strategy — it's evidence. Run Batch 1, measure 3 metrics, then it becomes investable.</div>
+      <div class="v-pills">
+        <span class="pill pg">COHERENT MODEL ✓</span>
+        <span class="pill pg">CLEAR GROWTH PATH ✓</span>
+        <span class="pill pa">NEEDS TRACTION !</span>
+        <span class="pill pa">FIND CO-FOUNDER !</span>
+        <span class="pill pr">NOT FUNDABLE YET ✗</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-footer">Built with <span>Claude AI</span> · @Anthropic @ABTalksOnAI @AnilBajpai · UTKARSH MAVI · 2026 · DAY 24 OF 60 · #60DaysOfAI</div>
+</div>
+</body>
+</html>
