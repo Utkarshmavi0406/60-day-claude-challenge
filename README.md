@@ -54,6 +54,7 @@ Each day I will:
 | 22 | June 21, 2026 | AI-First Schools India — Startup Validation Like a VC | ✅ |
 | 23 | June 22, 2026 | AIcademy India — Customer & MVP Blueprint | ✅ |
 | 24 | June 23, 2026 | AIcademy India — Startup Business Strategy Report | ✅ |
+| 25 | June 24, 2026 | AI Shark Tank Simulator — Pitch to 4 AI Investors | ✅ |
 
 *(I'll update this table as I go.)*
 
