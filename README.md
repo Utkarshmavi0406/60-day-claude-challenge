@@ -55,6 +55,7 @@ Each day I will:
 | 23 | June 22, 2026 | AIcademy India — Customer & MVP Blueprint | ✅ |
 | 24 | June 23, 2026 | AIcademy India — Startup Business Strategy Report | ✅ |
 | 25 | June 24, 2026 | AI Shark Tank Simulator — Pitch to 4 AI Investors | ✅ |
+| 26 | June 25, 2026 | Prior Authorization Workflow Simulator — Healthcare Workflow Learning | ✅ |
 
 *(I'll update this table as I go.)*
 
