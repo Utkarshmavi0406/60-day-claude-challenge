@@ -58,6 +58,7 @@ Each day I will:
 | 26 | June 25, 2026 | Prior Authorization Workflow Simulator — Healthcare Workflow Learning | ✅ |
 | 27 | June 26, 2026 | Prior Authorization Story Simulator — 8-Scene Conversational Learning | ✅ |
 | 28 | June 27, 2026 | Hospital Admission Readiness Simulator — Healthcare Ops Workflow | ✅ |
+| 29 | June 28, 2026 | Operation Lifeline — Supply Chain Crisis Lab | ✅ |
 
 
 *(I'll update this table as I go.)*
