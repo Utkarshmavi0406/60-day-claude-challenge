@@ -61,6 +61,7 @@ Each day I will:
 | 29 | June 28, 2026 | Operation Lifeline — Supply Chain Crisis Lab | ✅ |
 | 30 | June 29, 2026 | Supply Chain Builder — Optimization Simulator | ✅ |
 | 31 | June 30, 2026 | AI Supply Chain Control Tower — Real-time Ops Simulation | ✅ |
+| 32 | July 01, 2026 | Think Like a Marketing Strategist — Marketing Strategy Simulator | ✅ |
 
 
 *(I'll update this table as I go.)*
