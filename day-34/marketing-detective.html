@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Detective</title>
+<style>
+/* ===================================================
+   VARIABLES & THEMES
+=================================================== */
+:root {
+  --bg:#08090e; --bg2:#0e0f15; --card:#14151e; --card2:#1b1c28;
+  --text:#f0f0f5; --text2:#9898b0; --text3:#525270;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.12);
+  --green:#10b981; --red:#ef4444; --yellow:#f59e0b; --blue:#3b82f6;
+  --accent:#FF6B35; --glow:rgba(255,107,53,.25); --accent-rgb:255,107,53;
+}
+body.t-orange{--accent:#FF6B35;--glow:rgba(255,107,53,.25);--accent-rgb:255,107,53;}
+body.t-gold  {--accent:#F59E0B;--glow:rgba(245,158,11,.25);--accent-rgb:245,158,11;}
+body.t-blue  {--accent:#3B82F6;--glow:rgba(59,130,246,.25);--accent-rgb:59,130,246;}
+body.t-green {--accent:#10B981;--glow:rgba(16,185,129,.25);--accent-rgb:16,185,129;}
+body.t-red   {--accent:#EF4444;--glow:rgba(239,68,68,.25);--accent-rgb:239,68,68;}
+
+/* ===================================================
+   RESET & BASE
+=================================================== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px;}
+button{cursor:pointer;font-family:inherit;}
+
+/* ===================================================
+   SCREENS
+=================================================== */
+.screen{display:none;opacity:0;transform:translateY(12px);transition:opacity .4s ease,transform .4s ease;min-height:100vh;padding:24px 18px 80px;}
+.screen.active{display:block;}
+.screen.visible{opacity:1;transform:translateY(0);}
+.page{max-width:900px;margin:0 auto;}
+
+/* ===================================================
+   BUTTONS
+=================================================== */
+.btn{border:none;border-radius:10px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;}
+.btn-p{background:var(--accent);color:#fff;box-shadow:0 4px 16px var(--glow);}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 28px var(--glow);}
+.btn-p:disabled{opacity:.4;pointer-events:none;}
+.btn-o{background:rgba(255,255,255,.06);color:var(--text2);border:1px solid var(--border2);}
+.btn-o:hover{background:rgba(255,255,255,.1);color:var(--text);}
+.btn-g{background:rgba(16,185,129,.12);color:#34d399;border:1px solid rgba(16,185,129,.3);}
+
+/* ===================================================
+   THEME SELECTION
+=================================================== */
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:20px;}
+.theme-card{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:20px 14px;cursor:pointer;transition:all .2s;text-align:center;}
+.theme-card:hover{transform:translateY(-3px);}
+.theme-swatch{width:48px;height:48px;border-radius:50%;margin:0 auto 10px;box-shadow:0 4px 16px rgba(0,0,0,.4);}
+.theme-name{font-size:13px;font-weight:800;margin-bottom:3px;}
+.theme-sub{font-size:11px;color:var(--text3);}
+
+/* ===================================================
+   CASE ASSIGNMENT
+=================================================== */
+.folder{background:linear-gradient(135deg,#c8954a,#a57328);border-radius:4px 14px 14px 14px;padding:28px 26px;position:relative;box-shadow:4px 6px 24px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.15);max-width:680px;margin:0 auto;}
+.folder-tab{position:absolute;top:-26px;left:0;width:130px;height:28px;background:#a57328;border-radius:6px 6px 0 0;}
+.folder-tab-text{font-size:10px;font-weight:800;color:#7a5518;letter-spacing:2px;text-transform:uppercase;padding:6px 12px;}
+.case-stamp{display:inline-block;border:3px solid var(--red);color:var(--red);font-size:12px;font-weight:900;letter-spacing:3px;padding:4px 12px;transform:rotate(-5deg);opacity:.85;margin-bottom:12px;text-transform:uppercase;}
+.case-number{font-size:11px;font-weight:800;color:#7a5518;letter-spacing:2px;margin-bottom:8px;}
+.case-company{font-family:Georgia,serif;font-size:26px;font-weight:700;color:#1c1008;margin-bottom:4px;}
+.case-industry{font-size:12px;color:#7a5518;font-weight:600;margin-bottom:14px;}
+.case-field{margin-bottom:12px;}
+.case-field-label{font-size:9px;font-weight:800;letter-spacing:2px;color:#8a6030;text-transform:uppercase;margin-bottom:4px;}
+.case-field-val{font-size:13px;color:#2c1a06;font-family:'Courier New',monospace;line-height:1.5;}
+.paper-line{border:none;border-top:1px solid rgba(0,0,0,.15);margin:12px 0;}
+
+/* ===================================================
+   INVESTIGATION BOARD
+=================================================== */
+.cork{background:#2c1a06;background-image:radial-gradient(ellipse at 30% 40%,rgba(160,100,40,.12) 0%,transparent 60%),radial-gradient(ellipse at 70% 60%,rgba(120,80,30,.1) 0%,transparent 60%);border:4px solid #4a2f10;border-radius:12px;padding:18px;box-shadow:inset 0 2px 8px rgba(0,0,0,.5),0 4px 24px rgba(0,0,0,.4);}
+.cork-title{font-size:9px;font-weight:800;letter-spacing:3px;color:#8a6030;text-transform:uppercase;margin-bottom:14px;}
+.evidence-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
+.e-card{background:#f5f0e8;border:1px solid #d6cbba;border-radius:3px;padding:14px;cursor:grab;position:relative;transition:all .2s;box-shadow:2px 3px 10px rgba(0,0,0,.35),inset 0 0 15px rgba(0,0,0,.04);}
+.e-card:hover{transform:translateY(-3px) rotate(0.5deg);box-shadow:4px 6px 18px rgba(0,0,0,.4);}
+.e-card.dragging{opacity:.5;transform:scale(0.95);}
+.e-card.pinned-to-board{border:2px solid var(--accent);box-shadow:3px 3px 12px rgba(var(--accent-rgb),.3);}
+.pin{width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff9999,var(--accent));box-shadow:0 0 6px var(--glow),inset 0 1px 2px rgba(255,255,255,.3);position:absolute;top:-7px;left:50%;transform:translateX(-50%);z-index:2;}
+.e-card-type{font-size:9px;font-weight:800;letter-spacing:1.5px;color:rgba(0,0,0,.4);text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid rgba(0,0,0,.1);padding-bottom:6px;}
+.e-card-title{font-size:13px;font-weight:700;color:#1c1008;margin-bottom:6px;font-family:Georgia,serif;}
+.e-card-body{font-size:12px;color:#3d2b10;line-height:1.55;font-family:'Courier New',monospace;}
+.metric-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.metric-label{font-size:10px;color:#5a3a18;}
+.metric-value{font-size:12px;font-weight:800;color:#1c1008;}
+.metric-bar{height:4px;background:rgba(0,0,0,.1);border-radius:99px;margin-top:2px;overflow:hidden;}
+.metric-bar-fill{height:100%;border-radius:99px;transition:width .8s ease;background:var(--accent);}
+.metric-status{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700;}
+.s-bad{background:rgba(239,68,68,.15);color:#dc2626;}
+.s-warn{background:rgba(245,158,11,.15);color:#d97706;}
+.s-good{background:rgba(16,185,129,.15);color:#059669;}
+
+/* CLUE CARDS */
+.clue-area{margin-top:18px;}
+.clue-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:10px;}
+.clue-card{background:#fef3c7;border:1px solid #d97706;border-radius:3px;padding:14px;position:relative;transform:rotate(1.5deg);box-shadow:2px 3px 10px rgba(0,0,0,.3);}
+.clue-card:nth-child(2){transform:rotate(-1deg);}
+.clue-card:nth-child(3){transform:rotate(2deg);}
+.clue-card.locked{background:#e5e7eb;border-color:#9ca3af;cursor:not-allowed;}
+.clue-card.locked .pin{background:radial-gradient(circle at 35% 35%,#ccc,#999);box-shadow:none;}
+.clue-num{font-size:22px;font-weight:900;color:rgba(0,0,0,.15);position:absolute;bottom:8px;right:10px;}
+.clue-title{font-size:11px;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.clue-text{font-size:12px;color:#451a03;line-height:1.55;font-family:'Courier New',monospace;}
+.clue-locked-text{font-size:12px;color:#6b7280;font-family:'Courier New',monospace;}
+
+/* PIN BOARD DROP ZONE */
+.pin-board{min-height:120px;border:2px dashed rgba(var(--accent-rgb),.3);border-radius:8px;background:rgba(var(--accent-rgb),.03);padding:14px;position:relative;transition:all .2s;}
+.pin-board.drag-over{background:rgba(var(--accent-rgb),.08);border-color:rgba(var(--accent-rgb),.6);}
+.pin-board-label{font-size:10px;color:rgba(var(--accent-rgb),.5);font-weight:700;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:8px;}
+.pinned-item{display:inline-block;background:#f5f0e8;border:1px solid #d6cbba;border-radius:3px;padding:8px 12px;margin:5px;font-size:11px;color:#3d2b10;font-family:'Courier New',monospace;position:relative;box-shadow:2px 2px 8px rgba(0,0,0,.25);}
+.pinned-item .pin{width:10px;height:10px;top:-5px;}
+
+/* ===================================================
+   SOLVE SCREEN
+=================================================== */
+.solve-options{display:grid;gap:10px;margin:16px 0;}
+.option-card{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:16px 18px;cursor:pointer;transition:all .2s;text-align:left;position:relative;}
+.option-card:hover{border-color:rgba(var(--accent-rgb),.4);background:rgba(var(--accent-rgb),.04);}
+.option-card.selected{border-color:var(--accent);background:rgba(var(--accent-rgb),.08);box-shadow:0 0 16px rgba(var(--accent-rgb),.2);}
+.option-card.correct{border-color:var(--green);background:rgba(16,185,129,.08);}
+.option-card.wrong{border-color:var(--red);background:rgba(239,68,68,.08);}
+.option-letter{font-size:11px;font-weight:800;color:var(--accent);margin-bottom:5px;}
+.option-text{font-size:14px;font-weight:600;}
+
+/* ===================================================
+   CASE CLOSED
+=================================================== */
+.case-closed-container{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;}
+.stamp{font-size:clamp(32px,7vw,60px);font-weight:900;letter-spacing:4px;text-transform:uppercase;border:6px solid currentColor;display:inline-block;padding:12px 28px;border-radius:8px;animation:stampIn .5s cubic-bezier(.175,.885,.32,1.275);transform-origin:center;position:relative;}
+.stamp-correct{color:var(--green);box-shadow:0 0 40px rgba(16,185,129,.4);}
+.stamp-wrong{color:var(--red);box-shadow:0 0 40px rgba(239,68,68,.4);}
+@keyframes stampIn{from{opacity:0;transform:scale(2) rotate(-8deg)}to{opacity:1;transform:scale(1) rotate(-3deg)}}
+.verdict-text{font-size:clamp(13px,2vw,16px);color:var(--text2);margin:16px 0;max-width:560px;}
+
+/* ===================================================
+   LEARNING REPORT
+=================================================== */
+.report-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:14px;}
+.report-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.label-red{color:#f87171;}
+.label-green{color:#34d399;}
+.label-blue{color:#60a5fa;}
+.label-accent{color:var(--accent);}
+.report-text{font-size:14px;color:var(--text2);line-height:1.7;}
+.improvement-item{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start;}
+.imp-num{width:24px;height:24px;border-radius:50%;background:rgba(var(--accent-rgb),.15);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.imp-text{font-size:13px;color:var(--text2);line-height:1.6;}
+.lesson-box{background:rgba(var(--accent-rgb),.06);border:1px solid rgba(var(--accent-rgb),.2);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:14px 16px;}
+
+/* ===================================================
+   ANIMATED CHARTS
+=================================================== */
+.mini-chart{display:flex;align-items:flex-end;gap:3px;height:50px;margin-top:8px;}
+.bar{flex:1;border-radius:3px 3px 0 0;transition:height .8s ease;min-height:3px;}
+.bar-labels{display:flex;gap:3px;margin-top:4px;}
+.bar-label{flex:1;font-size:8px;text-align:center;color:rgba(0,0,0,.4);overflow:hidden;}
+
+/* ===================================================
+   PROGRESS + UTILITIES
+=================================================== */
+.progress-strip{display:flex;gap:6px;margin-bottom:24px;justify-content:center;}
+.p-dot{width:28px;height:8px;border-radius:99px;transition:all .3s;}
+.p-dot.done{background:var(--accent);}
+.p-dot.active{background:var(--accent);opacity:.6;}
+.p-dot.pending{background:rgba(255,255,255,.1);}
+.eyebrow{font-size:10px;font-weight:800;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;margin-bottom:10px;}
+.display-title{font-size:clamp(24px,5vw,40px);font-weight:900;line-height:1.1;margin-bottom:10px;}
+.body-text{font-size:14px;color:var(--text2);line-height:1.7;}
+.divider{height:1px;background:var(--border);margin:16px 0;}
+.tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:99px;}
+.tag-red{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25);}
+.tag-accent{background:rgba(var(--accent-rgb),.12);color:var(--accent);border:1px solid rgba(var(--accent-rgb),.3);}
+.flex-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.mb-8{margin-bottom:8px;}
+.mb-14{margin-bottom:14px;}
+.mt-14{margin-top:14px;}
+.mt-20{margin-top:20px;}
+.bold{font-weight:700;}
+.text-accent{color:var(--accent);}
+.text-green{color:#34d399;}
+.text-red{color:#f87171;}
+
+/* FADE IN */
+.fade-in{animation:fi .5s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===================================================
+   RESPONSIVE
+=================================================== */
+@media(max-width:600px){
+  .evidence-grid{grid-template-columns:1fr;}
+  .clue-cards{grid-template-columns:1fr;}
+  .solve-options{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body class="t-orange">
+
+<!-- ===================== SCREEN: THEME ===================== -->
+<div class="screen active" id="sc-theme">
+<div class="page" style="max-width:700px">
+  <div style="padding-top:48px;text-align:center;margin-bottom:32px">
+    <div class="eyebrow">Day 34 · 60 Days of Claude</div>
+    <h1 class="display-title">Marketing <span class="text-accent">Detective</span></h1>
+    <p class="body-text" style="max-width:480px;margin:0 auto">Solve real marketing mysteries through investigation. Analyze campaign evidence, identify the fatal mistake, and close the case.</p>
+  </div>
+  <div style="text-align:center;font-size:13px;font-weight:700;color:var(--text2);margin-bottom:14px">Choose your detective theme</div>
+  <div class="theme-grid">
+    <div class="theme-card" onclick="setTheme('t-orange','#FF6B35')">
+      <div class="theme-swatch" style="background:linear-gradient(135deg,#FF6B35,#DC2626)"></div>
+      <div class="theme-name">Claude Orange</div>
+      <div class="theme-sub">Signature</div>
+    </div>
+    <div class="theme-card" onclick="setTheme('t-gold','#F59E0B')">
+      <div class="theme-swatch" style="background:linear-gradient(135deg,#F59E0B,#D97706)"></div>
+      <div class="theme-name">Detective Gold</div>
+      <div class="theme-sub">Classic</div>
+    </div>
+    <div class="theme-card" onclick="setTheme('t-blue','#3B82F6')">
+      <div class="theme-swatch" style="background:linear-gradient(135deg,#3B82F6,#1D4ED8)"></div>
+      <div class="theme-name">Midnight Blue</div>
+      <div class="theme-sub">Forensic</div>
+    </div>
+    <div class="theme-card" onclick="setTheme('t-green','#10B981')">
+      <div class="theme-swatch" style="background:linear-gradient(135deg,#10B981,#059669)"></div>
+      <div class="theme-name">Field Agent</div>
+      <div class="theme-sub">Covert</div>
+    </div>
+    <div class="theme-card" onclick="setTheme('t-red','#EF4444')">
+      <div class="theme-swatch" style="background:linear-gradient(135deg,#EF4444,#991B1B)"></div>
+      <div class="theme-name">Crime Scene</div>
+      <div class="theme-sub">Intense</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN: CASE ASSIGNMENT ===================== -->
+<div class="screen" id="sc-case">
+<div class="page">
+  <div class="progress-strip"><div class="p-dot active"></div><div class="p-dot pending"></div><div class="p-dot pending"></div><div class="p-dot pending"></div><div class="p-dot pending"></div></div>
+  <div class="eyebrow" style="text-align:center">New Case Assignment</div>
+  <h2 style="text-align:center;font-size:clamp(18px,3vw,24px);font-weight:900;margin-bottom:24px">A marketing campaign has gone wrong.<br><span class="text-accent">You've been assigned the investigation.</span></h2>
+
+  <div class="folder">
+    <div class="folder-tab"><div class="folder-tab-text">CASE FILE</div></div>
+    <div class="case-stamp">Confidential</div>
+    <div class="case-number" id="cf-id">CASE MKT-001</div>
+    <div class="case-company" id="cf-company">FreshBrew Coffee Co.</div>
+    <div class="case-industry" id="cf-industry">Industry: Food & Beverage</div>
+    <div class="paper-line"></div>
+    <div class="case-field">
+      <div class="case-field-label">Campaign Objective</div>
+      <div class="case-field-val" id="cf-objective">—</div>
+    </div>
+    <div class="case-field">
+      <div class="case-field-label">Target Audience</div>
+      <div class="case-field-val" id="cf-audience">—</div>
+    </div>
+    <div class="case-field">
+      <div class="case-field-label">Marketing Channels</div>
+      <div class="case-field-val" id="cf-channels">—</div>
+    </div>
+    <div class="case-field">
+      <div class="case-field-label">Campaign Budget</div>
+      <div class="case-field-val" id="cf-budget">—</div>
+    </div>
+    <div class="paper-line"></div>
+    <div style="font-size:12px;color:#7a5518;font-family:'Courier New',monospace;font-style:italic">
+      The campaign underperformed significantly. Something went wrong. Your job is to find it.
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:24px">
+    <button class="btn btn-p" onclick="goTo('sc-investigation',2)">🔍 Accept This Case →</button>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN: INVESTIGATION ===================== -->
+<div class="screen" id="sc-investigation">
+<div class="page">
+  <div class="progress-strip"><div class="p-dot done"></div><div class="p-dot active"></div><div class="p-dot pending"></div><div class="p-dot pending"></div><div class="p-dot pending"></div></div>
+  <div class="eyebrow">Investigation Board · <span id="inv-case-id">MKT-001</span></div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:18px">
+    <div>
+      <h2 style="font-size:clamp(18px,3vw,24px);font-weight:900;margin-bottom:4px" id="inv-company">—</h2>
+      <div style="font-size:13px;color:var(--text2)" id="inv-tagline">—</div>
+    </div>
+    <div id="clue-counter" style="font-size:11px;color:var(--accent);font-weight:700;background:rgba(var(--accent-rgb),.1);border:1px solid rgba(var(--accent-rgb),.25);border-radius:8px;padding:6px 14px;">0/3 Clues Revealed</div>
+  </div>
+
+  <div class="cork mb-14">
+    <div class="cork-title">📋 Campaign Evidence — Drag cards to the Key Evidence board below</div>
+    <div class="evidence-grid" id="evidence-grid">
+      <!-- Evidence cards rendered by JS -->
+    </div>
+  </div>
+
+  <!-- Key Evidence Pin Board -->
+  <div class="cork mb-14">
+    <div class="cork-title">📌 Key Evidence Board — Drop your most important findings here</div>
+    <div class="pin-board" id="pin-board">
+      <div class="pin-board-label">Drag evidence cards here to pin key findings</div>
+      <div id="pinned-items"></div>
+    </div>
+  </div>
+
+  <!-- Clues Section -->
+  <div class="cork mb-14">
+    <div class="cork-title">🔍 Investigation Clues — Reveal one at a time</div>
+    <div class="clue-cards" id="clue-cards">
+      <!-- Rendered by JS -->
+    </div>
+    <div style="margin-top:14px">
+      <button class="btn btn-p" id="reveal-btn" onclick="revealNextClue()">Reveal Next Clue</button>
+      <span style="font-size:12px;color:var(--text3);margin-left:12px" id="reveal-hint">Start by analyzing the campaign metrics above</span>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:16px">
+    <button class="btn btn-p" id="solve-btn" onclick="goTo('sc-solve',3)" disabled>⚖️ I'm Ready to Solve This Case →</button>
+    <div style="font-size:12px;color:var(--text3);margin-top:8px">Reveal all 3 clues before solving</div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN: SOLVE ===================== -->
+<div class="screen" id="sc-solve">
+<div class="page" style="max-width:720px">
+  <div class="progress-strip"><div class="p-dot done"></div><div class="p-dot done"></div><div class="p-dot active"></div><div class="p-dot pending"></div><div class="p-dot pending"></div></div>
+  <div class="eyebrow">Solve the Case</div>
+  <h2 class="display-title">What was the <span class="text-accent">primary marketing mistake</span>?</h2>
+  <p class="body-text mb-14">You've reviewed the evidence. Based on what you found, identify the core reason this campaign failed.</p>
+
+  <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:18px">
+    <div style="font-size:10px;color:var(--text3);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">Case Summary</div>
+    <div style="font-size:13px;color:var(--text2)" id="solve-summary">—</div>
+  </div>
+
+  <div class="solve-options" id="solve-options">
+    <!-- Rendered by JS -->
+  </div>
+
+  <div style="text-align:center;margin-top:16px">
+    <button class="btn btn-p" id="submit-btn" onclick="submitSolve()" disabled>Submit My Answer →</button>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN: CASE CLOSED ===================== -->
+<div class="screen" id="sc-closed">
+<div class="case-closed-container">
+  <div class="stamp" id="verdict-stamp">CASE CLOSED</div>
+  <div style="margin-top:24px;font-size:clamp(18px,3vw,26px);font-weight:900" id="verdict-title">—</div>
+  <div class="verdict-text" id="verdict-body">—</div>
+  <button class="btn btn-p" style="margin-top:16px" onclick="goTo('sc-report',5)">📋 See Full Learning Report →</button>
+</div>
+</div>
+
+<!-- ===================== SCREEN: REPORT ===================== -->
+<div class="screen" id="sc-report">
+<div class="page" style="max-width:720px">
+  <div class="progress-strip"><div class="p-dot done"></div><div class="p-dot done"></div><div class="p-dot done"></div><div class="p-dot done"></div><div class="p-dot active"></div></div>
+  <div class="eyebrow">Marketing Learning Report</div>
+  <h2 style="font-size:clamp(20px,3.5vw,30px);font-weight:900;margin-bottom:6px" id="rep-company">—</h2>
+  <div style="font-size:14px;color:var(--text2);margin-bottom:20px" id="rep-case-id">—</div>
+
+  <div class="report-section">
+    <div class="report-label label-red">🚨 Primary Marketing Mistake</div>
+    <div style="font-size:16px;font-weight:800;margin-bottom:8px" id="rep-mistake">—</div>
+    <div class="report-text" id="rep-explanation">—</div>
+  </div>
+
+  <div class="report-section">
+    <div class="report-label label-green">✅ Suggested Improvements</div>
+    <div id="rep-improvements">—</div>
+  </div>
+
+  <div class="report-section">
+    <div class="report-label label-accent">💡 Marketing Lesson</div>
+    <div class="lesson-box">
+      <div class="report-text" id="rep-lesson">—</div>
+    </div>
+  </div>
+
+  <!-- Evidence summary -->
+  <div class="report-section">
+    <div class="report-label" style="color:var(--text3)">📌 Key Evidence Summary</div>
+    <div id="rep-clues" style="display:grid;gap:8px"></div>
+  </div>
+
+  <div style="text-align:center;margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <button class="btn btn-p" onclick="replay()">🔄 Next Case</button>
+    <div style="font-size:12px;color:var(--text3);align-self:center">New random case · New mistake · New lesson</div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ===================================================
+   CASE DATA — 10 FICTIONAL MARKETING CASES
+=================================================== */
+const CASES=[
+  {
+    id:'MKT-001',company:'FreshBrew Coffee Co.',industry:'Food & Beverage',
+    tagline:'Premium cold brew with zero conversions',
+    objective:'Launch premium cold brew product line targeting millennial professionals',
+    audience:'Urban professionals aged 25-35, high income, coffee enthusiasts',
+    channels:'Instagram Reels, TikTok, Google Display Ads',
+    budget:'$48,000 over 3 months',
+    metrics:[
+      {label:'Total Reach',val:'2.1M',pct:95,status:'s-warn',note:'High reach, wrong audience'},
+      {label:'Click-Through Rate',val:'0.3%',pct:15,status:'s-bad',note:'Industry avg: 0.9%'},
+      {label:'Engagement Rate',val:'1.8%',pct:25,status:'s-warn',note:'Low for spend'},
+      {label:'Conversion Rate',val:'0.09%',pct:5,status:'s-bad',note:'Critically low'},
+      {label:'Sales vs Target',val:'−23%',pct:10,status:'s-bad',note:'Missed badly'}
+    ],
+    comments:[
+      '"Never heard of FreshBrew — saw it on TikTok but immediately forgot"',
+      '"Great product but I found it at a store by accident, not through ads"',
+      '"Wish I\'d seen this in my LinkedIn feed — I\'d have clicked immediately"'
+    ],
+    social:{
+      p1:{name:'TikTok',s1:'1.4M views',s2:'Avg viewer age: 17',s3:'340 comments'},
+      p2:{name:'Instagram Reels',s1:'890K reach',s2:'1.2% engagement rate',s3:'+120 followers'}
+    },
+    clues:[
+      {title:'Age Demographics Report',text:'Analytics reveal 78% of TikTok campaign viewers were 14-22 years old. The target audience was professionals aged 25-35. The demographic gap makes conversion mathematically impossible.'},
+      {title:'Reach vs Conversion Analysis',text:'2.1M people saw ads. Only 189 converted (0.09%). At $48K spend, that is $254 per conversion. The benchmark for this product category is $18 per conversion.'},
+      {title:'Competitor Intelligence',text:'A rival cold brew brand ran LinkedIn Sponsored Content targeting the same demographic. They achieved 0.8% CTR and 2.4% conversion from 420K reach — with 1/5 of FreshBrew\'s total budget.'}
+    ],
+    mistake:'Platform-Audience Mismatch',
+    options:['Platform-Audience Mismatch','Creative Quality Too Low','Insufficient Total Budget','Poor Product-Market Fit'],
+    explanation:'FreshBrew allocated 75% of their budget to TikTok and Instagram Reels — platforms where 70%+ of users are under 25. Their target audience of millennial professionals predominantly uses LinkedIn, YouTube, and subscribes to email newsletters during commute hours. The message, product, and creative were not the problem. The platform choice was fundamentally wrong for the target audience.',
+    improvements:['Shift 50% of budget to LinkedIn Sponsored Content targeting by job title, seniority, and income','Run YouTube pre-roll ads on productivity, lifestyle, and business channels where professionals spend time','Partner with morning newsletter brands (The Hustle, Morning Brew) for native newsletter ad placement'],
+    lesson:'Platform selection must follow where YOUR specific audience spends their attention — not where the largest total audience exists. Platform popularity and platform fit are completely different things.'
+  },
+  {
+    id:'MKT-002',company:'TechLeap Pro',industry:'B2B SaaS',
+    tagline:'The enterprise app sold to consumers',
+    objective:'Increase free trial signups from SMB technology decision-makers',
+    audience:'CTOs, VP of Technology, IT Directors at companies with 50-500 employees',
+    channels:'Instagram Stories, TikTok Business, Pinterest Ads',
+    budget:'$62,000 over 6 weeks',
+    metrics:[
+      {label:'Total Reach',val:'3.8M',pct:90,status:'s-warn',note:'High reach, zero buyers'},
+      {label:'Enterprise Trial Signups',val:'12',pct:3,status:'s-bad',note:'Target: 500'},
+      {label:'Cost Per Trial',val:'$5,167',pct:5,status:'s-bad',note:'Target: $124'},
+      {label:'Qualified Leads',val:'3',pct:2,status:'s-bad',note:'All from organic search'},
+      {label:'CTR',val:'0.4%',pct:20,status:'s-bad',note:'B2B LinkedIn avg: 0.65%'}
+    ],
+    comments:[
+      '"I use TechLeap but my CTO found it through Google search, not any ad"',
+      '"This looked like a consumer app from the Instagram ads — didn\'t realize it was enterprise"',
+      '"Our CTO never sees Instagram. He\'s on LinkedIn 45 minutes every morning"'
+    ],
+    social:{
+      p1:{name:'Instagram',s1:'2.1M reach',s2:'Avg user: personal consumer',s3:'72% non-business accounts'},
+      p2:{name:'LinkedIn (organic, $0)',s1:'8.2K reach',s2:'3.1% engagement rate',s3:'9 trial signups'}
+    },
+    clues:[
+      {title:'LinkedIn Organic vs Paid Gap',text:'TechLeap\'s unpaid LinkedIn page with 3 posts generated 9 of their 12 trial signups — 75% of all conversions. Their $62,000 paid social campaign on other platforms generated only 3 total.'},
+      {title:'B2B Decision Cycle Reality',text:'B2B software decisions involve 6.8 stakeholders and take 84 days on average. A 15-second Instagram Story is incompatible with this purchase cycle. B2B buyers need whitepapers, demos, and case studies.'},
+      {title:'Decision-Maker Behavior Research',text:'91% of B2B buyers use LinkedIn to research software purchases. 67% prefer long-form content (case studies, ROI calculators) over short-form video when evaluating enterprise software.'}
+    ],
+    mistake:'B2B Brand Deploying on Consumer Social Channels',
+    options:['B2B Brand Deploying on Consumer Social Channels','Ad Creative Not Professional Enough','Trial Offer Too Complex to Understand','Wrong Geographic Market Targeted'],
+    explanation:'CTOs and VPs of Technology don\'t make $50,000+ annual software decisions based on TikTok videos or Instagram Stories. B2B purchase decisions require trust signals, proof points, and detailed information — all of which live on LinkedIn, G2 reviews, industry conferences, and email. The entire campaign budget went to channels where decision-makers are browsing as consumers, not making professional purchasing choices.',
+    improvements:['Move 70% of budget to LinkedIn Campaign Manager targeting precisely by job title (CTO, VP Technology, IT Director) and company size','Create detailed ROI calculators, case studies, and product demos — B2B buyers need proof, not awareness','Invest in G2 and Capterra review generation — 68% of B2B software purchases start with review platform research'],
+    lesson:'B2B and B2C require completely different channel strategies. The platforms where consumers discover new products are not where business professionals make enterprise purchasing decisions.'
+  },
+  {
+    id:'MKT-003',company:'StyleHaven Fashion',industry:'Fashion E-commerce',
+    tagline:'Chasing strangers while loyal customers left',
+    objective:'Drive 40% revenue growth during the holiday season campaign',
+    audience:'Fashion-conscious women aged 28-45, household income $60K+',
+    channels:'Facebook Ads, Instagram, Google Shopping — 90% new customer focus',
+    budget:'$85,000 over 8 weeks (holiday season)',
+    metrics:[
+      {label:'New Customer CAC',val:'$89',pct:30,status:'s-bad',note:'Budgeted $45'},
+      {label:'Repeat Purchase Rate',val:'12%',pct:25,status:'s-bad',note:'Industry avg: 27%'},
+      {label:'Email Open Rate',val:'8%',pct:15,status:'s-bad',note:'List avg was 24%'},
+      {label:'Cart Abandonment',val:'78%',pct:80,status:'s-bad',note:'No retargeting active'},
+      {label:'Revenue vs Target',val:'−31%',pct:10,status:'s-bad',note:'Holiday season missed'}
+    ],
+    comments:[
+      '"I\'ve bought from StyleHaven 4 times — didn\'t hear from them once during the holidays"',
+      '"I was ready to buy 3 items — just needed one reminder email and never got it"',
+      '"Loyal customers got nothing. First-time buyers got constant ads. That\'s backwards"'
+    ],
+    social:{
+      p1:{name:'Facebook (new customers)',s1:'$89 CAC',s2:'1.2x ROAS',s3:'9,100 new customers'},
+      p2:{name:'Email (existing customers)',s1:'8% open rate',s2:'0.3% click rate',s3:'3 emails sent total'}
+    },
+    clues:[
+      {title:'Customer Lifetime Value Analysis',text:'Existing StyleHaven customers spend $280 average per holiday season. New customers average $67. The cost to retain an existing customer: $3. To acquire a new one: $89. Yet 90% of budget went to acquisition.'},
+      {title:'Cart Abandonment Revenue Loss',text:'78% cart abandonment with no active retargeting campaigns. Estimated $340K in near-conversion revenue went uncaptured during peak shopping season — the most valuable 8 weeks of the retail year.'},
+      {title:'Email List Neglect Report',text:'Only 3 emails sent to 48,000 subscribers over 8 weeks. Holiday best practice: 12-16 emails with segmentation. When the list went cold, open rate dropped from 24% baseline to 8% — destroying their highest-ROI channel.'}
+    ],
+    mistake:'Over-Investment in Acquisition Over Retention',
+    options:['Over-Investment in Acquisition Over Retention','Low Quality Ad Creative','Product Pricing Uncompetitive','Wrong Holiday Campaign Timing'],
+    explanation:'StyleHaven spent 90% of their holiday budget acquiring new customers at $89 CAC, while completely ignoring 48,000 existing customers who were 29x cheaper to reactivate and spent 4x more per order. Their highest-ROI channel (email) was used 3 times in 8 weeks when competitors sent 16+ emails. They left $340K in abandoned cart revenue uncaptured while spending $85K chasing cold strangers.',
+    improvements:['Reallocate 50% of holiday budget to existing customer retention: VIP early access, loyalty rewards, personalized product recommendations','Launch automated holiday email sequence with 12+ touchpoints including abandoned cart, browse abandonment, and post-purchase flows','Segment top 20% of customers by LTV and create exclusive VIP holiday experience — they drive 80% of revenue'],
+    lesson:'Acquiring a new customer costs 5-7x more than retaining an existing one. During peak seasons, your best revenue source is the customers who already trust you — not the ones you haven\'t met yet.'
+  },
+  {
+    id:'MKT-004',company:'GreenLeaf Organics',industry:'Health & Wellness',
+    tagline:'The supplement sold to the wrong wellness crowd',
+    objective:'Launch turmeric supplement targeting adults seeking natural anti-inflammatory solutions',
+    audience:'Health-conscious adults 35-55 with joint pain, chronic inflammation, or preventive health goals',
+    channels:'Instagram fitness influencers (500K-2M followers), YouTube fitness channels',
+    budget:'$72,000 over 10 weeks',
+    metrics:[
+      {label:'Influencer Reach',val:'4.2M',pct:85,status:'s-warn',note:'Wrong wellness segment'},
+      {label:'Conversion Rate',val:'0.12%',pct:6,status:'s-bad',note:'Target: 1.5%'},
+      {label:'ROAS',val:'0.8x',pct:20,status:'s-bad',note:'Lost money on every sale'},
+      {label:'Return Rate',val:'31%',pct:60,status:'s-bad',note:'Message mismatch returns'},
+      {label:'CPA (Cost Per Acquisition)',val:'$198',pct:8,status:'s-bad',note:'Target: $28'}
+    ],
+    comments:[
+      '"The influencer was talking about muscle recovery — I expected anti-inflammatory for aging joints"',
+      '"I\'m not an athlete — GreenLeaf needs to talk to the yoga and mindfulness crowd, not gym influencers"',
+      '"Bought it based on the influencer but it wasn\'t what I needed. Returned it"'
+    ],
+    social:{
+      p1:{name:'Fitness Influencers',s1:'4.2M reach',s2:'Avg audience age: 22',s3:'0.12% purchase rate'},
+      p2:{name:'Wellness Bloggers (test, $3K)',s1:'210K reach',s2:'Avg audience age: 44',s3:'1.8% purchase rate'}
+    },
+    clues:[
+      {title:'Influencer Audience Age Breakdown',text:'GreenLeaf\'s chosen fitness influencers had audiences averaging 22 years old, interested in bodybuilding and weight loss. Turmeric supplement core purchasers are 38-55, motivated by joint health and inflammation — completely different needs.'},
+      {title:'Message-Market Misalignment',text:'Influencer content framed turmeric as "muscle recovery boost for athletes." The actual buyer (older adults with chronic inflammation) rejected this positioning — generating a 31% product return rate from customers who felt the product was misrepresented.'},
+      {title:'Niche Wellness Creator Test Results',text:'A $3,000 test with 3 holistic wellness creators (total 210K reach) achieved 1.8% purchase rate — 15x higher than the fitness influencer campaigns at 1/24th of the budget spend.'}
+    ],
+    mistake:'Influencer-Audience Mismatch',
+    options:['Influencer-Audience Mismatch','Insufficient Influencer Budget','Poor Product Packaging Design','Wrong Social Platform Selected'],
+    explanation:'GreenLeaf partnered with fitness influencers whose audiences (young gym-goers aged 18-26 seeking muscle gains) were fundamentally different from their product\'s actual buyer (adults 38-55 seeking anti-inflammatory and joint health benefits). The turmeric supplement\'s value proposition, positioning, and messaging were all designed for a buyer persona completely different from who the influencers\' audiences represented. The wrong messenger can never reach the right buyer.',
+    improvements:['Partner with yoga, meditation, holistic health, and healthy aging influencers whose audiences are 35+ and health-focused for preventive reasons','Reframe all messaging from "workout recovery" to "daily joint health, natural inflammation relief, and healthy aging"','Test content in Facebook Groups for arthritis support, holistic health communities, and wellness newsletters where the actual buyer lives'],
+    lesson:'Influencer marketing success requires demographic match between the influencer\'s actual audience and your actual buyer. Follower count is meaningless if the followers don\'t need what you\'re selling.'
+  },
+  {
+    id:'MKT-005',company:'PulseCity Gym',industry:'Fitness & Health',
+    tagline:'January ads for decisions already made in December',
+    objective:'Drive 800 new annual memberships during the New Year fitness surge',
+    audience:'Adults 22-45 motivated by New Year health resolutions',
+    channels:'Facebook Ads, Instagram, Local Radio — all launched January 1st',
+    budget:'$38,000 deployed in January only',
+    metrics:[
+      {label:'New Memberships',val:'112',pct:14,status:'s-bad',note:'Target: 800'},
+      {label:'January Sign-up Rate',val:'14%',pct:14,status:'s-bad',note:'Most decided before Jan'},
+      {label:'Website Traffic (Jan)',val:'+340%',pct:80,status:'s-good',note:'Interest was there'},
+      {label:'December Lead Capture',val:'0',pct:0,status:'s-bad',note:'No pre-campaign capture'},
+      {label:'Competitor Memberships',val:'+580',pct:70,status:'s-bad',note:'Started marketing Dec 1'}
+    ],
+    comments:[
+      '"I decided on my gym in mid-December — by January I\'d already signed a contract somewhere"',
+      '"PulseCity reached out January 2nd but I\'d already paid for a different gym on December 28th"',
+      '"I was actively Googling gyms in late November — I wish they\'d been advertising then"'
+    ],
+    social:{
+      p1:{name:'Facebook (January)',s1:'890K reach',s2:'3.2% CTR',s3:'112 signups'},
+      p2:{name:'Google Search: Nov-Dec',s1:'"gym near me" peaked Nov 28',s2:'PulseCity: not ranking',s3:'Missed entire research window'}
+    },
+    clues:[
+      {title:'Consumer Decision Timeline Study',text:'Fitness industry data shows 67% of New Year gym sign-ups make their final decision between November 20 and December 31. PulseCity launched their campaign January 1st — after 67% of their audience had already committed elsewhere.'},
+      {title:'Competitor December Activity',text:'Three competing gyms ran "New Year early bird" campaigns in December, offering reserved spots and pre-payment discounts. They captured 62% of annual new memberships before January even began — at lower CAC.'},
+      {title:'PulseCity Own Analytics',text:'PulseCity\'s website showed its highest traffic of the year in late November and December (research phase). January traffic was 40% lower — they advertised during the "action" phase but completely missed the "decision" phase.'}
+    ],
+    mistake:'Campaign Launched After Purchase Decision Already Made',
+    options:['Campaign Launched After Purchase Decision Already Made','Ad Creative Lacked Motivational Message','Radio Budget Too High for Digital Era','Membership Price Not Competitive Enough'],
+    explanation:'PulseCity assumed New Year resolution-makers decide in January. Consumer behavior data clearly shows they decide in November-December and act in January. By launching their entire $38K campaign on January 1st, PulseCity entered the conversation after 67% of their target audience had already made their choice. Every marketing dollar competed against an audience that had already committed to someone else.',
+    improvements:['Launch "New Year Preview" campaign November 15th — capture email leads with an "early bird lock-in" offer and payment plan before competitors fill the market','Build a December lead nurture sequence converting December researchers into January paid members with time-limited bonuses','Create a holiday gift membership product — "Give the Gift of Health" — to capture gifted memberships as December purchases'],
+    lesson:'Consumer purchase decisions often happen weeks before the purchase action. Marketing must reach people during the decision phase, not just the transaction moment. The window of influence precedes the window of purchase.'
+  },
+  {
+    id:'MKT-006',company:'LuxeNest Interiors',industry:'Luxury Home Design',
+    tagline:'A $50K service sold through 15-second videos',
+    objective:'Acquire 15 high-ticket interior design clients ($30-80K projects)',
+    audience:'Homeowners aged 38-60 with household income $200K+, planning major renovations',
+    channels:'TikTok Ads, Instagram Reels, Snapchat Spotlight',
+    budget:'$55,000 over 3 months',
+    metrics:[
+      {label:'New Design Clients',val:'1',pct:7,status:'s-bad',note:'Target: 15'},
+      {label:'Cost Per Client',val:'$55,000',pct:10,status:'s-bad',note:'Target: $3,667'},
+      {label:'Consultation Requests',val:'8',pct:10,status:'s-bad',note:'None from paid ads'},
+      {label:'Portfolio Views',val:'4.2M',pct:90,status:'s-warn',note:'Wrong income demographic'},
+      {label:'Avg Viewer Household Income',val:'<$50K',pct:15,status:'s-bad',note:'Target: $200K+'}
+    ],
+    comments:[
+      '"I found LuxeNest through Houzz — that\'s where I look for home services. Never saw their TikTok"',
+      '"I\'d never hire a designer based on a 15-second video. I need to see their full portfolio"',
+      '"A $50K project needs a referral or a portfolio review — not a Reels ad"'
+    ],
+    social:{
+      p1:{name:'TikTok',s1:'3.1M views',s2:'Avg viewer income: <$45K',s3:'0 client conversions'},
+      p2:{name:'Houzz (organic, $0)',s1:'28K profile views',s2:'Avg viewer income: $180K',s3:'7 consultation requests'}
+    },
+    clues:[
+      {title:'Platform Income Demographics',text:'TikTok\'s median US household income is $46K. LuxeNest\'s minimum project value is $30,000. Their entire TikTok budget reached an audience that statistically cannot afford their service at their price point.'},
+      {title:'High-Ticket Purchase Consideration Cycle',text:'Interior design projects averaging $50K+ involve 3-6 months of research, portfolio review, in-person consultations, and referral verification. A 15-second Reels video cannot facilitate any part of this decision process.'},
+      {title:'Free Houzz Profile Performance',text:'LuxeNest\'s unmanaged, zero-budget Houzz profile generated 28K views from $180K+ income homeowners — their exact target audience — and 7 consultation requests during the same period their $55K paid campaign generated zero.'}
+    ],
+    mistake:'Wrong Platform for High-Trust, High-Investment Service Purchase',
+    options:['Wrong Platform for High-Trust, High-Investment Service Purchase','Video Production Quality Too Low','Marketing Budget Insufficient for Results','Should Have Targeted Younger Homeowners'],
+    explanation:'A $30-80K interior design commitment requires months of research, portfolio review, referrals, and in-person meetings. LuxeNest deployed their entire budget on platforms with 15-second video formats reaching an audience whose median income is below their minimum project cost. Meanwhile, their zero-budget Houzz profile — the platform where wealthy homeowners actually research design services — outperformed $55K in paid social.',
+    improvements:['Invest in Houzz Premium profile with 100+ project photos and active review response — their ideal audience is already there without any ads','Build SEO-optimized long-form portfolio pages targeting "interior designer [city]" searches by affluent homeowners','Create referral partnerships with luxury real estate agents, contractors, and architects who serve the same $200K+ income demographic'],
+    lesson:'High-ticket, high-consideration purchases require trust-building channels — detailed portfolios, long-form content, referrals, and in-person meetings. Short-form viral platforms are designed for impulse engagement, not trust transfer.'
+  },
+  {
+    id:'MKT-007',company:'CloudSuite Analytics',industry:'Data Analytics SaaS',
+    tagline:'Filling a leaking bucket with more water',
+    objective:'Reduce monthly churn rate from 8% to 2% within 4 months',
+    audience:'Existing CloudSuite subscribers struggling with product adoption',
+    channels:'Facebook Lookalike Ads, Google Display, LinkedIn Sponsored — all acquisition focused',
+    budget:'$95,000 over 4 months (85% on new acquisition ads)',
+    metrics:[
+      {label:'Monthly Churn Rate',val:'7.9%',pct:80,status:'s-bad',note:'Unchanged from 8%'},
+      {label:'New Customers (4 months)',val:'+420',pct:40,status:'s-warn',note:'391 churned same period'},
+      {label:'Onboarding Completion',val:'23%',pct:23,status:'s-bad',note:'Root cause never fixed'},
+      {label:'Net Revenue Growth',val:'+1.2%',pct:12,status:'s-bad',note:'Barely moved'},
+      {label:'Support Ticket Volume',val:'+34%',pct:70,status:'s-bad',note:'More confused customers'}
+    ],
+    comments:[
+      '"I canceled because I never figured out how to connect my data — onboarding was terrible"',
+      '"Three months in and I still couldn\'t use the core feature properly. I gave up"',
+      '"The product is powerful but I needed a human walkthrough and never got one"'
+    ],
+    social:{
+      p1:{name:'Acquisition Campaigns',s1:'420 new customers',s2:'391 churned same period',s3:'Net gain: 29 customers'},
+      p2:{name:'Completed Onboarding Users',s1:'Churn rate: 1.2%',s2:'Did not complete: 11.4% churn',s3:'Gap: 10x difference'}
+    },
+    clues:[
+      {title:'Churn Exit Survey Results',text:'73% of churned customers cited "never got value from the product" in exit surveys. This is a product adoption and onboarding problem — not a top-of-funnel marketing problem. Acquisition ads cannot fix product experience.'},
+      {title:'Leaky Bucket Mathematics',text:'At 8% monthly churn, CloudSuite loses 64% of customers annually. 420 new customers minus 391 churned = net gain of 29 customers at $95K cost = $3,276 per net new retained customer. This math is catastrophic.'},
+      {title:'Onboarding Completion Correlation',text:'Users who completed onboarding: 1.2% monthly churn. Users who did not: 11.4% monthly churn. Only 23% completed onboarding. Fixing this one metric would reduce churn by 70% — worth more than any acquisition campaign.'}
+    ],
+    mistake:'Using Acquisition Marketing to Solve a Retention and Product Problem',
+    options:['Using Acquisition Marketing to Solve a Retention and Product Problem','Wrong Ad Targeting Segments Selected','Brand Awareness Too Low to Convert','Campaign Budget Spread Too Thinly'],
+    explanation:'CloudSuite had a product onboarding problem — 77% of users never completed setup, and those who didn\'t churned at nearly 10x the rate of those who did. Spending $95K acquiring new customers into a broken onboarding funnel is the business equivalent of pouring water into a bucket with a hole at the bottom. The correct solution was: fix onboarding, add customer success touchpoints, and only then invest in acquisition.',
+    improvements:['Redesign the onboarding experience with interactive product tours, milestone celebrations, and video walkthroughs — target 80%+ completion rate','Launch a Customer Success program with proactive check-ins at Day 7, Day 30, and Day 90 for every new account','Build an in-app engagement scoring system that triggers automatic outreach when usage drops below activation thresholds'],
+    lesson:'Marketing cannot fix a product or retention problem. If your bucket leaks, stop filling it and fix the hole. Solve churn with product improvements and customer success — then invest in acquisition.'
+  },
+  {
+    id:'MKT-008',company:'ArtisanBite Restaurant',industry:'Food Service & Hospitality',
+    tagline:'A neighborhood bistro chasing national fame',
+    objective:'Increase average weeknight dinner covers by 40% — new customers',
+    audience:'Local food enthusiasts within an 8-mile radius who can actually visit',
+    channels:'National food magazine digital ads, Regional highway billboard',
+    budget:'$42,000 over 3 months (90% non-local channels)',
+    metrics:[
+      {label:'New Dinner Covers',val:'+6%',pct:15,status:'s-bad',note:'Target: +40%'},
+      {label:'Ad Reach',val:'2.8M',pct:90,status:'s-warn',note:'98.7% too far to visit'},
+      {label:'New Reservations via Ads',val:'4',pct:2,status:'s-bad',note:'2 mentioned the ads'},
+      {label:'Google Business Profile',val:'Unclaimed',pct:0,status:'s-bad',note:'No photos, 12 reviews'},
+      {label:'Local Area Awareness',val:'Low',pct:10,status:'s-bad',note:'Neighbors didn\'t know'}
+    ],
+    comments:[
+      '"ArtisanBite sounds amazing — but I\'m in Portland and the ad reached me through a national mag"',
+      '"I\'m literally 3 blocks away and didn\'t know they had a weeknight special menu"',
+      '"Found them through a friend recommendation — never saw them online anywhere locally"'
+    ],
+    social:{
+      p1:{name:'National Magazine Digital Ads',s1:'2.8M reach',s2:'98.7% too far to visit',s3:'Est. $40K ineffective spend'},
+      p2:{name:'Google My Business',s1:'Unclaimed / unoptimized',s2:'12 reviews, 3.1 stars',s3:'Not in local 3-pack results'}
+    },
+    clues:[
+      {title:'Geographic Reach Waste Analysis',text:'98.7% of national magazine digital ad viewers were located more than 50 miles from the restaurant — completely outside any possible dine-in radius. $41,200 effectively reached an audience that can never become a customer.'},
+      {title:'Google My Business Neglect',text:'ArtisanBite\'s Google profile had no photos, hadn\'t been updated in 14 months, and showed 3.1 stars from 12 reviews. Competitors on the same street had 200+ reviews and dominated the local search "3-pack" that drives 44% of restaurant discovery.'},
+      {title:'Local Marketing Alternative Value',text:'The $42K budget could have: run hyper-local Instagram and Facebook ads within 5 miles, sponsored 3 local food influencer dinners (2,000 local followers each), and launched a neighborhood loyalty program — all reaching only people who can actually eat there.'}
+    ],
+    mistake:'Local Business Investing in Non-Local Marketing Channels',
+    options:['Local Business Investing in Non-Local Marketing Channels','Menu Pricing Not Competitive','Restaurant Hours Inconvenient for Target Audience','Food Photography Quality Too Low'],
+    explanation:'ArtisanBite spent 90% of their budget on channels that reached millions of people who are geographically incapable of becoming their customers. National digital magazine ads and highway billboards are entirely wrong for a neighborhood restaurant. Meanwhile, their Google Business Profile — the most important local discovery tool — was unclaimed and unoptimized, and nearby residents had no idea the restaurant existed.',
+    improvements:['Claim and fully optimize Google Business Profile: 50+ food and atmosphere photos, respond to all reviews within 24 hours, post weekly specials as Google Posts','Run hyper-local Facebook and Instagram ads geo-targeted within 5 miles with radius targeting — show within-walking-distance messaging','Partner with 3 local food content creators for a weeknight tasting series — content, authenticity, and local reach in one campaign'],
+    lesson:'Local businesses must use local channels. Every marketing dollar should only reach people who can realistically become your customer based on geography. Scale of reach is irrelevant if the reach is in the wrong location.'
+  },
+  {
+    id:'MKT-009',company:'VoyageVault Travel',industry:'Online Travel',
+    tagline:'Selling adventure to family vacation buyers',
+    objective:'Increase summer vacation bookings by 45% above last year',
+    audience:'Adults planning summer holidays — actual buyer segment unknown',
+    channels:'Programmatic Display (adventure travel), YouTube Pre-roll (adventure content), Facebook Ads',
+    budget:'$110,000 over 5 months (75% adventure travel creative)',
+    metrics:[
+      {label:'Bookings vs Target',val:'−38%',pct:10,status:'s-bad',note:'Adventure: only +2%'},
+      {label:'Family Package Bookings',val:'+67%',pct:70,status:'s-good',note:'Got 15% of budget'},
+      {label:'Adventure Campaign ROAS',val:'0.6x',pct:15,status:'s-bad',note:'Lost money'},
+      {label:'Family Campaign ROAS',val:'4.1x',pct:85,status:'s-good',note:'Hugely profitable'},
+      {label:'Average Booking Value (Family)',val:'$2,890',pct:75,status:'s-good',note:'vs $1,247 adventure'}
+    ],
+    comments:[
+      '"I kept seeing extreme adventure travel ads but I have 3 kids — completely wrong for me"',
+      '"VoyageVault has perfect family packages. I found them by Googling — saw zero family ads"',
+      '"The creative was all skydiving and solo trekking — I\'m planning a Disney cruise with my 7-year-old"'
+    ],
+    social:{
+      p1:{name:'Adventure Campaigns (75% budget)',s1:'$82.5K spent',s2:'0.08% booking rate',s3:'+2% adventure bookings'},
+      p2:{name:'Family Campaigns (15% budget)',s1:'$16.5K spent',s2:'1.1% booking rate',s3:'+67% family bookings'}
+    },
+    clues:[
+      {title:'Site Analytics Search Term Report',text:'68% of VoyageVault\'s site visitors were searching terms like "family vacation packages," "Disney cruise deals," and "kid-friendly resorts." Only 18% searched adventure travel. Yet adventure campaigns received 5x the budget.'},
+      {title:'Conversion Rate Disparity',text:'Family vacation campaigns: 1.1% booking rate on $16.5K. Adventure campaigns: 0.08% booking rate on $82.5K. The lower-funded campaigns outperformed by 13.75x. The data pointed clearly at where to invest.'},
+      {title:'Customer Database Reality',text:'VoyageVault\'s existing customer database: 71% had previous family vacation bookings. 18% couples. 11% solo/adventure. The marketing budget was allocated exactly inverse to the actual customer distribution.'}
+    ],
+    mistake:'Advertising the Wrong Product to the Wrong Audience Based on Preference Not Data',
+    options:['Advertising the Wrong Product to the Wrong Audience Based on Preference Not Data','Total Marketing Budget Too Small','Website Conversion Rate Too Low','Off-Season Campaign Timing'],
+    explanation:'VoyageVault\'s own data clearly showed: 71% of customers book family vacations, 68% of site visitors searched for family packages, family ROAS was 4.1x vs adventure ROAS of 0.6x, and family average booking value was 2.3x higher. Despite all of this data, they allocated 75% of their budget to adventure travel campaigns. They marketed what they wanted to sell rather than what their data proved customers wanted to buy.',
+    improvements:['Realign budget to match data evidence: 65-70% family vacation campaigns, 20% couples, 10% adventure — following actual customer distribution','Build audience segments based on actual booking history and serve hyper-relevant creative to each returning customer segment','Create a "family vacation planner" interactive tool as organic lead magnet — capturing exactly the search intent driving 68% of site visits'],
+    lesson:'Marketing strategy must follow your data, not your preferences. The product your audience wants to buy — proven by their behavior — is always more important than the product you most want to sell.'
+  },
+  {
+    id:'MKT-010',company:'QuickHire Staffing Platform',industry:'HR Technology',
+    tagline:'Marketing to everyone who cannot buy anything',
+    objective:'Increase paying employer client accounts by 100 in 90 days',
+    audience:'HR Managers and hiring managers at growing companies (the paying buyers)',
+    channels:'Instagram Influencers, TikTok #JobSeekers community, Facebook Jobs',
+    budget:'$78,000 over 3 months (70% on job seeker platforms)',
+    metrics:[
+      {label:'New Employer Clients',val:'7',pct:7,status:'s-bad',note:'Target: 100'},
+      {label:'Job Seeker Registrations',val:'+2,400',pct:80,status:'s-warn',note:'Not the paying buyer'},
+      {label:'Cost Per Employer Client',val:'$11,143',pct:5,status:'s-bad',note:'Target: $780'},
+      {label:'Employer Inquiry Rate',val:'0.3%',pct:5,status:'s-bad',note:'Wrong audience engaged'},
+      {label:'Platform Supply-Demand',val:'1:342',pct:10,status:'s-bad',note:'Way too many seekers'}
+    ],
+    comments:[
+      '"I\'m a job seeker who found QuickHire — great for me, but I didn\'t know companies use it too"',
+      '"I\'m an HR director and never heard of QuickHire. Learned about it at an HR conference"',
+      '"The TikTok campaign was all \'find your dream job\' — as a hiring manager I need to know you can find ME qualified candidates"'
+    ],
+    social:{
+      p1:{name:'Job Seeker Campaigns',s1:'2,400 seeker signups',s2:'$54.6K spent',s3:'5 employer conversions'},
+      p2:{name:'LinkedIn HR Posts (organic, $0)',s1:'3 posts targeting HR ROI',s2:'340 HR manager views',s3:'5 of 7 employer clients from here'}
+    },
+    clues:[
+      {title:'Revenue Model Reality Check',text:'QuickHire\'s revenue comes 100% from employer subscriptions ($299-899/month). Job seekers use the platform entirely free. Yet 70% of the marketing budget targeted job seekers — the free users with zero purchasing power toward the business.'},
+      {title:'LinkedIn Organic vs Paid Performance',text:'3 unpaid LinkedIn posts about "reducing time-to-hire for HR teams" generated 340 HR manager views and produced 5 of the 7 employer conversions during the campaign period — 71% of conversions from 0% of the budget.'},
+      {title:'Messaging Architecture Failure',text:'QuickHire\'s paid campaigns used messaging: "Find your dream job, get hired faster." This is designed for job seekers. The employer buyer (HR Manager) needs to hear: "Reduce time-to-hire by 40%, access 50,000 pre-screened candidates within 48 hours." These are opposite value propositions.'}
+    ],
+    mistake:'Marketing to the Non-Paying User Instead of the Paying Customer',
+    options:['Marketing to the Non-Paying User Instead of the Paying Customer','Not Enough Budget for Brand Awareness','Platform Product-Market Fit Issues','Website Design Too Complex for Employers'],
+    explanation:'QuickHire runs a two-sided marketplace where employers pay and job seekers use it free. Yet 70% of their marketing budget was spent attracting free users — people with zero purchasing power toward the business model. Their 3 unpaid LinkedIn posts for HR managers, addressing employer-specific ROI, outperformed $54K in paid job seeker campaigns. They marketed to the wrong side of their own marketplace.',
+    improvements:['Redirect 80% of budget to HR managers and hiring directors via LinkedIn Campaign Manager targeting by job function, title, and company growth signals','Create entirely separate messaging for employer audience: frame every message around speed-to-hire, quality-of-candidates, and cost-per-hire reduction metrics','Build HR-focused content marketing targeting hiring manager search queries: "reduce time to hire," "best recruiting platforms for SMBs," "how to screen candidates at scale"'],
+    lesson:'In two-sided marketplaces, always market to the side that pays. Knowing who writes the check is not just financial — it determines every channel, message, and creative decision in your entire marketing strategy.'
+  }
+];
+
+/* ===================================================
+   STATE
+=================================================== */
+let S={
+  theme:'t-orange',
+  caseIdx:null,
+  currentCase:null,
+  revealedClues:0,
+  selectedOption:null,
+  isCorrect:false,
+  pinnedCards:[]
+};
+
+/* ===================================================
+   THEME
+=================================================== */
+function setTheme(t,color){
+  S.theme=t;
+  document.body.className=t;
+  document.querySelectorAll('.theme-card').forEach((c,i)=>{
+    c.style.borderColor='';c.style.boxShadow='';
+  });
+  // Highlight selected
+  const themeMap={'t-orange':0,'t-gold':1,'t-blue':2,'t-green':3,'t-red':4};
+  const cards=document.querySelectorAll('.theme-card');
+  if(cards[themeMap[t]]){
+    cards[themeMap[t]].style.borderColor=color;
+    cards[themeMap[t]].style.boxShadow=`0 0 20px ${color}40`;
+  }
+  setTimeout(()=>startNewCase(),200);
+}
+
+/* ===================================================
+   SCREEN NAVIGATION
+=================================================== */
+function goTo(id,prog){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active','visible');});
+  const t=document.getElementById(id);
+  if(!t)return;
+  t.classList.add('active');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    t.classList.add('visible');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }));
+}
+
+/* ===================================================
+   CASE SETUP
+=================================================== */
+function startNewCase(){
+  // Pick random case
+  let idx=Math.floor(Math.random()*CASES.length);
+  if(idx===S.caseIdx&&CASES.length>1){idx=(idx+1)%CASES.length;}
+  S.caseIdx=idx;
+  S.currentCase=CASES[idx];
+  S.revealedClues=0;
+  S.selectedOption=null;
+  S.isCorrect=false;
+  S.pinnedCards=[];
+
+  const c=S.currentCase;
+
+  // Populate case assignment
+  document.getElementById('cf-id').textContent='CASE '+c.id;
+  document.getElementById('cf-company').textContent=c.company;
+  document.getElementById('cf-industry').textContent='Industry: '+c.industry;
+  document.getElementById('cf-objective').textContent=c.objective;
+  document.getElementById('cf-audience').textContent=c.audience;
+  document.getElementById('cf-channels').textContent=c.channels;
+  document.getElementById('cf-budget').textContent=c.budget;
+
+  // Build investigation board
+  buildInvestigationBoard(c);
+
+  // Build solve options
+  buildSolveOptions(c);
+
+  // Reset
+  document.getElementById('solve-btn').disabled=true;
+  document.getElementById('submit-btn').disabled=true;
+  document.getElementById('clue-counter').textContent='0/3 Clues Revealed';
+  document.getElementById('reveal-hint').textContent='Start by analyzing the campaign metrics above';
+  document.getElementById('pinned-items').innerHTML='';
+
+  goTo('sc-case',0);
+}
+
+function replay(){
+  startNewCase();
+}
+
+/* ===================================================
+   INVESTIGATION BOARD
+=================================================== */
+function buildInvestigationBoard(c){
+  document.getElementById('inv-case-id').textContent=c.id;
+  document.getElementById('inv-company').textContent=c.company;
+  document.getElementById('inv-tagline').textContent=c.tagline;
+
+  const grid=document.getElementById('evidence-grid');
+  grid.innerHTML='';
+
+  // Card 1: Campaign Metrics
+  const m=c.metrics;
+  let metricsHTML=m.map(mt=>`
+    <div class="metric-row">
+      <div>
+        <div class="metric-label">${mt.label}</div>
+        <div class="metric-bar"><div class="metric-bar-fill" style="width:0%" data-target="${mt.pct}%" data-status="${mt.status}"></div></div>
+      </div>
+      <div style="text-align:right">
+        <div class="metric-value">${mt.val}</div>
+        <span class="metric-status ${mt.status}">${mt.note}</span>
+      </div>
+    </div>
+  `).join('');
+  grid.appendChild(createEvidenceCard('metrics','📊 Campaign Metrics','Performance Numbers',metricsHTML));
+
+  // Card 2: Customer Comments
+  let commentsHTML=c.comments.map(cm=>`
+    <div style="background:rgba(0,0,0,.06);border-radius:4px;padding:7px;margin-bottom:6px;font-size:11px;font-style:italic;line-height:1.5;color:#451a03">${cm}</div>
+  `).join('');
+  grid.appendChild(createEvidenceCard('comments','💬 Customer Feedback','What Customers Said',commentsHTML));
+
+  // Card 3: Budget Breakdown
+  let budgetHTML=`<div class="e-card-body" style="margin-bottom:8px;font-size:11px;">${c.budget}</div>`;
+  budgetHTML+=`<div class="mini-chart" id="budget-chart">`;
+  c.budgetBreakdown&&c.budgetBreakdown.forEach(b=>{
+    budgetHTML+=`<div class="bar" style="height:${b.pct}%;background:${b.color};opacity:0.85" title="${b.label}: ${b.pct}%"></div>`;
+  });
+  budgetHTML+=`</div><div class="bar-labels">`;
+  c.budgetBreakdown&&c.budgetBreakdown.forEach(b=>{
+    budgetHTML+=`<div class="bar-label" style="color:#451a03">${b.label}</div>`;
+  });
+  budgetHTML+=`</div>`;
+  grid.appendChild(createEvidenceCard('budget','💰 Budget Allocation','Where the Money Went',budgetHTML));
+
+  // Card 4: Social Performance
+  const sp=c.social;
+  let socialHTML=`
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;font-weight:800;color:#7a5518;margin-bottom:5px;">${sp.p1.name}</div>
+      ${[sp.p1.s1,sp.p1.s2,sp.p1.s3].map(s=>`<div class="e-card-body" style="margin-bottom:3px">${s}</div>`).join('')}
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:800;color:#7a5518;margin-bottom:5px;">${sp.p2.name}</div>
+      ${[sp.p2.s1,sp.p2.s2,sp.p2.s3].map(s=>`<div class="e-card-body" style="margin-bottom:3px">${s}</div>`).join('')}
+    </div>`;
+  grid.appendChild(createEvidenceCard('social','📱 Social Performance','Channel Breakdown',socialHTML));
+
+  // Build locked clue cards
+  buildClueCards(c);
+
+  // Animate metric bars
+  setTimeout(animateBars,400);
+
+  // Init drag and drop
+  setTimeout(initDragDrop,100);
+}
+
+function createEvidenceCard(id,type,title,body){
+  const card=document.createElement('div');
+  card.className='e-card';
+  card.id='ecard-'+id;
+  card.draggable=true;
+  card.innerHTML=`
+    <div class="pin"></div>
+    <div class="e-card-type">${type}</div>
+    <div class="e-card-title">${title}</div>
+    <div>${body}</div>
+  `;
+  return card;
+}
+
+function buildClueCards(c){
+  const container=document.getElementById('clue-cards');
+  container.innerHTML='';
+  c.clues.forEach((clue,i)=>{
+    const card=document.createElement('div');
+    card.className='clue-card locked';
+    card.id='clue-'+i;
+    card.innerHTML=`
+      <div class="pin" style="background:radial-gradient(circle at 35% 35%,#ccc,#999);box-shadow:none;"></div>
+      <div class="clue-num">${i+1}</div>
+      <div class="clue-title" style="color:#6b7280">🔒 CLUE ${i+1} — LOCKED</div>
+      <div class="clue-locked-text">Reveal this clue when you're ready to investigate further.</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function revealNextClue(){
+  const c=S.currentCase;
+  if(S.revealedClues>=c.clues.length)return;
+  const idx=S.revealedClues;
+  const clue=c.clues[idx];
+  const card=document.getElementById('clue-'+idx);
+  if(!card)return;
+
+  card.classList.remove('locked');
+  card.innerHTML=`
+    <div class="pin"></div>
+    <div class="clue-num">${idx+1}</div>
+    <div class="clue-title">${clue.title}</div>
+    <div class="clue-text">${clue.text}</div>
+  `;
+  card.style.animation='cardIn .4s ease';
+  card.style.animationFillMode='both';
+
+  S.revealedClues++;
+  document.getElementById('clue-counter').textContent=`${S.revealedClues}/3 Clues Revealed`;
+
+  if(S.revealedClues>=c.clues.length){
+    document.getElementById('reveal-btn').textContent='All Clues Revealed ✓';
+    document.getElementById('reveal-btn').disabled=true;
+    document.getElementById('reveal-hint').textContent='You have all the evidence. Time to solve the case!';
+    document.getElementById('solve-btn').disabled=false;
+  } else {
+    document.getElementById('reveal-hint').textContent=`${c.clues.length-S.revealedClues} more clue${c.clues.length-S.revealedClues!==1?'s':''} available`;
+  }
+
+  // Also fill solve summary
+  document.getElementById('solve-summary').textContent=
+    `${c.company} · ${c.industry} · Objective: ${c.objective}`;
+}
+
+/* ===================================================
+   SOLVE OPTIONS
+=================================================== */
+function buildSolveOptions(c){
+  // Shuffle options
+  const opts=[c.mistake,...c.options.filter(o=>o!==c.mistake)];
+  // Shuffle
+  for(let i=opts.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [opts[i],opts[j]]=[opts[j],opts[i]];
+  }
+  const letters=['A','B','C','D'];
+  const container=document.getElementById('solve-options');
+  container.innerHTML='';
+  opts.forEach((opt,i)=>{
+    const card=document.createElement('div');
+    card.className='option-card';
+    card.id='opt-'+i;
+    card.setAttribute('data-value',opt);
+    card.innerHTML=`
+      <div class="option-letter">Option ${letters[i]}</div>
+      <div class="option-text">${opt}</div>
+    `;
+    card.addEventListener('click',()=>selectOption(opt,i));
+    container.appendChild(card);
+  });
+}
+
+function selectOption(value,idx){
+  S.selectedOption=value;
+  document.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('opt-'+idx).classList.add('selected');
+  document.getElementById('submit-btn').disabled=false;
+}
+
+/* ===================================================
+   SUBMIT & VERDICT
+=================================================== */
+function submitSolve(){
+  const c=S.currentCase;
+  S.isCorrect=S.selectedOption===c.mistake;
+
+  // Highlight correct/wrong
+  document.querySelectorAll('.option-card').forEach(card=>{
+    const val=card.getAttribute('data-value');
+    if(val===c.mistake)card.classList.add('correct');
+    else if(card.classList.contains('selected'))card.classList.add('wrong');
+  });
+
+  // Build case closed screen
+  const stamp=document.getElementById('verdict-stamp');
+  const vtitle=document.getElementById('verdict-title');
+  const vbody=document.getElementById('verdict-body');
+
+  if(S.isCorrect){
+    stamp.className='stamp stamp-correct';
+    stamp.textContent='CASE CLOSED';
+    vtitle.innerHTML='✅ Correct! You cracked it.';
+    vtitle.style.color='var(--green)';
+    vbody.textContent=`The primary mistake was: "${c.mistake}." Your investigative analysis was spot on. Let's review the full breakdown.`;
+  } else {
+    stamp.className='stamp stamp-wrong';
+    stamp.textContent='CASE REOPENED';
+    vtitle.innerHTML='❌ Not quite — review the evidence again.';
+    vtitle.style.color='var(--red)';
+    vbody.textContent=`The actual primary mistake was: "${c.mistake}." Understanding why is more important than being right the first time. Let's dig into the explanation.`;
+  }
+
+  setTimeout(()=>goTo('sc-closed',4),300);
+}
+
+/* ===================================================
+   LEARNING REPORT
+=================================================== */
+function showReport(){
+  const c=S.currentCase;
+  document.getElementById('rep-company').textContent=c.company;
+  document.getElementById('rep-case-id').textContent='Case '+c.id+' · '+c.industry;
+  document.getElementById('rep-mistake').textContent=c.mistake;
+  document.getElementById('rep-explanation').textContent=c.explanation;
+
+  // Improvements
+  const impEl=document.getElementById('rep-improvements');
+  impEl.innerHTML=c.improvements.map((imp,i)=>`
+    <div class="improvement-item">
+      <div class="imp-num">${i+1}</div>
+      <div class="imp-text">${imp}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('rep-lesson').textContent=c.lesson;
+
+  // Clue summary
+  const clueEl=document.getElementById('rep-clues');
+  clueEl.innerHTML=c.clues.map(cl=>`
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:10px;font-weight:800;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;">🔍 ${cl.title}</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6;">${cl.text}</div>
+    </div>
+  `).join('');
+
+  goTo('sc-report',5);
+}
+
+// Override the "see report" button to build data first
+document.querySelector('[onclick="goTo(\'sc-report\',5)"]')&&
+  document.querySelector('[onclick="goTo(\'sc-report\',5)"]').setAttribute('onclick','showReport()');
+
+/* ===================================================
+   DRAG AND DROP
+=================================================== */
+function initDragDrop(){
+  const cards=document.querySelectorAll('.e-card');
+  const board=document.getElementById('pin-board');
+  const pinned=document.getElementById('pinned-items');
+
+  cards.forEach(card=>{
+    card.addEventListener('dragstart',e=>{
+      e.dataTransfer.setData('text/plain',card.id);
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+  });
+
+  board.addEventListener('dragover',e=>{e.preventDefault();board.classList.add('drag-over');});
+  board.addEventListener('dragleave',()=>board.classList.remove('drag-over'));
+  board.addEventListener('drop',e=>{
+    e.preventDefault();
+    board.classList.remove('drag-over');
+    const cardId=e.dataTransfer.getData('text/plain');
+    if(S.pinnedCards.includes(cardId))return;
+    S.pinnedCards.push(cardId);
+    const orig=document.getElementById(cardId);
+    if(orig){
+      const typeEl=orig.querySelector('.e-card-type');
+      const titleEl=orig.querySelector('.e-card-title');
+      const item=document.createElement('div');
+      item.className='pinned-item';
+      const rot=(Math.random()-0.5)*6;
+      item.style.transform=`rotate(${rot}deg)`;
+      item.innerHTML=`<div class="pin" style="width:8px;height:8px;top:-4px;left:50%;transform:translateX(-50%)"></div>
+        <strong>${titleEl?titleEl.textContent:''}</strong>`;
+      pinned.appendChild(item);
+      orig.classList.add('pinned-to-board');
+      // Remove label
+      const label=board.querySelector('.pin-board-label');
+      if(label)label.style.display='none';
+    }
+  });
+}
+
+/* ===================================================
+   ANIMATED BARS
+=================================================== */
+function animateBars(){
+  document.querySelectorAll('.metric-bar-fill').forEach(bar=>{
+    const target=bar.getAttribute('data-target');
+    const status=bar.getAttribute('data-status');
+    const color=status==='s-bad'?'#ef4444':status==='s-good'?'#10b981':'#f59e0b';
+    bar.style.background=color;
+    setTimeout(()=>{bar.style.width=target;},50);
+  });
+}
+
+/* ===================================================
+   EXTRA: Wire up "See Full Report" button
+=================================================== */
+document.addEventListener('DOMContentLoaded',()=>{
+  const reportBtn=document.querySelector('#sc-closed button');
+  if(reportBtn)reportBtn.setAttribute('onclick','showReport()');
+});
+</script>
+</body>
+</html>
