@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧩 Prompt Puzzle — Master AI Prompting Through Play</title>
+<style>
+/* =====================================================
+   VARIABLES & RESET
+===================================================== */
+:root{
+  --bg:#08080f;--bg2:#0d0e1a;--card:#131424;--card2:#1a1c30;
+  --purple:#7c3aed;--purple-l:#8b5cf6;--purple-br:#a78bfa;
+  --green:#10b981;--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;
+  --text:#f0f0f6;--text2:#9898b0;--text3:#525270;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
+  --glow:rgba(124,58,237,0.25);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--purple);border-radius:3px;}
+button{cursor:pointer;font-family:inherit;}
+
+/* =====================================================
+   SCREENS
+===================================================== */
+.screen{display:none;opacity:0;transform:translateY(12px);transition:opacity .4s,transform .4s;min-height:100vh;padding:20px 16px 80px;}
+.screen.active{display:block;}
+.screen.visible{opacity:1;transform:translateY(0);}
+.page{max-width:900px;margin:0 auto;}
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+.btn{border:none;border-radius:10px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;}
+.btn-p{background:linear-gradient(135deg,var(--purple),#5b21b6);color:#fff;box-shadow:0 4px 18px var(--glow);}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 28px var(--glow);}
+.btn-p:disabled{opacity:.4;pointer-events:none;}
+.btn-o{background:rgba(255,255,255,.06);color:var(--text2);border:1px solid var(--border2);}
+.btn-o:hover{background:rgba(255,255,255,.1);color:var(--text);}
+.btn-g{background:linear-gradient(135deg,#059669,#047857);color:#fff;}
+
+/* =====================================================
+   CARDS & UTILITIES
+===================================================== */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:14px;}
+.eyebrow{font-size:10px;font-weight:800;letter-spacing:2.5px;color:var(--purple-br);text-transform:uppercase;margin-bottom:8px;}
+.display-title{font-size:clamp(24px,5vw,42px);font-weight:900;line-height:1.1;margin-bottom:10px;}
+.body-text{font-size:14px;color:var(--text2);line-height:1.7;}
+.tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:99px;}
+.tag-purple{background:rgba(139,92,246,.15);color:var(--purple-br);border:1px solid rgba(139,92,246,.3);}
+.tag-green{background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.3);}
+.tag-amber{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3);}
+.tag-red{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);}
+.tag-cyan{background:rgba(6,182,212,.15);color:#67e8f9;border:1px solid rgba(6,182,212,.3);}
+.flex-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.divider{height:1px;background:var(--border);margin:16px 0;}
+.mt-12{margin-top:12px;}
+.mt-20{margin-top:20px;}
+.mb-12{margin-bottom:12px;}
+.fade-in{animation:fi .4s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* =====================================================
+   PROGRESS BAR
+===================================================== */
+.progress-bar{height:6px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;margin-bottom:24px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--purple-br));border-radius:99px;transition:width .5s ease;}
+
+/* =====================================================
+   HEADER (in-game)
+===================================================== */
+.game-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(13,14,26,.9);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);}
+.gh-title{font-size:13px;font-weight:800;color:var(--purple-br);}
+.gh-score{font-size:20px;font-weight:900;color:var(--purple-br);}
+.gh-timer{font-size:18px;font-weight:800;color:var(--amber);font-variant-numeric:tabular-nums;transition:color .3s;}
+.gh-timer.urgent{color:var(--red);animation:timerPulse 1s infinite;}
+@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:.5}}
+.gh-challenge-badge{font-size:11px;font-weight:700;color:var(--text3);}
+
+/* =====================================================
+   BLOCK SYSTEM (Drag & Drop)
+===================================================== */
+.block{display:inline-flex;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:9px 14px;cursor:grab;transition:all .2s;user-select:none;margin:4px;}
+.block:hover{border-color:rgba(139,92,246,.4);transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.3);}
+.block:active{cursor:grabbing;opacity:.7;}
+.block.dragging{opacity:.4;transform:scale(.95);}
+.block.placed{background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.4);color:var(--purple-br);}
+.block.correct-block{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.4);color:#34d399;}
+.block.wrong-block{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.35);color:#f87171;}
+.block-label{font-size:9px;font-weight:800;letter-spacing:1px;padding:2px 7px;border-radius:99px;flex-shrink:0;}
+.block-label-role{background:rgba(139,92,246,.2);color:var(--purple-br);}
+.block-label-ctx{background:rgba(6,182,212,.2);color:#67e8f9;}
+.block-label-task{background:rgba(16,185,129,.2);color:#34d399;}
+.block-label-fmt{background:rgba(245,158,11,.2);color:var(--amber);}
+.block-label-aud{background:rgba(236,72,153,.2);color:#f9a8d4;}
+.block-label-const{background:rgba(59,130,246,.2);color:#93c5fd;}
+.block-label-bad{background:rgba(239,68,68,.2);color:#f87171;}
+.block-text{font-size:12px;font-weight:500;}
+
+/* =====================================================
+   BUILD CHALLENGE
+===================================================== */
+.build-layout{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:14px;}
+.desired-output{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:16px;}
+.do-label{font-size:9px;font-weight:800;letter-spacing:2px;color:var(--purple-br);text-transform:uppercase;margin-bottom:8px;}
+.do-text{font-size:13px;color:var(--text2);line-height:1.6;}
+.slot-area{display:flex;flex-direction:column;gap:8px;}
+.slot{min-height:58px;background:rgba(255,255,255,.03);border:2px dashed rgba(255,255,255,.12);border-radius:10px;padding:8px;display:flex;align-items:center;transition:all .2s;position:relative;}
+.slot.drag-over{background:rgba(139,92,246,.08);border-color:rgba(139,92,246,.5);}
+.slot.has-block{border-style:solid;border-color:rgba(139,92,246,.35);}
+.slot-num{position:absolute;top:5px;left:8px;font-size:9px;font-weight:800;color:var(--text3);}
+.palette{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;min-height:200px;}
+.palette-label{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--text3);text-transform:uppercase;margin-bottom:10px;}
+.palette-blocks{display:flex;flex-direction:column;gap:6px;}
+
+/* =====================================================
+   CLEAN CHALLENGE
+===================================================== */
+.clean-prompt{background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:18px;display:flex;flex-wrap:wrap;gap:8px;}
+.clean-block{padding:9px 14px;border-radius:8px;cursor:pointer;transition:all .2s;border:2px solid transparent;user-select:none;font-size:12px;}
+.clean-block.keep-state{background:rgba(16,185,129,.06);border-color:rgba(16,185,129,.2);color:var(--text2);}
+.clean-block.remove-state{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.4);color:#f87171;text-decoration:line-through;}
+.clean-block:hover{transform:translateY(-1px);}
+.clean-legend{display:flex;gap:20px;margin-top:10px;font-size:12px;color:var(--text2);}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px;}
+
+/* =====================================================
+   CHOOSE CHALLENGE
+===================================================== */
+.choose-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.choose-card{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;}
+.choose-card:hover{border-color:rgba(139,92,246,.35);}
+.choose-card.selected{border-color:var(--purple);background:rgba(139,92,246,.06);box-shadow:0 0 16px var(--glow);}
+.choose-card.reveal-correct{border-color:var(--green);background:rgba(16,185,129,.06);}
+.choose-card.reveal-wrong{border-color:var(--red);background:rgba(239,68,68,.06);}
+.choose-type{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.choose-prompt{font-size:12px;color:var(--text2);line-height:1.6;background:rgba(0,0,0,.2);border-radius:6px;padding:10px;margin-bottom:8px;font-family:'Courier New',monospace;max-height:120px;overflow-y:auto;}
+.choose-output{font-size:11px;color:var(--text3);line-height:1.5;border-top:1px solid var(--border);padding-top:8px;margin-top:8px;display:none;}
+.choose-output.visible{display:block;}
+.show-output-btn{font-size:10px;color:var(--purple-br);background:none;border:none;cursor:pointer;padding:4px 0;font-weight:700;}
+.reveal-badge{font-size:11px;font-weight:800;padding:4px 10px;border-radius:6px;margin-top:8px;display:none;}
+.reveal-correct{background:rgba(16,185,129,.15);color:#34d399;}
+.reveal-wrong{background:rgba(239,68,68,.15);color:#f87171;}
+
+/* =====================================================
+   FEEDBACK SCREEN
+===================================================== */
+.feedback-score{font-size:72px;font-weight:900;text-align:center;line-height:1;margin:16px 0;}
+.feedback-label{text-align:center;font-size:18px;font-weight:800;margin-bottom:4px;}
+.principle-box{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.2);border-left:3px solid var(--purple);border-radius:0 10px 10px 0;padding:14px 16px;}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
+.compare-col{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.compare-col-label{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.compare-col-text{font-size:12px;color:var(--text2);line-height:1.6;font-family:'Courier New',monospace;}
+
+/* =====================================================
+   REPORT SCREEN
+===================================================== */
+.report-score{font-size:80px;font-weight:900;text-align:center;line-height:1;background:linear-gradient(135deg,var(--purple-br),#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.rank-badge{display:inline-block;font-size:22px;font-weight:900;padding:8px 24px;border-radius:12px;margin:8px 0;}
+.dna-item{margin-bottom:12px;}
+.dna-header{display:flex;justify-content:space-between;margin-bottom:5px;}
+.dna-label{font-size:12px;color:var(--text2);font-weight:600;}
+.dna-val{font-size:12px;font-weight:700;color:var(--purple-br);}
+.dna-track{height:8px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;}
+.dna-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--purple),var(--purple-br));transition:width 1s ease;}
+.feedback-point{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;}
+.fp-icon{font-size:16px;flex-shrink:0;}
+.fp-text{font-size:13px;color:var(--text2);line-height:1.6;}
+.optimized-prompt{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:16px;font-family:'Courier New',monospace;font-size:12px;color:#a7f3d0;line-height:1.7;}
+
+/* =====================================================
+   FLOATING NOTIFICATIONS
+===================================================== */
+.notif{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:12px 20px;font-size:13px;font-weight:700;z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;}
+.notif.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.notif.success{border-color:rgba(16,185,129,.4);color:#34d399;background:rgba(16,185,129,.1);}
+.notif.error{border-color:rgba(239,68,68,.4);color:#f87171;background:rgba(239,68,68,.1);}
+.notif.info{border-color:rgba(139,92,246,.4);color:var(--purple-br);background:rgba(139,92,246,.1);}
+
+/* =====================================================
+   CHALLENGE INFO BAR
+===================================================== */
+.challenge-info{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;}
+.ci-title{font-size:16px;font-weight:800;margin-bottom:4px;}
+.ci-goal{font-size:13px;color:var(--text2);line-height:1.5;}
+.ci-type{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+
+/* =====================================================
+   SCORE COUNTER
+===================================================== */
+.score-counter{font-size:28px;font-weight:900;color:var(--purple-br);text-align:center;padding:8px;}
+@keyframes scoreCount{from{transform:scale(1.3)}to{transform:scale(1)}}
+.score-animate{animation:scoreCount .3s ease;}
+
+/* =====================================================
+   HINT BUTTON
+===================================================== */
+.hint-btn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);color:var(--amber);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.hint-btn:hover{background:rgba(245,158,11,.18);}
+.hint-btn:disabled{opacity:.4;pointer-events:none;}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media(max-width:700px){
+  .build-layout{grid-template-columns:1fr;}
+  .choose-grid{grid-template-columns:1fr;}
+  .compare-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== SCREEN: WELCOME ===================== -->
+<div class="screen active" id="sc-welcome">
+<div class="page" style="max-width:680px;text-align:center;padding-top:60px">
+  <div style="font-size:48px;margin-bottom:12px">🧩</div>
+  <div class="eyebrow">60 Days of Claude · Day 35</div>
+  <h1 class="display-title">Prompt Puzzle</h1>
+  <p style="font-size:16px;font-weight:700;color:var(--purple-br);margin-bottom:6px">Master AI Prompting Through Play</p>
+  <p class="body-text" style="max-width:480px;margin:0 auto 28px">Learn professional prompt engineering through three interactive challenge types. Every puzzle teaches a real principle used by expert practitioners.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;max-width:580px;margin-left:auto;margin-right:auto;">
+    <div class="card" style="text-align:center;padding:16px">
+      <div style="font-size:24px;margin-bottom:6px">🏗️</div>
+      <div style="font-size:12px;font-weight:800;margin-bottom:4px">Build</div>
+      <div style="font-size:11px;color:var(--text3)">Drag blocks to construct the perfect prompt</div>
+    </div>
+    <div class="card" style="text-align:center;padding:16px">
+      <div style="font-size:24px;margin-bottom:6px">🧹</div>
+      <div style="font-size:12px;font-weight:800;margin-bottom:4px">Clean</div>
+      <div style="font-size:11px;color:var(--text3)">Remove vague & redundant elements</div>
+    </div>
+    <div class="card" style="text-align:center;padding:16px">
+      <div style="font-size:24px;margin-bottom:6px">🎯</div>
+      <div style="font-size:12px;font-weight:800;margin-bottom:4px">Choose</div>
+      <div style="font-size:11px;color:var(--text3)">Identify the optimized prompt from 3</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap">
+    <span class="tag tag-purple">Domain: Business Analytics & AI</span>
+    <span class="tag tag-amber">Difficulty: Intermediate</span>
+    <span class="tag tag-cyan">6 Challenges</span>
+  </div>
+
+  <button class="btn btn-p" style="font-size:16px;padding:14px 40px" onclick="startGame()">Start Puzzling →</button>
+  <div style="margin-top:10px;font-size:12px;color:var(--text3)">Each challenge has a 90-second timer · Earn up to 100 points per challenge</div>
+</div>
+</div>
+
+<!-- ===================== SCREEN: CHALLENGE ===================== -->
+<div class="screen" id="sc-challenge">
+<div class="game-header">
+  <div>
+    <div class="gh-title">🧩 Prompt Puzzle</div>
+    <div class="gh-challenge-badge" id="challenge-badge">Challenge 1 of 6</div>
+  </div>
+  <div style="text-align:center">
+    <div style="font-size:9px;color:var(--text3);margin-bottom:2px">SCORE</div>
+    <div class="gh-score" id="total-score-display">0</div>
+  </div>
+  <div style="text-align:center">
+    <div style="font-size:9px;color:var(--text3);margin-bottom:2px">TIME</div>
+    <div class="gh-timer" id="timer-display">1:30</div>
+  </div>
+</div>
+
+<div class="page" style="padding-top:16px">
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="challenge-info">
+    <div>
+      <div class="flex-row mb-12">
+        <span class="tag tag-purple" id="challenge-type-badge">Build</span>
+        <span style="font-size:11px;color:var(--text3)" id="challenge-num-label">Challenge 1</span>
+      </div>
+      <div class="ci-title" id="challenge-title">Loading...</div>
+      <div class="ci-goal" id="challenge-goal">—</div>
+    </div>
+    <div class="ci-type">
+      <button class="hint-btn" id="hint-btn" onclick="useHint()">💡 Hint (−10)</button>
+      <div style="font-size:10px;color:var(--text3);text-align:right" id="hints-remaining">3 hints left</div>
+    </div>
+  </div>
+
+  <!-- Dynamic challenge content rendered here -->
+  <div id="challenge-content"></div>
+
+  <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end;align-items:center">
+    <div id="action-hint" style="font-size:12px;color:var(--text3)"></div>
+    <button class="btn btn-p" id="submit-btn" onclick="submitChallenge()" disabled>Submit Answer</button>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN: FEEDBACK ===================== -->
+<div class="screen" id="sc-feedback">
+<div class="page" style="max-width:720px;padding-top:32px">
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="font-size:40px" id="fb-emoji">🎉</div>
+    <div class="feedback-label" id="fb-label">—</div>
+    <div class="feedback-score" id="fb-score">0</div>
+    <div style="font-size:13px;color:var(--text3)" id="fb-score-breakdown">—</div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="principle-box">
+      <div style="font-size:9px;font-weight:800;letter-spacing:2px;color:var(--purple-br);text-transform:uppercase;margin-bottom:6px">🧠 Prompt Principle</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6" id="fb-principle">—</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:12px">See the Difference</div>
+    <div class="compare-grid">
+      <div class="compare-col">
+        <div class="compare-col-label" style="color:#f87171">❌ Weak Prompt Output</div>
+        <div class="compare-col-text" id="fb-weak-output">—</div>
+      </div>
+      <div class="compare-col">
+        <div class="compare-col-label" style="color:#34d399">✅ Optimized Prompt Output</div>
+        <div class="compare-col-text" id="fb-opt-output">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center">
+    <button class="btn btn-p" id="next-btn" onclick="nextChallenge()">Next Challenge →</button>
+    <div style="font-size:12px;color:var(--text3);margin-top:8px" id="next-label">3 challenges remaining</div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN: REPORT ===================== -->
+<div class="screen" id="sc-report">
+<div class="page" style="max-width:760px;padding-top:28px">
+  <div style="text-align:center;margin-bottom:24px">
+    <div class="eyebrow">Session Complete</div>
+    <h2 style="font-size:clamp(20px,3.5vw,28px);font-weight:900;margin-bottom:4px">Prompt Performance Report</h2>
+    <div style="font-size:14px;color:var(--text2)">Business Analytics & AI · Intermediate</div>
+  </div>
+
+  <div class="card" style="text-align:center;padding:32px;margin-bottom:16px;border-color:rgba(139,92,246,.25);box-shadow:0 0 30px var(--glow)">
+    <div style="font-size:12px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">Your Prompt Score</div>
+    <div class="report-score" id="rep-score">0</div>
+    <div class="rank-badge" id="rep-rank">—</div>
+    <div style="font-size:14px;color:var(--text2)" id="rep-grade-label">—</div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--purple-br);text-transform:uppercase;margin-bottom:16px">🧬 Prompt DNA Analysis</div>
+    <div id="dna-bars">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <div class="card">
+      <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:#34d399;text-transform:uppercase;margin-bottom:12px">💪 Performance Insights</div>
+      <div id="rep-feedback">—</div>
+    </div>
+    <div class="card">
+      <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--amber);text-transform:uppercase;margin-bottom:12px">📊 Challenge Scores</div>
+      <div id="rep-scores">—</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;margin-bottom:10px">🎯 Next Milestone</div>
+    <div style="font-size:13px;color:var(--text2)" id="rep-milestone">—</div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px">
+    <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:#34d399;text-transform:uppercase;margin-bottom:10px">✅ Final Optimized Prompt</div>
+    <div class="optimized-prompt" id="rep-final-prompt">—</div>
+  </div>
+
+  <div style="text-align:center;display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+    <button class="btn btn-p" onclick="replay()">🔄 Play Again — New Scenarios</button>
+    <div style="font-size:12px;color:var(--text3);align-self:center">Scenarios shuffle each replay</div>
+  </div>
+</div>
+</div>
+
+<script>
+/* =====================================================
+   SCENARIOS DATA — 6 CHALLENGES
+===================================================== */
+const SCENARIOS = [
+
+  // ── BUILD 1: Customer Churn Analysis ──────────────
+  {
+    id: 1, type: 'build',
+    title: 'Customer Churn Analysis',
+    goal: 'Build a prompt that generates a structured churn analysis with ranked risk factors and specific retention recommendations.',
+    desiredOutput: 'Ranked table of top 5 churn predictors with impact scores, customer risk segment profiles, and specific retention actions per segment.',
+    blocks: [
+      { id: 'r1', text: 'Act as a senior customer analytics specialist with expertise in behavioral data', label: 'ROLE', cat: 'role', correct: true },
+      { id: 'c1', text: 'I have 12 months of behavioral data: purchase frequency, support tickets, and login activity for 8,000 customers', label: 'CONTEXT', cat: 'ctx', correct: true },
+      { id: 't1', text: 'Identify the top 5 predictors of churn and calculate their relative impact scores', label: 'TASK', cat: 'task', correct: true },
+      { id: 'f1', text: 'Format: (1) Predictor ranking table (2) Risk segment profiles (3) Retention action plan per segment', label: 'FORMAT', cat: 'fmt', correct: true },
+      { id: 'd1', text: 'Please be as thorough and comprehensive as possible', label: 'VAGUE', cat: 'bad', correct: false },
+      { id: 'd2', text: 'Use your best judgment on what to include', label: 'VAGUE', cat: 'bad', correct: false },
+      { id: 'd3', text: 'Think step by step carefully and be detailed', label: 'FILLER', cat: 'bad', correct: false }
+    ],
+    slotCount: 4,
+    principle: 'Role + Context + Task + Format — The 4-pillar framework ensures the AI knows WHO to be, WHAT they\'re working with, WHAT to do, and HOW to present it. Each pillar is essential; removing any one degrades output quality significantly.',
+    weakPrompt: 'Analyze customer churn for my company.',
+    optimizedPrompt: 'Act as a senior customer analytics specialist. I have 12 months of behavioral data (purchase frequency, support tickets, login activity) for 8,000 customers. Identify the top 5 churn predictors with impact scores. Format: (1) Predictor ranking table, (2) Risk segment profiles, (3) Retention action plan per segment.',
+    weakOutput: 'Customer churn refers to when customers stop doing business with a company. Common reasons include poor service, better competitor offers, and changing customer needs. To reduce churn, focus on improving your product quality and customer service...',
+    optimizedOutput: '**Churn Predictor Ranking**\n1. Login frequency drop (Impact: 0.94) — 14+ day inactivity = 73% churn probability\n2. Support ticket volume (0.87) — 3+ unresolved tickets = high risk\n3. Purchase frequency decline (0.82) — 60 days no purchase = critical\n\n**Risk Segments**: High Risk (2,100 customers), Medium (3,400), Low (2,500)\n\n**Retention Actions**: High-risk: Personal outreach within 48h + 20% loyalty discount...',
+    dnaMap: { role: 100, context: 90, format: 100, constraints: 60, clarity: 90 }
+  },
+
+  // ── CLEAN 1: SQL Optimization ─────────────────────
+  {
+    id: 2, type: 'clean',
+    title: 'SQL Query Optimization',
+    goal: 'This prompt is bloated with filler, contradictions, and vague instructions. Remove the bad elements to make it precise and effective.',
+    promptBlocks: [
+      { id: 'k1', text: 'Act as a SQL performance expert specializing in PostgreSQL', label: 'ROLE', keep: true },
+      { id: 'k2', text: 'Here is my slow query (45 seconds on a 2M row orders table): [query attached]', label: 'CONTEXT', keep: true },
+      { id: 'k3', text: 'Identify the performance bottlenecks and rewrite the query', label: 'TASK', keep: true },
+      { id: 'k4', text: 'Show original vs optimized side by side with expected % performance improvement', label: 'FORMAT', keep: true },
+      { id: 'r1', text: 'Please be creative and innovative in your optimization approach', label: '❌ WRONG GOAL', keep: false },
+      { id: 'r2', text: 'Also feel free to completely redesign the schema if you think that\'s best', label: '❌ SCOPE CREEP', keep: false },
+      { id: 'r3', text: 'Make it as comprehensive and thorough as humanly possible', label: '❌ FILLER', keep: false },
+      { id: 'r4', text: 'Use your own judgment about what format to present this in', label: '❌ CONTRADICTS FORMAT', keep: false }
+    ],
+    principle: 'Precision beats length. Every word either adds clarity or creates ambiguity. "Creative" is wrong for SQL optimization. "Comprehensive" is meaningless. "Your own judgment on format" contradicts the format instruction. Clear is better than long.',
+    optimizedPrompt: 'Act as a SQL performance expert specializing in PostgreSQL. Query: [attached] — currently 45 seconds on 2M row orders table. Identify bottlenecks and rewrite it. Present original vs optimized side by side with expected % improvement.',
+    weakOutput: 'I\'ll creatively approach this optimization! First, let me redesign your schema for better performance. I recommend completely restructuring your tables and then providing a very comprehensive overview of all possible SQL optimization strategies including indexing, partitioning, caching, query rewriting, and many more...',
+    optimizedOutput: '**Bottlenecks Identified**:\n• Full table scan (no index on order_date)\n• N+1 query in subquery\n• Unnecessary SELECT *\n\n**Original Query** [45 seconds]\n\n**Optimized Query** [estimated 0.3 seconds]\n\nKey changes: Added composite index, rewrote subquery as JOIN, selected only needed columns. Expected improvement: 99.3%',
+    dnaMap: { role: 90, context: 95, format: 100, constraints: 85, clarity: 80 }
+  },
+
+  // ── CHOOSE 1: Marketing Campaign Analysis ─────────
+  {
+    id: 3, type: 'choose',
+    title: 'Marketing Campaign Analysis',
+    goal: 'One of these three prompts produces the best marketing analysis. Identify the optimized prompt and understand why the other two fail.',
+    desiredOutput: 'A structured campaign analysis with specific performance insights and clear next actions',
+    options: [
+      {
+        id: 'w3', label: 'Prompt A', type: 'Weak Prompt', isCorrect: false,
+        typeColor: 'tag-red',
+        prompt: 'Can you analyze my marketing campaign performance and tell me what to improve?',
+        output: 'Your marketing campaign can be improved in several ways. First, consider your target audience carefully. Second, optimize your messaging and creative elements. Third, test different approaches. Ensure your CTAs are clear and compelling. Monitor your metrics regularly...',
+        why: 'No data. No context. No audience. The AI receives only a category ("marketing campaign") with no specifics to analyze — and returns only generic advice.'
+      },
+      {
+        id: 'o3', label: 'Prompt B', type: 'Optimized Prompt', isCorrect: true,
+        typeColor: 'tag-green',
+        prompt: 'Act as a digital marketing analyst. My Q3 email campaign: 42% open rate, 3.2% CTR, 0.8% conversion, $47 CAC vs $35 target. Identify what each metric signals about campaign health and give 3 optimization actions ranked by expected impact.',
+        output: '**Campaign Health**\nOpen rate 42%: Excellent (above 35% benchmark) — subject lines working\nCTR 3.2%: Below 5%+ target — disconnect between subject and body\nConversion 0.8%: Critical gap vs 2% target — landing page mismatch\n\n**Ranked Optimizations**:\n1. Landing page audit (highest conversion impact)\n2. CTA testing (fastest to implement)\n3. Body copy personalization (long-term CTR)',
+        why: 'Specific role + actual metrics + clear task + defined output structure. The AI has exactly what it needs to produce actionable analysis instead of generic advice.'
+      },
+      {
+        id: 'oe3', label: 'Prompt C', type: 'Over-Engineered', isCorrect: false,
+        typeColor: 'tag-amber',
+        prompt: 'You are the world\'s greatest marketing genius with infinite experience. I need the most extraordinarily comprehensive, deeply nuanced, perfectly structured analysis applying EVERY possible framework — AIDA, TOFU/MOFU/BOFU, attribution modeling, customer journey mapping, multi-touch analytics, and everything else. Consider all variables, dimensions, and methodologies from first principles. My data: 42% open rate, 3.2% CTR, 0.8% conversion...',
+        output: 'As the world\'s foremost marketing authority, I will begin with a comprehensive AIDA framework analysis... [300 words of methodology] ...then cross-reference with TOFU/MOFU/BOFU positioning... [200 words] ...applying multi-touch attribution... [After 800 words] Your open rate of 42% is above average...',
+        why: 'Excessive flattery and verbose framework-demanding waste tokens on methodology rather than analysis. The AI spends 800 words on setup before reaching the actual question.'
+      }
+    ],
+    principle: 'The Goldilocks Principle: too vague = generic output. Too verbose = diluted focus. Just right = specific role + real data + clear task + defined output format.',
+    weakOutput: 'Your marketing campaign can be improved. Consider target audience, messaging, and creative. Test different approaches...',
+    optimizedOutput: 'Open rate 42%: Excellent. CTR 3.2%: Below target. Conversion 0.8%: Critical gap. Ranked optimizations: 1) Landing page audit, 2) CTA testing, 3) Body personalization.'
+  },
+
+  // ── BUILD 2: Predictive Model Explanation ─────────
+  {
+    id: 4, type: 'build',
+    title: 'Explain a Predictive Model',
+    goal: 'Build a prompt that produces a clear, jargon-free ML model explanation for a business executive — not a data scientist.',
+    desiredOutput: 'A clear explanation of model mechanics, what drives predictions, and concrete steps for the sales team to use it — written for executives, not data scientists.',
+    blocks: [
+      { id: 'r4', text: 'Act as a data science translator who bridges ML models and business stakeholders', label: 'ROLE', cat: 'role', correct: true },
+      { id: 'c4', text: 'I built a random forest model predicting lead conversion. AUC: 0.87. Top features: industry, company size, days since last contact', label: 'CONTEXT', cat: 'ctx', correct: true },
+      { id: 'a4', text: 'My audience is the VP of Sales who has no data science background — avoid technical jargon', label: 'AUDIENCE', cat: 'const', correct: true },
+      { id: 't4', text: 'Explain: (1) What the model does simply (2) Why these 3 features matter (3) How the sales team uses predictions daily', label: 'TASK', cat: 'task', correct: true },
+      { id: 'd41', text: 'Please be very technical and detailed in your explanation', label: '❌ WRONG AUDIENCE', cat: 'bad', correct: false },
+      { id: 'd42', text: 'Include all mathematical formulas and statistical derivations', label: '❌ CONTRADICTS GOAL', cat: 'bad', correct: false },
+      { id: 'd43', text: 'Be creative and inspiring in your explanation format', label: '❌ VAGUE', cat: 'bad', correct: false }
+    ],
+    slotCount: 4,
+    principle: 'Audience specification is a superpower. When you explicitly tell the AI who will read the output (and their background), it automatically calibrates vocabulary, depth, metaphors, and format — without you specifying each one.',
+    weakPrompt: 'Explain my machine learning model to stakeholders.',
+    optimizedPrompt: 'Act as a data science translator who bridges ML and business. My random forest model predicts lead conversion (AUC: 0.87). Top features: industry, company size, days since last contact. Audience: VP of Sales with no data science background. Explain: (1) what the model does simply, (2) why these 3 features matter, (3) how the sales team uses predictions daily.',
+    weakOutput: 'Your machine learning model uses algorithms to make predictions based on statistical patterns. The AUC of 0.87 indicates strong discriminatory capability. Features selected indicate significant variable importance. The random forest ensemble method provides robust predictions with lower variance than individual decision trees...',
+    optimizedOutput: '**Think of your model like a very experienced sales manager who\'s reviewed 10,000 deals.** It learned that three things predict success most reliably:\n\n• Industry match (35% impact) — SaaS/fintech companies close 3x more often\n• Company size (28%) — 50-500 employees is your sweet spot\n• Recency (22%) — leads untouched 30+ days have half the close rate\n\nEach lead gets a score (0-100). Above 70: call today. Below 30: nurture or deprioritize.',
+    dnaMap: { role: 95, context: 85, format: 80, constraints: 100, clarity: 95 }
+  },
+
+  // ── CLEAN 2: Executive Dashboard Brief ────────────
+  {
+    id: 5, type: 'clean',
+    title: 'Executive Dashboard Design Brief',
+    goal: 'Remove vague, contradictory, and unnecessary blocks from this dashboard brief. Keep only what gives the AI clear design direction.',
+    promptBlocks: [
+      { id: 'k51', text: 'Act as a data visualization expert and BI dashboard designer', label: 'ROLE', keep: true },
+      { id: 'k52', text: 'Design a KPI dashboard for a CFO monitoring: revenue, gross margin, burn rate, and runway', label: 'CONTEXT', keep: true },
+      { id: 'k53', text: 'Prioritize at-a-glance readability — the CFO reviews this for 60 seconds each morning', label: 'CONSTRAINT', keep: true },
+      { id: 'k54', text: 'Recommend: widget layout, chart type per KPI, and color coding for threshold alerts', label: 'TASK', keep: true },
+      { id: 'r51', text: 'Make it visually stunning and aesthetically impressive', label: '❌ SUBJECTIVE', keep: false },
+      { id: 'r52', text: 'Include all the information that might ever be useful to a CFO', label: '❌ CONTRADICTS CONSTRAINT', keep: false },
+      { id: 'r53', text: 'Feel free to add any other metrics you think might be relevant', label: '❌ SCOPE CREEP', keep: false },
+      { id: 'r54', text: 'Use whatever visualization style feels right to you', label: '❌ REMOVES CONTROL', keep: false }
+    ],
+    principle: 'Real constraints are worth a thousand adjectives. "60 seconds each morning" tells the AI more about design requirements than "make it visually stunning" ever could. Constraints shape solutions; adjectives just add noise.',
+    optimizedPrompt: 'Act as a data visualization expert. Design a KPI dashboard for a CFO monitoring: revenue, gross margin, burn rate, runway. Priority: at-a-glance readability (60-second daily review). Recommend widget layout, chart types per KPI, and threshold alert color coding.',
+    weakOutput: 'I\'ll create something visually stunning! A CFO dashboard should include all relevant financial metrics, operational indicators, market trends, competitive data, team performance, and any other information that might be useful. I\'ll use a creative visualization style with custom charts and artistic color schemes...',
+    optimizedOutput: '**CFO Dashboard Layout (60-second scan design)**\n\nTop Row (critical, large): Revenue (line trend + vs plan %), Runway (single large number with RAG status)\n\nSecond Row: Gross Margin (gauge), Burn Rate (waterfall or trend)\n\nAlert Colors: Red <threshold, Amber 90-100% of threshold, Green above threshold\n\nWidget priority: Revenue largest (top-left eye tracking), Runway most prominent (red/green status)'
+  },
+
+  // ── CHOOSE 2: Data Story for Board ───────────────
+  {
+    id: 6, type: 'choose',
+    title: 'Data Story for Board Presentation',
+    goal: 'One prompt generates a compelling strategic narrative. The others produce a flat summary or unfocused essay. Find the optimized prompt.',
+    desiredOutput: 'A narrative that connects Q3 metrics to the expansion decision, suitable for board-level strategic discussion',
+    options: [
+      {
+        id: 'w6', label: 'Prompt A', type: 'Weak Prompt', isCorrect: false,
+        typeColor: 'tag-red',
+        prompt: 'Write a data story about our Q3 performance.',
+        output: 'Our Q3 performance showed several trends. Revenue was $4.2M. Customer acquisition cost was $89. Churn rate was 4.2%. These numbers indicate various aspects of our business performance which have implications for strategy going forward. There are opportunities and challenges to consider...',
+        why: 'No role, no audience, no decision context, no narrative goal. Output is a list of numbers with zero insight, zero story, and zero strategic connection.'
+      },
+      {
+        id: 'o6', label: 'Prompt B', type: 'Optimized Prompt', isCorrect: true,
+        typeColor: 'tag-green',
+        prompt: 'Act as a strategic data storyteller. Q3: Revenue $4.2M (+18% YoY), CAC $89 (−12%), Churn 4.2% (+1.8pp). Audience: board deciding whether to expand to 3 new markets next quarter. Structure a 5-minute narrative: (1) what\'s working and why, (2) the one risk expansion must address, (3) a clear ask.',
+        output: '**The Story of Q3: Momentum With a Warning**\n\nWe grew revenue 18% while dropping CAC 12% — a rare signal that unit economics are improving at scale.\n\nBut churn rose 1.8 points. Before expanding to 3 markets, this demands an answer: are we retaining customers well enough to justify the acquisition spend expansion requires?\n\n**The Ask**: Approve Phase 1 expansion to 1 market, contingent on Q4 churn returning below 3%.',
+        why: 'Decision context transforms data into strategy. By telling the AI what decision the audience must make, it knows exactly which insight to amplify and what recommendation to build toward.'
+      },
+      {
+        id: 'oe6', label: 'Prompt C', type: 'Over-Engineered', isCorrect: false,
+        typeColor: 'tag-amber',
+        prompt: 'Create an absolutely extraordinary, groundbreaking, paradigm-shifting data story masterfully weaving Q3 metrics into a cohesive, compelling, visually rich, emotionally resonant, strategically sound narrative that considers all interpretations, explores multiple scenarios, includes sensitivity analysis, competitive benchmarking, 5-year historical context, and synthesizes everything into a perfect unified theory... Revenue $4.2M, CAC $89, Churn 4.2%.',
+        output: 'To create a truly comprehensive narrative, I must first establish historical context. Looking back 5 years at revenue trends... [200 words] ...then examining competitive benchmarking... [150 words] ...considering sensitivity analysis across 12 scenarios... [After 600 words] ...In Q3, revenue was $4.2M which represents...',
+        why: 'Scope explosion buries the answer. The AI spends 600 words on methodology before reaching the data. No decision context means no strategic direction — just an expensive word count.'
+      }
+    ],
+    principle: 'Decision context is the ultimate prompt superpower. Knowing what decision the audience faces automatically filters all analysis through that single lens — and tells the AI exactly what insight to build toward.',
+    weakOutput: 'Q3 showed several trends. Revenue: $4.2M. CAC: $89. Churn: 4.2%. These numbers have implications for future strategy...',
+    optimizedOutput: 'Revenue +18% while CAC −12% = improving unit economics. Warning: Churn +1.8pp. The Ask: Approve Phase 1 expansion to 1 market, contingent on Q4 churn < 3%.'
+  }
+];
+
+/* =====================================================
+   GAME STATE
+===================================================== */
+const G = {
+  scenarios: [],
+  currentIdx: 0,
+  scores: [],
+  totalScore: 0,
+  hintsLeft: 3,
+  timerVal: 90,
+  timerID: null,
+  hintsUsedThisChallenge: 0,
+  wrongPlacementsThisChallenge: 0,
+  movesThisChallenge: 0,
+  challengeStartTime: null,
+
+  // Build state
+  buildPlaced: {}, // slotIndex -> blockId
+  buildAvailable: new Set(),
+
+  // Clean state
+  cleanMarked: new Set(), // marked for removal
+
+  // Choose state
+  chosenOption: null,
+  outputsVisible: new Set()
+};
+
+/* =====================================================
+   SCREEN NAVIGATION
+===================================================== */
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active', 'visible'); });
+  const t = document.getElementById(id);
+  if (!t) return;
+  t.classList.add('active');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    t.classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }));
+}
+
+/* =====================================================
+   NOTIFICATIONS
+===================================================== */
+function showNotif(msg, type = 'info') {
+  const n = document.createElement('div');
+  n.className = 'notif ' + type;
+  n.textContent = msg;
+  document.body.appendChild(n);
+  requestAnimationFrame(() => n.classList.add('show'));
+  setTimeout(() => {
+    n.classList.remove('show');
+    setTimeout(() => n.remove(), 350);
+  }, 2200);
+}
+
+/* =====================================================
+   TIMER
+===================================================== */
+function startTimer(seconds) {
+  G.timerVal = seconds;
+  updateTimerDisplay();
+  G.timerID = setInterval(() => {
+    G.timerVal--;
+    updateTimerDisplay();
+    if (G.timerVal <= 0) {
+      clearInterval(G.timerID);
+      showNotif('⏰ Time\'s up! Auto-submitting...', 'error');
+      setTimeout(submitChallenge, 800);
+    }
+  }, 1000);
+}
+
+function stopTimer() { if (G.timerID) { clearInterval(G.timerID); G.timerID = null; } }
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer-display');
+  const m = Math.floor(G.timerVal / 60);
+  const s = G.timerVal % 60;
+  el.textContent = m + ':' + String(s).padStart(2, '0');
+  el.classList.toggle('urgent', G.timerVal <= 20);
+}
+
+/* =====================================================
+   GAME START
+===================================================== */
+function startGame() {
+  // Shuffle scenarios
+  G.scenarios = [...SCENARIOS].sort(() => Math.random() - 0.5);
+  G.currentIdx = 0;
+  G.scores = [];
+  G.totalScore = 0;
+  G.hintsLeft = 3;
+  document.getElementById('total-score-display').textContent = '0';
+  goTo('sc-challenge');
+  setTimeout(() => loadChallenge(), 300);
+}
+
+function replay() {
+  startGame();
+}
+
+/* =====================================================
+   LOAD CHALLENGE
+===================================================== */
+function loadChallenge() {
+  const sc = G.scenarios[G.currentIdx];
+  G.hintsUsedThisChallenge = 0;
+  G.wrongPlacementsThisChallenge = 0;
+  G.movesThisChallenge = 0;
+  G.buildPlaced = {};
+  G.buildAvailable = new Set();
+  G.cleanMarked = new Set();
+  G.chosenOption = null;
+  G.outputsVisible = new Set();
+  G.challengeStartTime = Date.now();
+
+  // Update header
+  document.getElementById('challenge-badge').textContent = `Challenge ${G.currentIdx + 1} of ${G.scenarios.length}`;
+  document.getElementById('challenge-title').textContent = sc.title;
+  document.getElementById('challenge-goal').textContent = sc.goal;
+  document.getElementById('hints-remaining').textContent = G.hintsLeft + ' hints left';
+  document.getElementById('hint-btn').disabled = G.hintsLeft <= 0;
+
+  // Type badge
+  const typeBadge = document.getElementById('challenge-type-badge');
+  const num = document.getElementById('challenge-num-label');
+  if (sc.type === 'build') { typeBadge.textContent = '🏗️ Build'; typeBadge.className = 'tag tag-purple'; }
+  else if (sc.type === 'clean') { typeBadge.textContent = '🧹 Clean'; typeBadge.className = 'tag tag-cyan'; }
+  else { typeBadge.textContent = '🎯 Choose'; typeBadge.className = 'tag tag-amber'; }
+  num.textContent = 'Challenge ' + (G.currentIdx + 1);
+
+  // Progress
+  document.getElementById('progress-fill').style.width = ((G.currentIdx / G.scenarios.length) * 100) + '%';
+
+  // Submit button
+  const submitBtn = document.getElementById('submit-btn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submit Answer';
+
+  // Render challenge content
+  const content = document.getElementById('challenge-content');
+  if (sc.type === 'build') {
+    content.innerHTML = renderBuild(sc);
+    document.getElementById('action-hint').textContent = 'Drag the correct blocks into the slots';
+    initBuildDragDrop(sc);
+  } else if (sc.type === 'clean') {
+    content.innerHTML = renderClean(sc);
+    document.getElementById('action-hint').textContent = 'Click blocks marked ❌ to remove them';
+  } else {
+    content.innerHTML = renderChoose(sc);
+    document.getElementById('action-hint').textContent = 'Click a prompt to select it, then submit';
+  }
+
+  startTimer(90);
+}
+
+/* =====================================================
+   BUILD CHALLENGE
+===================================================== */
+function renderBuild(sc) {
+  // Shuffle blocks
+  const shuffled = [...sc.blocks].sort(() => Math.random() - 0.5);
+  shuffled.forEach(b => G.buildAvailable.add(b.id));
+
+  let slotsHTML = '';
+  for (let i = 0; i < sc.slotCount; i++) {
+    slotsHTML += `<div class="slot" id="slot-${i}" data-slot="${i}" 
+      ondragover="onSlotDragOver(event,${i})" ondrop="onSlotDrop(event,${i})" ondragleave="onSlotDragLeave(${i})">
+      <span class="slot-num">Slot ${i + 1}</span>
+      <div id="slot-block-${i}" style="width:100%;padding-left:8px"></div>
+    </div>`;
+  }
+
+  let paletteHTML = shuffled.map(b => renderBlock(b)).join('');
+
+  return `
+    <div class="build-layout">
+      <div class="desired-output">
+        <div class="do-label">🎯 Desired Output</div>
+        <div class="do-text">${sc.desiredOutput}</div>
+        <div style="margin-top:12px;font-size:11px;color:var(--text3)">Drag exactly ${sc.slotCount} blocks to build the optimal prompt</div>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:10px">📋 Build Zone — ${sc.slotCount} slots</div>
+        <div class="slot-area">${slotsHTML}</div>
+        <div style="margin-top:10px;font-size:11px;color:var(--text3)">Drag incorrect blocks back to palette</div>
+      </div>
+      <div class="palette">
+        <div class="palette-label">🧩 Block Palette</div>
+        <div class="palette-blocks" id="palette-blocks">${paletteHTML}</div>
+      </div>
+    </div>`;
+}
+
+function renderBlock(b, inSlot = false) {
+  const labelClass = {
+    role: 'block-label-role', ctx: 'block-label-ctx', task: 'block-label-task',
+    fmt: 'block-label-fmt', const: 'block-label-const', aud: 'block-label-aud', bad: 'block-label-bad'
+  }[b.cat] || 'block-label-bad';
+  return `<div class="block" id="block-${b.id}" data-bid="${b.id}" draggable="true"
+    ondragstart="onBlockDragStart(event,'${b.id}')" ondragend="onBlockDragEnd(event)">
+    <span class="block-label ${labelClass}">${b.label}</span>
+    <span class="block-text">${b.text}</span>
+  </div>`;
+}
+
+function initBuildDragDrop(sc) {
+  const palette = document.getElementById('palette-blocks');
+  if (palette) {
+    palette.addEventListener('dragover', e => e.preventDefault());
+    palette.addEventListener('drop', e => {
+      e.preventDefault();
+      const bid = e.dataTransfer.getData('blockId');
+      if (!bid) return;
+      // Find which slot this block was in
+      for (let i = 0; i < sc.slotCount; i++) {
+        const slotEl = document.getElementById('slot-block-' + i);
+        if (slotEl && slotEl.querySelector('#block-' + bid)) {
+          slotEl.innerHTML = '';
+          delete G.buildPlaced[i];
+          document.getElementById('slot-' + i).classList.remove('has-block');
+          break;
+        }
+      }
+      G.buildAvailable.add(bid);
+      const block = sc.blocks.find(b => b.id === bid);
+      if (block) palette.insertAdjacentHTML('beforeend', renderBlock(block));
+      checkBuildSubmit(sc);
+    });
+  }
+}
+
+let currentDragId = null;
+function onBlockDragStart(e, bid) {
+  currentDragId = bid;
+  e.dataTransfer.setData('blockId', bid);
+  const el = document.getElementById('block-' + bid);
+  if (el) el.classList.add('dragging');
+  G.movesThisChallenge++;
+}
+function onBlockDragEnd(e) {
+  if (currentDragId) {
+    const el = document.getElementById('block-' + currentDragId);
+    if (el) el.classList.remove('dragging');
+  }
+}
+function onSlotDragOver(e, idx) {
+  e.preventDefault();
+  document.getElementById('slot-' + idx).classList.add('drag-over');
+}
+function onSlotDragLeave(idx) {
+  document.getElementById('slot-' + idx).classList.remove('drag-over');
+}
+function onSlotDrop(e, idx) {
+  e.preventDefault();
+  const bid = e.dataTransfer.getData('blockId') || currentDragId;
+  if (!bid) return;
+  document.getElementById('slot-' + idx).classList.remove('drag-over');
+  const sc = G.scenarios[G.currentIdx];
+  const block = sc.blocks.find(b => b.id === bid);
+  if (!block) return;
+
+  // If slot already has a block, move it back to palette
+  if (G.buildPlaced[idx]) {
+    const prevBid = G.buildPlaced[idx];
+    const prevBlock = sc.blocks.find(b => b.id === prevBid);
+    G.buildAvailable.add(prevBid);
+    const palette = document.getElementById('palette-blocks');
+    if (palette && prevBlock) palette.insertAdjacentHTML('beforeend', renderBlock(prevBlock));
+  }
+
+  // Remove from old slot if dragging between slots
+  for (let i = 0; i < sc.slotCount; i++) {
+    if (i !== idx && G.buildPlaced[i] === bid) {
+      document.getElementById('slot-block-' + i).innerHTML = '';
+      delete G.buildPlaced[i];
+      document.getElementById('slot-' + i).classList.remove('has-block');
+    }
+  }
+
+  // Place in slot
+  G.buildPlaced[idx] = bid;
+  G.buildAvailable.delete(bid);
+  const slotBlockEl = document.getElementById('slot-block-' + idx);
+  if (slotBlockEl) slotBlockEl.innerHTML = renderBlock(block, true);
+
+  // Re-init drag on newly placed block
+  const placed = document.getElementById('block-' + bid);
+  if (placed) {
+    placed.setAttribute('draggable', 'true');
+    placed.setAttribute('ondragstart', `onBlockDragStart(event,'${bid}')`);
+    placed.setAttribute('ondragend', 'onBlockDragEnd(event)');
+  }
+
+  // Remove from palette
+  const inPalette = document.querySelector(`#palette-blocks #block-${bid}`);
+  if (inPalette) inPalette.remove();
+
+  document.getElementById('slot-' + idx).classList.add('has-block');
+  checkBuildSubmit(sc);
+}
+
+function checkBuildSubmit(sc) {
+  const filledSlots = Object.keys(G.buildPlaced).length;
+  document.getElementById('submit-btn').disabled = filledSlots < sc.slotCount;
+}
+
+/* =====================================================
+   CLEAN CHALLENGE
+===================================================== */
+function renderClean(sc) {
+  const blocksHTML = sc.promptBlocks.map(b => {
+    const initClass = b.keep ? 'keep-state' : 'remove-state';
+    // Start all in their correct visual hint — but user needs to decide
+    return `<div class="clean-block keep-state" id="cb-${b.id}" onclick="toggleCleanBlock('${b.id}',${b.keep})" data-keep="${b.keep}">
+      <span style="font-size:9px;font-weight:800;letter-spacing:1px;margin-right:6px;opacity:.6">${b.label}</span>
+      ${b.text}
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="card" style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:12px">Cluttered Prompt — Click blocks to mark them for removal</div>
+      <div class="clean-prompt" id="clean-prompt-area">${blocksHTML}</div>
+      <div class="clean-legend" style="margin-top:12px">
+        <span><span class="legend-dot" style="background:var(--text2)"></span> Default: keep</span>
+        <span><span class="legend-dot" style="background:var(--red)"></span> Click: mark for removal</span>
+        <span style="color:var(--text3);font-size:11px">Mark all ❌ elements for removal — click again to unmark</span>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text3);text-align:center">Blocks you mark will be struck through in red. Submit when you've identified all the bad elements.</div>`;
+}
+
+function toggleCleanBlock(bid, isKeep) {
+  const el = document.getElementById('cb-' + bid);
+  if (!el) return;
+
+  if (G.cleanMarked.has(bid)) {
+    G.cleanMarked.delete(bid);
+    el.classList.remove('remove-state');
+    el.classList.add('keep-state');
+  } else {
+    G.cleanMarked.add(bid);
+    el.classList.add('remove-state');
+    el.classList.remove('keep-state');
+  }
+  G.movesThisChallenge++;
+
+  const sc = G.scenarios[G.currentIdx];
+  const toRemoveCount = sc.promptBlocks.filter(b => !b.keep).length;
+  document.getElementById('submit-btn').disabled = G.cleanMarked.size === 0;
+  document.getElementById('action-hint').textContent = `${G.cleanMarked.size} marked for removal (${toRemoveCount} to find)`;
+}
+
+/* =====================================================
+   CHOOSE CHALLENGE
+===================================================== */
+function renderChoose(sc) {
+  const optionsHTML = sc.options.map(opt => `
+    <div class="choose-card" id="cc-${opt.id}" onclick="selectChoose('${opt.id}')">
+      <div class="flex-row mb-12">
+        <span class="tag ${opt.typeColor}">${opt.label}</span>
+        <span style="font-size:11px;font-weight:700;color:var(--text3)">${opt.type}</span>
+      </div>
+      <div class="choose-prompt">${opt.prompt}</div>
+      <button class="show-output-btn" onclick="toggleOutput(event,'${opt.id}')">▶ Show AI Output</button>
+      <div class="choose-output" id="co-${opt.id}">${opt.output.replace(/\n/g,'<br>')}</div>
+      <div class="reveal-badge" id="rb-${opt.id}"></div>
+    </div>
+  `).join('');
+
+  return `
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px;text-align:center">
+      Click "Show AI Output" to preview what each prompt produces, then select the optimized prompt.
+    </div>
+    <div class="choose-grid">${optionsHTML}</div>`;
+}
+
+function toggleOutput(e, oid) {
+  e.stopPropagation();
+  const el = document.getElementById('co-' + oid);
+  if (!el) return;
+  const isVisible = el.classList.contains('visible');
+  el.classList.toggle('visible', !isVisible);
+  e.target.textContent = isVisible ? '▶ Show AI Output' : '▼ Hide Output';
+}
+
+function selectChoose(oid) {
+  G.chosenOption = oid;
+  document.querySelectorAll('.choose-card').forEach(c => c.classList.remove('selected'));
+  const el = document.getElementById('cc-' + oid);
+  if (el) el.classList.add('selected');
+  document.getElementById('submit-btn').disabled = false;
+  G.movesThisChallenge++;
+}
+
+/* =====================================================
+   HINTS
+===================================================== */
+function useHint() {
+  if (G.hintsLeft <= 0) return;
+  const sc = G.scenarios[G.currentIdx];
+  G.hintsLeft--;
+  G.hintsUsedThisChallenge++;
+  document.getElementById('hints-remaining').textContent = G.hintsLeft + ' hints left';
+  document.getElementById('hint-btn').disabled = G.hintsLeft <= 0;
+
+  if (sc.type === 'build') {
+    // Reveal one correct block by highlighting it in the palette
+    const correctNotPlaced = sc.blocks.filter(b => b.correct && G.buildAvailable.has(b.id));
+    if (correctNotPlaced.length > 0) {
+      const b = correctNotPlaced[0];
+      const el = document.getElementById('block-' + b.id);
+      if (el) { el.style.boxShadow = '0 0 16px var(--green)'; el.style.borderColor = 'var(--green)'; }
+      showNotif('💡 Hint: The highlighted block belongs in the prompt!', 'info');
+    }
+  } else if (sc.type === 'clean') {
+    const badNotMarked = sc.promptBlocks.filter(b => !b.keep && !G.cleanMarked.has(b.id));
+    if (badNotMarked.length > 0) {
+      const b = badNotMarked[0];
+      const el = document.getElementById('cb-' + b.id);
+      if (el) { el.style.boxShadow = '0 0 14px var(--amber)'; }
+      showNotif('💡 Hint: This block should be removed!', 'info');
+    }
+  } else {
+    // Eliminate one wrong option
+    const wrongOpts = sc.options.filter(o => !o.isCorrect);
+    if (wrongOpts.length > 0) {
+      const o = wrongOpts[Math.floor(Math.random() * wrongOpts.length)];
+      const el = document.getElementById('cc-' + o.id);
+      if (el) { el.style.opacity = '0.4'; el.style.pointerEvents = 'none'; }
+      showNotif('💡 Hint: That option has been eliminated!', 'info');
+    }
+  }
+}
+
+/* =====================================================
+   SUBMIT
+===================================================== */
+function submitChallenge() {
+  stopTimer();
+  const sc = G.scenarios[G.currentIdx];
+  const elapsed = (Date.now() - G.challengeStartTime) / 1000;
+  const timeBonus = Math.max(0, Math.round((G.timerVal / 90) * 25));
+
+  let accuracy = 0;
+  let isCorrect = false;
+
+  if (sc.type === 'build') {
+    const placedIds = Object.values(G.buildPlaced);
+    const correctBlocks = sc.blocks.filter(b => b.correct).map(b => b.id);
+    const correctPlaced = placedIds.filter(id => correctBlocks.includes(id)).length;
+    const wrongPlaced = placedIds.filter(id => !correctBlocks.includes(id)).length;
+    G.wrongPlacementsThisChallenge += wrongPlaced;
+    accuracy = Math.round((correctPlaced / sc.slotCount) * 60);
+    isCorrect = correctPlaced === sc.slotCount && wrongPlaced === 0;
+    if (!isCorrect) showNotif(`${correctPlaced}/${sc.slotCount} correct blocks placed`, 'error');
+  } else if (sc.type === 'clean') {
+    const toRemove = sc.promptBlocks.filter(b => !b.keep).map(b => b.id);
+    const correctMarked = [...G.cleanMarked].filter(id => toRemove.includes(id)).length;
+    const wrongMarked = [...G.cleanMarked].filter(id => !toRemove.includes(id)).length;
+    G.wrongPlacementsThisChallenge += wrongMarked;
+    accuracy = Math.round((correctMarked / toRemove.length) * 60);
+    isCorrect = correctMarked === toRemove.length && wrongMarked === 0;
+    if (!isCorrect) showNotif(`${correctMarked}/${toRemove.length} correct removals`, 'error');
+  } else {
+    isCorrect = G.chosenOption === sc.options.find(o => o.isCorrect)?.id;
+    accuracy = isCorrect ? 60 : 0;
+  }
+
+  const perfectBonus = (accuracy === 60 && G.hintsUsedThisChallenge === 0) ? 15 : 0;
+  const hintPenalty = G.hintsUsedThisChallenge * 10;
+  const wrongPenalty = G.wrongPlacementsThisChallenge * 5;
+  const rawScore = accuracy + timeBonus + perfectBonus - hintPenalty - wrongPenalty;
+  const score = Math.max(0, Math.min(100, rawScore));
+
+  G.scores.push({ challenge: G.currentIdx + 1, title: sc.title, score, type: sc.type });
+  G.totalScore += score;
+  animateTotalScore();
+
+  showFeedback(sc, score, isCorrect, accuracy, timeBonus, perfectBonus);
+}
+
+function animateTotalScore() {
+  const el = document.getElementById('total-score-display');
+  let current = parseInt(el.textContent) || 0;
+  const target = G.totalScore;
+  const step = Math.ceil((target - current) / 15);
+  const interval = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = current;
+    if (current >= target) clearInterval(interval);
+  }, 30);
+}
+
+/* =====================================================
+   FEEDBACK SCREEN
+===================================================== */
+function showFeedback(sc, score, isCorrect, accuracy, timeBonus, perfectBonus) {
+  const emoji = score >= 80 ? '🎯' : score >= 60 ? '✅' : score >= 40 ? '⚠️' : '📚';
+  const label = score >= 80 ? 'Excellent!' : score >= 60 ? 'Good Work!' : score >= 40 ? 'Keep Learning' : 'Study the Principle';
+
+  document.getElementById('fb-emoji').textContent = emoji;
+  document.getElementById('fb-label').textContent = label;
+  document.getElementById('fb-score').textContent = score;
+  document.getElementById('fb-score').style.color = score >= 70 ? 'var(--green)' : score >= 45 ? 'var(--amber)' : 'var(--red)';
+  document.getElementById('fb-score-breakdown').textContent =
+    `Accuracy: ${accuracy} · Time Bonus: +${timeBonus} · Perfect Bonus: +${perfectBonus} · Penalties: −${G.hintsUsedThisChallenge * 10 + G.wrongPlacementsThisChallenge * 5}`;
+  document.getElementById('fb-principle').textContent = sc.principle;
+  document.getElementById('fb-weak-output').textContent = sc.weakOutput || '—';
+  document.getElementById('fb-opt-output').textContent = sc.optimizedOutput || '—';
+
+  const remaining = G.scenarios.length - G.currentIdx - 1;
+  document.getElementById('next-label').textContent = remaining > 0 ?
+    `${remaining} challenge${remaining !== 1 ? 's' : ''} remaining` : 'Final challenge — see your report!';
+  document.getElementById('next-btn').textContent = remaining > 0 ? 'Next Challenge →' : 'See My Report →';
+
+  // If choose challenge, reveal correct/wrong
+  if (sc.type === 'choose') {
+    sc.options.forEach(opt => {
+      const el = document.getElementById('cc-' + opt.id);
+      if (el) {
+        el.classList.add(opt.isCorrect ? 'reveal-correct' : 'reveal-wrong');
+        const badge = document.getElementById('rb-' + opt.id);
+        if (badge) {
+          badge.style.display = 'inline-block';
+          badge.className = 'reveal-badge ' + (opt.isCorrect ? 'reveal-correct' : 'reveal-wrong');
+          badge.textContent = opt.isCorrect ? `✅ Optimized — ${opt.whyGood}` : `❌ ${opt.whyBad}`;
+        }
+      }
+    });
+  }
+
+  goTo('sc-feedback');
+}
+
+/* =====================================================
+   NEXT CHALLENGE
+===================================================== */
+function nextChallenge() {
+  G.currentIdx++;
+  if (G.currentIdx >= G.scenarios.length) {
+    showReport();
+  } else {
+    goTo('sc-challenge');
+    setTimeout(loadChallenge, 300);
+  }
+}
+
+/* =====================================================
+   REPORT
+===================================================== */
+function showReport() {
+  const totalPossible = G.scenarios.length * 100;
+  const pct = Math.round((G.totalScore / totalPossible) * 100);
+
+  // Score
+  const scoreEl = document.getElementById('rep-score');
+  scoreEl.textContent = '0%';
+  setTimeout(() => { scoreEl.textContent = pct + '%'; }, 200);
+
+  // Rank
+  let rank, rankColor, gradeLabel;
+  if (pct >= 90) { rank = '🏆 Prompt Master'; rankColor = '#ffd700'; gradeLabel = 'Elite-level prompting instincts. You think like a professional prompt engineer.'; }
+  else if (pct >= 75) { rank = '🎯 Optimization Expert'; rankColor = '#a78bfa'; gradeLabel = 'Strong understanding of core prompting principles with excellent execution.'; }
+  else if (pct >= 60) { rank = '📘 Solid Prompter'; rankColor = '#34d399'; gradeLabel = 'Good foundational skills. A few principles need reinforcement through practice.'; }
+  else if (pct >= 45) { rank = '🌱 Developing'; rankColor = '#f59e0b'; gradeLabel = 'You\'re building the right habits. Focus on role and format specification next.'; }
+  else { rank = '📚 Keep Practicing'; rankColor = '#f87171'; gradeLabel = 'The principles are learnable. Replay with focus on the feedback sections.'; }
+
+  document.getElementById('rep-rank').textContent = rank;
+  document.getElementById('rep-rank').style.background = rankColor + '20';
+  document.getElementById('rep-rank').style.color = rankColor;
+  document.getElementById('rep-rank').style.border = `1px solid ${rankColor}40`;
+  document.getElementById('rep-grade-label').textContent = gradeLabel;
+
+  // DNA Bars — calculate from scenario dnaMap fields
+  const dnaCategories = [
+    { key: 'role', label: 'Role Specification', icon: '👤' },
+    { key: 'context', label: 'Context Clarity', icon: '📋' },
+    { key: 'format', label: 'Output Format', icon: '📐' },
+    { key: 'constraints', label: 'Constraint Use', icon: '🎯' },
+    { key: 'clarity', label: 'Task Clarity', icon: '✍️' }
+  ];
+
+  const dnaAvg = {};
+  dnaCategories.forEach(cat => {
+    const vals = G.scenarios.filter(sc => sc.dnaMap).map(sc => sc.dnaMap[cat.key] || 0);
+    const challengeScore = pct; // Weight by overall performance
+    dnaAvg[cat.key] = Math.round((vals.reduce((a, b) => a + b, 0) / (vals.length || 1)) * (pct / 100));
+  });
+
+  document.getElementById('dna-bars').innerHTML = dnaCategories.map(cat => {
+    const val = Math.min(100, Math.max(20, dnaAvg[cat.key]));
+    const color = val >= 75 ? 'var(--green)' : val >= 55 ? 'var(--amber)' : 'var(--red)';
+    return `<div class="dna-item">
+      <div class="dna-header">
+        <span class="dna-label">${cat.icon} ${cat.label}</span>
+        <span class="dna-val">${val}%</span>
+      </div>
+      <div class="dna-track"><div class="dna-fill" style="width:0%;background:${color}" data-target="${val}"></div></div>
+    </div>`;
+  }).join('');
+
+  setTimeout(() => {
+    document.querySelectorAll('.dna-fill').forEach(f => { f.style.width = f.dataset.target + '%'; });
+  }, 400);
+
+  // Feedback points
+  const feedbackPoints = [];
+  if (pct >= 70) feedbackPoints.push({ icon: '✅', text: 'You consistently identified role specifications as the foundation of effective prompts.' });
+  else feedbackPoints.push({ icon: '📌', text: 'Focus: Adding a role specification (Act as a...) improves output quality by up to 40% in most domains.' });
+  if (G.scores.some(s => s.type === 'clean' && s.score >= 70)) feedbackPoints.push({ icon: '✂️', text: 'Strong signal detection — you identified vague and contradictory elements effectively.' });
+  else feedbackPoints.push({ icon: '🔍', text: 'Practice: Words like "comprehensive," "be creative," and "use judgment" are filler — they dilute specificity without adding value.' });
+  if (G.scores.some(s => s.type === 'choose' && s.score >= 50)) feedbackPoints.push({ icon: '⚖️', text: 'Good calibration — you recognized the Goldilocks Zone between too vague and over-engineered.' });
+  else feedbackPoints.push({ icon: '💡', text: 'Remember: Over-engineering prompts is as harmful as under-specifying. Clarity beats length.' });
+
+  document.getElementById('rep-feedback').innerHTML = feedbackPoints.map(p =>
+    `<div class="feedback-point"><span class="fp-icon">${p.icon}</span><span class="fp-text">${p.text}</span></div>`
+  ).join('');
+
+  // Per-challenge scores
+  document.getElementById('rep-scores').innerHTML = G.scores.map(s => `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div>
+        <div style="font-size:12px;font-weight:700">${s.title}</div>
+        <div style="font-size:10px;color:var(--text3)">${s.type.charAt(0).toUpperCase() + s.type.slice(1)}</div>
+      </div>
+      <div style="font-size:18px;font-weight:900;color:${s.score >= 70 ? 'var(--green)' : s.score >= 45 ? 'var(--amber)' : 'var(--red)'}">${s.score}</div>
+    </div>`).join('');
+
+  // Milestone
+  const nextTarget = pct >= 90 ? null : pct >= 75 ? 90 : pct >= 60 ? 75 : pct >= 45 ? 60 : 45;
+  document.getElementById('rep-milestone').textContent = nextTarget ?
+    `Next rank unlocks at ${nextTarget}%. Focus on role specification and output format to close the gap.` :
+    '🏆 Maximum rank achieved! Challenge yourself with different domains to master prompt engineering across all contexts.';
+
+  // Final optimized prompt — show the best one
+  const bestScenario = G.scenarios.find(sc => sc.optimizedPrompt) || G.scenarios[0];
+  document.getElementById('rep-final-prompt').textContent = bestScenario?.optimizedPrompt || '—';
+
+  goTo('sc-report');
+  setTimeout(() => {
+    document.getElementById('report-score-counter').textContent = pct;
+  }, 100);
+}
+</script>
+<div id="report-score-counter" style="display:none"></div>
+</body>
+</html>
