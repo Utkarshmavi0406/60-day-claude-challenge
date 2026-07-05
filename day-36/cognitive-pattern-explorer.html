@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧠 Cognitive Pattern Explorer</title>
+<meta name="description" content="Explore your thinking patterns through interactive scenarios — an educational self-reflection experience.">
+<style>
+/* =====================================================
+   CSS CUSTOM PROPERTIES — CALM MODE (default)
+===================================================== */
+:root {
+  --bg-a: #e8f0fd;
+  --bg-b: #f0e6ff;
+  --orb1: rgba(99,102,241,0.18);
+  --orb2: rgba(139,92,246,0.14);
+  --orb3: rgba(59,130,246,0.12);
+  --primary: #5b21b6;
+  --primary-mid: #7c3aed;
+  --primary-light: #a78bfa;
+  --primary-glow: rgba(124,58,237,0.18);
+  --card-bg: rgba(255,255,255,0.88);
+  --card-border: rgba(124,58,237,0.15);
+  --card-hover-border: rgba(124,58,237,0.45);
+  --text: #1e1b4b;
+  --text-sub: #6b7280;
+  --text-muted: #9ca3af;
+  --success: #10b981;
+  --chip: rgba(124,58,237,0.09);
+  --progress: rgba(124,58,237,0.12);
+  --progress-fill: #7c3aed;
+  --selected-bg: rgba(124,58,237,0.08);
+  --selected-border: #7c3aed;
+  --drag-over: rgba(124,58,237,0.07);
+  --drag-border: rgba(124,58,237,0.5);
+  --bar-a: #3b82f6;
+  --bar-e: #ec4899;
+  --bar-o: #8b5cf6;
+  --bar-d: #f97316;
+  --bar-b: #10b981;
+  --shadow: 0 8px 32px rgba(88,28,135,0.1);
+  --shadow-hover: 0 16px 48px rgba(88,28,135,0.18);
+  --transition: 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+
+body.stress {
+  --bg-a: #fff5ef;
+  --bg-b: #fffbeb;
+  --orb1: rgba(249,115,22,0.15);
+  --orb2: rgba(239,68,68,0.12);
+  --orb3: rgba(245,158,11,0.1);
+  --primary: #b45309;
+  --primary-mid: #d97706;
+  --primary-light: #fbbf24;
+  --primary-glow: rgba(217,119,6,0.18);
+  --card-border: rgba(217,119,6,0.2);
+  --card-hover-border: rgba(217,119,6,0.5);
+  --text: #431407;
+  --text-sub: #78350f;
+  --chip: rgba(217,119,6,0.09);
+  --progress: rgba(217,119,6,0.12);
+  --progress-fill: #d97706;
+  --selected-bg: rgba(217,119,6,0.08);
+  --selected-border: #d97706;
+  --drag-over: rgba(217,119,6,0.07);
+  --drag-border: rgba(217,119,6,0.5);
+  --shadow: 0 8px 32px rgba(120,53,15,0.1);
+  --shadow-hover: 0 16px 48px rgba(120,53,15,0.18);
+}
+
+/* =====================================================
+   RESET & BASE
+===================================================== */
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  min-height:100vh;
+  background:linear-gradient(135deg,var(--bg-a) 0%,var(--bg-b) 100%);
+  color:var(--text);
+  line-height:1.65;
+  transition:background var(--transition), color var(--transition);
+  overflow-x:hidden;
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
+}
+
+/* =====================================================
+   AMBIENT ORBS
+===================================================== */
+.orbs { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.orb {
+  position:absolute; border-radius:50%;
+  filter:blur(80px); animation:orbFloat 10s ease-in-out infinite;
+}
+.orb-1 { width:420px; height:420px; top:-10%; left:-8%; background:var(--orb1); animation-duration:11s; }
+.orb-2 { width:320px; height:320px; bottom:-5%; right:-5%; background:var(--orb2); animation-duration:14s; animation-delay:-4s; }
+.orb-3 { width:250px; height:250px; top:40%; right:10%; background:var(--orb3); animation-duration:9s; animation-delay:-2s; }
+@keyframes orbFloat {
+  0%,100% { transform:translate(0,0) scale(1); }
+  33% { transform:translate(20px,-30px) scale(1.05); }
+  66% { transform:translate(-15px,20px) scale(0.97); }
+}
+
+/* =====================================================
+   LAYOUT
+===================================================== */
+.wrap { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:24px 16px 60px; }
+.container { width:100%; max-width:680px; }
+
+/* =====================================================
+   SCREENS
+===================================================== */
+.screen { display:none; opacity:0; transform:translateY(18px); transition:opacity .45s ease, transform .45s ease; }
+.screen.active { display:block; animation:screenIn .45s ease forwards; }
+@keyframes screenIn { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+/* =====================================================
+   PROGRESS DOTS
+===================================================== */
+.progress-dots { display:flex; gap:8px; justify-content:center; margin-bottom:32px; }
+.p-dot {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--progress); transition:all .3s ease;
+}
+.p-dot.done { background:var(--progress-fill); width:20px; border-radius:4px; }
+.p-dot.active { background:var(--primary-mid); width:28px; border-radius:4px; box-shadow:0 0 8px var(--primary-glow); }
+
+/* =====================================================
+   TYPOGRAPHY
+===================================================== */
+.eyebrow { font-size:11px; font-weight:700; letter-spacing:2.5px; color:var(--primary-mid); text-transform:uppercase; margin-bottom:10px; }
+.display { font-size:clamp(26px,5vw,38px); font-weight:800; line-height:1.15; margin-bottom:12px; }
+.subtitle { font-size:16px; color:var(--text-sub); line-height:1.7; margin-bottom:8px; max-width:520px; }
+.chip { display:inline-block; font-size:11px; font-weight:700; background:var(--chip); color:var(--primary-mid); padding:4px 12px; border-radius:99px; margin-bottom:20px; }
+.disclaimer {
+  font-size:12px; color:var(--text-muted); line-height:1.6;
+  background:var(--chip); border-radius:10px; padding:12px 14px;
+  margin-bottom:20px; border-left:3px solid var(--primary-light);
+}
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+.btn {
+  border:none; border-radius:12px; padding:13px 26px; font-size:15px;
+  font-weight:700; cursor:pointer; transition:all .2s ease;
+  font-family:inherit; letter-spacing:.2px;
+}
+.btn-primary {
+  background:var(--primary-mid); color:#fff;
+  box-shadow:0 4px 18px var(--primary-glow);
+}
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 28px var(--primary-glow); }
+.btn-primary:focus-visible { outline:3px solid var(--primary-light); outline-offset:3px; }
+.btn-outline {
+  background:var(--card-bg); color:var(--primary-mid);
+  border:2px solid var(--card-border);
+}
+.btn-outline:hover { border-color:var(--card-hover-border); background:var(--selected-bg); }
+.btn-row { display:flex; gap:12px; flex-wrap:wrap; }
+
+/* =====================================================
+   MODE SELECTION
+===================================================== */
+.mode-cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:24px 0; }
+.mode-card {
+  background:var(--card-bg); border:2px solid var(--card-border);
+  border-radius:18px; padding:28px 22px; cursor:pointer;
+  transition:all .25s ease; text-align:center;
+  box-shadow:var(--shadow);
+}
+.mode-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-hover); border-color:var(--card-hover-border); }
+.mode-card:focus-visible { outline:3px solid var(--primary-light); outline-offset:3px; border-color:var(--card-hover-border); }
+.mode-icon { font-size:36px; margin-bottom:12px; }
+.mode-title { font-size:17px; font-weight:800; margin-bottom:6px; }
+.mode-desc { font-size:13px; color:var(--text-sub); line-height:1.5; }
+
+/* =====================================================
+   SCENARIO CARDS
+===================================================== */
+.scenario-context {
+  background:var(--card-bg); border:1px solid var(--card-border);
+  border-radius:16px; padding:22px 24px; margin-bottom:18px;
+  box-shadow:var(--shadow);
+}
+.scenario-label { font-size:10px; font-weight:800; letter-spacing:2px; color:var(--primary-mid); text-transform:uppercase; margin-bottom:8px; }
+.scenario-text { font-size:16px; line-height:1.65; font-weight:500; }
+
+.options-grid { display:flex; flex-direction:column; gap:10px; }
+.option-card {
+  background:var(--card-bg); border:2px solid var(--card-border);
+  border-radius:14px; padding:16px 18px; cursor:pointer;
+  transition:all .2s ease; box-shadow:0 2px 10px rgba(0,0,0,.04);
+  font-size:14px; line-height:1.6; color:var(--text);
+  text-align:left; font-family:inherit; font-weight:500;
+}
+.option-card:hover { border-color:var(--card-hover-border); background:var(--selected-bg); transform:translateX(4px); }
+.option-card:focus-visible { outline:3px solid var(--primary-light); outline-offset:2px; }
+.option-card.selected {
+  border-color:var(--selected-border); background:var(--selected-bg);
+  box-shadow:0 0 0 3px rgba(124,58,237,.12);
+}
+.option-card.selected::before { content:'✓ '; font-weight:800; color:var(--primary-mid); }
+
+.scenario-counter { font-size:13px; color:var(--text-muted); text-align:center; margin-bottom:16px; font-weight:600; }
+
+/* =====================================================
+   CHAPTER HEADER
+===================================================== */
+.chapter-header { text-align:center; margin-bottom:28px; }
+.chapter-num {
+  display:inline-block; font-size:12px; font-weight:800;
+  letter-spacing:1.5px; color:var(--primary-mid);
+  background:var(--chip); border-radius:99px; padding:5px 14px; margin-bottom:10px;
+  text-transform:uppercase;
+}
+
+/* =====================================================
+   DRAG-AND-DROP LISTS
+===================================================== */
+.drag-list { display:flex; flex-direction:column; gap:8px; }
+.drag-item {
+  display:flex; align-items:center; gap:14px;
+  background:var(--card-bg); border:2px solid var(--card-border);
+  border-radius:13px; padding:14px 16px;
+  cursor:grab; transition:all .2s ease; user-select:none;
+  box-shadow:0 2px 10px rgba(0,0,0,.04);
+}
+.drag-item:hover { border-color:var(--card-hover-border); box-shadow:0 4px 16px rgba(0,0,0,.08); }
+.drag-item:active { cursor:grabbing; transform:scale(1.01); }
+.drag-item.dragging { opacity:.5; transform:scale(.97); }
+.drag-item.drag-over { border-color:var(--drag-border); background:var(--drag-over); transform:translateY(-2px); }
+.drag-handle { font-size:18px; color:var(--text-muted); flex-shrink:0; cursor:grab; }
+.drag-rank { width:28px; height:28px; border-radius:50%; background:var(--chip); color:var(--primary-mid); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex-shrink:0; }
+.drag-content { flex:1; }
+.drag-label { font-size:14px; font-weight:700; margin-bottom:2px; }
+.drag-desc { font-size:12px; color:var(--text-sub); }
+.drag-instructions {
+  font-size:13px; color:var(--text-sub); text-align:center;
+  padding:10px 14px; background:var(--chip); border-radius:10px;
+  margin-bottom:14px; line-height:1.5;
+}
+.drag-instructions strong { color:var(--primary-mid); }
+
+/* =====================================================
+   REFLECTION JOURNAL
+===================================================== */
+.journal-header { text-align:center; margin-bottom:32px; }
+.journal-title { font-size:clamp(22px,4vw,32px); font-weight:900; margin-bottom:8px; }
+.journal-mode-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--chip); border-radius:99px; padding:5px 14px;
+  font-size:12px; font-weight:700; color:var(--primary-mid); margin-bottom:20px;
+}
+
+.section-card {
+  background:var(--card-bg); border:1px solid var(--card-border);
+  border-radius:18px; padding:24px; margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+.section-label { font-size:10px; font-weight:800; letter-spacing:2px; color:var(--primary-mid); text-transform:uppercase; margin-bottom:14px; }
+
+/* Tendency bars */
+.tendency-row { margin-bottom:12px; }
+.tendency-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+.tendency-name { font-size:13px; font-weight:700; }
+.tendency-pct { font-size:12px; font-weight:800; color:var(--primary-mid); }
+.bar-track { height:9px; background:rgba(0,0,0,.06); border-radius:99px; overflow:hidden; }
+.bar-fill { height:100%; border-radius:99px; width:0%; transition:width 1.2s cubic-bezier(.25,1,.5,1); }
+
+.tendency-card {
+  border-radius:14px; padding:18px 20px; margin-bottom:14px;
+  border:1px solid rgba(124,58,237,.15);
+}
+.tendency-tag {
+  display:inline-block; font-size:11px; font-weight:800;
+  letter-spacing:1px; text-transform:uppercase;
+  padding:3px 10px; border-radius:99px; margin-bottom:10px;
+}
+.tendency-headline { font-size:17px; font-weight:800; margin-bottom:8px; }
+.tendency-profile { font-size:13px; color:var(--text-sub); line-height:1.7; margin-bottom:10px; }
+.tendency-insight { font-size:13px; line-height:1.65; }
+
+.insight-list { display:flex; flex-direction:column; gap:12px; }
+.insight-item { display:flex; gap:12px; align-items:flex-start; }
+.insight-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+.insight-text { font-size:13px; color:var(--text-sub); line-height:1.65; }
+.insight-text strong { color:var(--text); }
+
+.journal-footer { text-align:center; margin-top:24px; }
+.journal-footnote { font-size:12px; color:var(--text-muted); margin-top:12px; line-height:1.6; }
+
+/* =====================================================
+   COMPLETION ANIMATION
+===================================================== */
+.completion-ring {
+  width:80px; height:80px; border-radius:50%;
+  border:4px solid var(--primary-light);
+  display:flex; align-items:center; justify-content:center;
+  font-size:36px; margin:0 auto 16px;
+  animation:ringPop .5s ease;
+}
+@keyframes ringPop { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media(max-width:500px) {
+  .mode-cards { grid-template-columns:1fr; }
+  .wrap { padding:16px 12px 60px; }
+}
+
+/* =====================================================
+   UTILITY
+===================================================== */
+.mt-16 { margin-top:16px; }
+.mt-20 { margin-top:20px; }
+.mt-24 { margin-top:24px; }
+.mb-8  { margin-bottom:8px; }
+.mb-12 { margin-bottom:12px; }
+.mb-20 { margin-bottom:20px; }
+.text-center { text-align:center; }
+.text-sub { color:var(--text-sub); }
+.hidden { display:none; }
+</style>
+</head>
+<body>
+<div class="orbs" aria-hidden="true">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<main class="wrap" role="main">
+<div class="container">
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: START
+══════════════════════════════════════════════ -->
+<section class="screen active" id="sc-start" aria-label="Start screen">
+  <div style="text-align:center;padding-top:32px;margin-bottom:8px">
+    <div style="font-size:52px;margin-bottom:12px">🧠</div>
+    <div class="eyebrow">60 Days of Claude · Day 36</div>
+    <h1 class="display">Cognitive Pattern Explorer</h1>
+    <p class="subtitle" style="margin:0 auto 16px">A calm, reflective experience to help you notice how you naturally think, decide, and respond.</p>
+    <div class="disclaimer">
+      <strong>This is educational, not clinical.</strong> This experience is designed to encourage self-reflection, not to diagnose or assess mental health. Language is reflective and exploratory — it describes tendencies, not fixed traits.
+    </div>
+  </div>
+
+  <div class="mode-cards" role="group" aria-label="Choose your mode">
+    <button class="mode-card" onclick="selectMode('calm')" aria-label="Calm Mode — everyday reflective pace">
+      <div class="mode-icon">🌿</div>
+      <div class="mode-title">Calm Mode</div>
+      <div class="mode-desc">Everyday pace · Gentle framing · Soft color theme</div>
+    </button>
+    <button class="mode-card" onclick="selectMode('stress')" aria-label="Stress Mode — higher pressure scenarios">
+      <div class="mode-icon">⚡</div>
+      <div class="mode-title">Stress Mode</div>
+      <div class="mode-desc">Higher-pressure scenarios · Warm color theme · Same depth</div>
+    </button>
+  </div>
+
+  <p style="text-align:center;font-size:13px;color:var(--text-muted);margin-top:4px">
+    Choose how you'd like to frame the scenarios. You can replay in the other mode anytime.
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: CHAPTER 1 INTRO
+══════════════════════════════════════════════ -->
+<section class="screen" id="sc-ch1-intro" aria-label="Chapter 1 introduction">
+  <div class="progress-dots" id="pd-ch1-intro" aria-label="Progress"></div>
+  <div class="chapter-header">
+    <div class="chapter-num">Chapter 1</div>
+    <h2 class="display">Discover Your Thinking Style</h2>
+    <p class="subtitle" style="margin:0 auto 16px">5 short scenarios. No right or wrong answers — just your honest first reaction. Choose the response that feels most natural to you.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px">
+      <span class="chip">5 Scenarios</span>
+      <span class="chip">Choose Freely</span>
+      <span class="chip">~4 minutes</span>
+    </div>
+  </div>
+  <div class="text-center mt-20">
+    <button class="btn btn-primary" onclick="startCh1()" style="min-width:180px">Begin →</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: SCENARIO
+══════════════════════════════════════════════ -->
+<section class="screen" id="sc-scenario" aria-label="Scenario question">
+  <div class="progress-dots" id="pd-scenario" aria-label="Progress"></div>
+  <div id="scenario-counter" class="scenario-counter"></div>
+  <div id="scenario-context" class="scenario-context">
+    <div class="scenario-label">The Situation</div>
+    <div class="scenario-text" id="scenario-text"></div>
+  </div>
+  <p style="font-size:13px;color:var(--text-sub);margin-bottom:12px;text-align:center">Which response feels most like you?</p>
+  <div class="options-grid" id="options-container" role="group" aria-label="Response options"></div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: CHAPTER 2 INTRO
+══════════════════════════════════════════════ -->
+<section class="screen" id="sc-ch2-intro" aria-label="Chapter 2 introduction">
+  <div class="progress-dots" id="pd-ch2-intro" aria-label="Progress"></div>
+  <div class="chapter-header">
+    <div class="chapter-num">Chapter 2</div>
+    <h2 class="display">What Matters Most?</h2>
+    <p class="subtitle" style="margin:0 auto 16px">Drag the cards into your personal priority order — from what matters most at the top to what you tend to consider last.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px">
+      <span class="chip">5 Priorities to Rank</span>
+      <span class="chip">Drag to Reorder</span>
+    </div>
+  </div>
+  <div class="text-center mt-20">
+    <button class="btn btn-primary" onclick="startCh2()" style="min-width:180px">Continue →</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: CHAPTER 2 DRAG
+══════════════════════════════════════════════ -->
+<section class="screen" id="sc-ch2" aria-label="Priority ranking activity">
+  <div class="progress-dots" id="pd-ch2" aria-label="Progress"></div>
+  <div class="chapter-header">
+    <div class="chapter-num">Chapter 2 · Priority Ranking</div>
+    <h2 style="font-size:clamp(19px,3.5vw,26px);font-weight:800;margin-bottom:6px">What do you naturally reach for first?</h2>
+    <p style="font-size:14px;color:var(--text-sub)">Drag to arrange — most important at the top, least important at the bottom.</p>
+  </div>
+  <div class="drag-instructions">
+    <strong>Drag &amp; drop</strong> to reorder · On mobile, press and hold to move cards
+  </div>
+  <div class="drag-list" id="priority-list" role="list" aria-label="Priority cards — drag to reorder"></div>
+  <div class="text-center mt-24">
+    <button class="btn btn-primary" onclick="submitPriorities()" style="min-width:180px">Lock In My Order →</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: CHAPTER 3 INTRO
+══════════════════════════════════════════════ -->
+<section class="screen" id="sc-ch3-intro" aria-label="Chapter 3 introduction">
+  <div class="progress-dots" id="pd-ch3-intro" aria-label="Progress"></div>
+  <div class="chapter-header">
+    <div class="chapter-num">Chapter 3</div>
+    <h2 class="display">Map Your Thinking</h2>
+    <p class="subtitle" style="margin:0 auto 16px">When you face a real decision, what order do you typically follow? Arrange these steps into your natural sequence — from what you do first to what comes last.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px">
+      <span class="chip">6 Steps</span>
+      <span class="chip">Your Natural Order</span>
+    </div>
+  </div>
+  <div class="text-center mt-20">
+    <button class="btn btn-primary" onclick="startCh3()" style="min-width:180px">Continue →</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: CHAPTER 3 DRAG
+══════════════════════════════════════════════ -->
+<section class="screen" id="sc-ch3" aria-label="Thinking sequence activity">
+  <div class="progress-dots" id="pd-ch3" aria-label="Progress"></div>
+  <div class="chapter-header">
+    <div class="chapter-num">Chapter 3 · Thinking Sequence</div>
+    <h2 style="font-size:clamp(19px,3.5vw,26px);font-weight:800;margin-bottom:6px">What does your decision process look like?</h2>
+    <p style="font-size:14px;color:var(--text-sub)">Arrange from what you do <strong>first</strong> (top) to what comes <strong>last</strong> (bottom).</p>
+  </div>
+  <div class="drag-instructions">
+    <strong>Drag &amp; drop</strong> to sequence · No right or wrong order — just your honest habit
+  </div>
+  <div class="drag-list" id="sequence-list" role="list" aria-label="Thinking steps — drag to sequence"></div>
+  <div class="text-center mt-24">
+    <button class="btn btn-primary" onclick="submitSequence()" style="min-width:180px">See My Reflection Journal →</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: REFLECTION JOURNAL
+══════════════════════════════════════════════ -->
+<section class="screen" id="sc-journal" aria-label="Reflection Journal">
+  <div class="journal-header">
+    <div class="completion-ring" aria-hidden="true">📖</div>
+    <h2 class="journal-title">Your Reflection Journal</h2>
+    <div class="journal-mode-badge" id="journal-mode-badge">🌿 Calm Mode</div>
+    <p style="font-size:14px;color:var(--text-sub);max-width:500px;margin:0 auto">Based on how you responded across all three chapters, here's what your thinking patterns may suggest.</p>
+  </div>
+
+  <!-- Tendency Breakdown -->
+  <div class="section-card">
+    <div class="section-label">Your Thinking Profile — Breakdown</div>
+    <div id="tendency-bars"></div>
+    <p style="font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.5">Percentages reflect the relative weight of each tendency in your responses — not fixed personality categories.</p>
+  </div>
+
+  <!-- Primary Tendency -->
+  <div class="section-card" id="primary-tendency-card">
+    <div class="section-label">Your Leading Tendency</div>
+    <div id="primary-tendency-content"></div>
+  </div>
+
+  <!-- Secondary Tendency (if close) -->
+  <div class="section-card hidden" id="secondary-tendency-section">
+    <div class="section-label">A Close Second</div>
+    <div id="secondary-tendency-content"></div>
+  </div>
+
+  <!-- 3 Key Insights -->
+  <div class="section-card">
+    <div class="section-label">3 Insights to Sit With</div>
+    <div class="insight-list" id="insight-list"></div>
+  </div>
+
+  <!-- Mode Note -->
+  <div class="section-card" id="mode-note-card">
+    <div class="section-label">Mode Reflection</div>
+    <div id="mode-note-content" style="font-size:13px;color:var(--text-sub);line-height:1.7"></div>
+  </div>
+
+  <div class="journal-footer">
+    <button class="btn btn-primary" onclick="replay()" style="min-width:180px">🔄 Explore in Other Mode</button>
+    <p class="journal-footnote">This experience is for reflection only. For professional support, please reach out to a qualified mental health professional.</p>
+  </div>
+</section>
+
+</div><!-- end container -->
+</main>
+
+<script>
+/* =====================================================
+   DATA — SCENARIOS, PRIORITIES, THINKING STEPS
+===================================================== */
+const SCENARIOS_CALM = [
+  {
+    text: "You find out that an important project you're part of has had its deadline moved up by one week. It's a Monday morning.",
+    options: [
+      { text: "I'd immediately restructure the timeline — update the plan, identify the most critical tasks, and figure out what needs to shift.", t: 'A' },
+      { text: "I'd feel the pressure first. I'd probably need to process it with someone or give myself a moment before thinking practically.", t: 'E' },
+      { text: "My mind would race through everything that might not get done in time. I'd find it hard to just focus on one solution.", t: 'O' },
+      { text: "I'd just start working. Planning can happen as I go — movement first, adjustments later.", t: 'D' },
+      { text: "I'd take a breath, acknowledge the stress, then calmly assess what matters most and where to start.", t: 'B' }
+    ]
+  },
+  {
+    text: "A close friend shares honest feedback that you've been coming across as distant or distracted lately.",
+    options: [
+      { text: "I'd ask specific questions first — what gave them that impression? I'd want to understand the evidence before responding.", t: 'A' },
+      { text: "I'd feel a wave of emotion — probably some defensiveness, then reflection. The feeling would come before the thinking.", t: 'E' },
+      { text: "I'd spend a lot of time replaying recent conversations in my head, second-guessing things I thought were fine.", t: 'O' },
+      { text: "I'd acknowledge it and immediately think about what I can do differently, starting today.", t: 'D' },
+      { text: "I'd hold the feedback gently — feel the emotion of it, but also honestly consider what truth it might hold.", t: 'B' }
+    ]
+  },
+  {
+    text: "You're offered an exciting new opportunity, but it comes with real uncertainty and would require significant change.",
+    options: [
+      { text: "I'd research it thoroughly before deciding — talk to people who've done something similar, map out the realistic risks and benefits.", t: 'A' },
+      { text: "I'd tune in to how it makes me feel. Does it excite me? Does something feel off? That emotional read matters.", t: 'E' },
+      { text: "I'd find myself fixating on everything that could go wrong before I could properly feel excited about the possibility.", t: 'O' },
+      { text: "I'd lean toward saying yes. I trust I can figure out the details once I'm in motion.", t: 'D' },
+      { text: "I'd sit with both the excitement and the uncertainty, weigh them honestly, and make a considered choice.", t: 'B' }
+    ]
+  },
+  {
+    text: "Something you worked hard on doesn't go the way you hoped — and the people around you noticed.",
+    options: [
+      { text: "I'd analyze what specifically went wrong. What were the contributing factors? What can I learn from this?", t: 'A' },
+      { text: "I'd give myself permission to feel disappointed first. Processing the feeling helps me actually move on.", t: 'E' },
+      { text: "I'd struggle to stop replaying what I should have done differently — long past the point where it's useful.", t: 'O' },
+      { text: "I'd move on faster than most people. Dwelling doesn't help — I'd focus on what I can control next.", t: 'D' },
+      { text: "I'd feel the disappointment, reflect on what happened, and then genuinely look forward with that learning.", t: 'B' }
+    ]
+  },
+  {
+    text: "You need to make a meaningful decision, but you don't have all the information you'd ideally want.",
+    options: [
+      { text: "I'd put energy into finding more information before committing, even if that takes more time.", t: 'A' },
+      { text: "I'd trust my gut. Sometimes you just know what feels right, even without all the facts.", t: 'E' },
+      { text: "I'd feel genuinely stuck. Making a decision with incomplete information creates a lot of anxiety for me.", t: 'O' },
+      { text: "I'd make the best call I can with what I have. I can always course-correct later.", t: 'D' },
+      { text: "I'd use both the information I have and my intuitive read of the situation to make the most balanced call I can.", t: 'B' }
+    ]
+  }
+];
+
+const SCENARIOS_STRESS = [
+  {
+    text: "Your manager messages you at 8am: the deadline for a project you're managing has been moved up by a full week, effective immediately.",
+    options: [
+      { text: "I'd open a spreadsheet within minutes — update the timeline, identify what's at risk, and flag the critical path.", t: 'A' },
+      { text: "I'd feel the spike of anxiety before anything else. I'd need a moment — or to talk to someone — before I could think clearly.", t: 'E' },
+      { text: "I'd immediately start playing out worst-case scenarios in my head. The mental spiral would kick in before the solution.", t: 'O' },
+      { text: "I'd just start doing things. There's no time to overthink — I'd move fast and sort out the details as they came up.", t: 'D' },
+      { text: "I'd breathe, acknowledge the stress, then work out what truly matters in the next 48 hours.", t: 'B' }
+    ]
+  },
+  {
+    text: "A colleague tells you directly that your behavior in a recent meeting was coming across as dismissive of others' ideas.",
+    options: [
+      { text: "I'd ask them to be specific — which moments? What did it look like from their perspective? I'd want the data.", t: 'A' },
+      { text: "I'd feel defensive, then guilty, then reflective — all before I could respond thoughtfully.", t: 'E' },
+      { text: "I'd be up at night replaying every comment I made in that meeting, interrogating each one.", t: 'O' },
+      { text: "I'd thank them, take it on board, and figure out how to act differently in the next meeting. Clean break.", t: 'D' },
+      { text: "I'd sit with both the discomfort and the feedback — feel it, then examine it honestly.", t: 'B' }
+    ]
+  },
+  {
+    text: "You're offered a stretch role at work — it's a genuine opportunity, but it's at the edge of your current skill set and comes with pressure.",
+    options: [
+      { text: "I'd want to research what the role really requires, talk to people who've done it, and map out a realistic picture.", t: 'A' },
+      { text: "I'd pay close attention to my gut: does this feel exciting or dread-inducing? That feeling would carry a lot of weight.", t: 'E' },
+      { text: "I'd find myself dwelling on all the ways I might fail before I could genuinely consider saying yes.", t: 'O' },
+      { text: "I'd say yes first and figure out how to grow into it as I go. That's how I've always learned best.", t: 'D' },
+      { text: "I'd take a day, weigh the real opportunity against the real risk, and make the clearest call I can.", t: 'B' }
+    ]
+  },
+  {
+    text: "A project launch you led publicly underperforms — it missed key targets, and your team and leadership are aware.",
+    options: [
+      { text: "I'd do a thorough post-mortem — what were the root causes? I'd want to understand it before moving forward.", t: 'A' },
+      { text: "I'd need to process the embarrassment and disappointment before I could think straight about next steps.", t: 'E' },
+      { text: "I'd replay it constantly — the decisions I made, the things I missed. It would be hard to stop.", t: 'O' },
+      { text: "I'd own it publicly and shift focus to what we do next. Dwelling on failure doesn't help anyone.", t: 'D' },
+      { text: "I'd take the time to feel it properly, extract the real lessons, and move forward with that clarity.", t: 'B' }
+    ]
+  },
+  {
+    text: "You have to make a significant decision by end of day, but key information you were expecting hasn't arrived yet.",
+    options: [
+      { text: "I'd push to get the missing information — call, escalate, whatever it takes. I won't decide without it if I can avoid it.", t: 'A' },
+      { text: "I'd trust my instincts about what direction feels right, even without all the facts.", t: 'E' },
+      { text: "The uncertainty would be genuinely distressing. I'd struggle to focus on anything else.", t: 'O' },
+      { text: "I'd make a call with what I have. Waiting for perfect information often costs more than deciding now.", t: 'D' },
+      { text: "I'd do a quick gut-check alongside a rapid assessment of what I do know, then make the best call I can.", t: 'B' }
+    ]
+  }
+];
+
+const PRIORITY_CARDS = [
+  { id: 0, label: "Gathering complete information", desc: "Having all the facts before committing to a direction", t: 'A' },
+  { id: 1, label: "Trusting my emotional read", desc: "Checking in with how I genuinely feel about the situation", t: 'E' },
+  { id: 2, label: "Anticipating what could go wrong", desc: "Identifying risks before committing to any path", t: 'O' },
+  { id: 3, label: "Acting quickly and decisively", desc: "Maintaining momentum by making a call and moving forward", t: 'D' },
+  { id: 4, label: "Finding the most balanced approach", desc: "Honoring both practical needs and emotional considerations", t: 'B' }
+];
+
+const THINKING_STEPS = [
+  { id: 0, label: "Gather information and facts", desc: "I look for data to understand what's actually happening", t: 'A' },
+  { id: 1, label: "Notice my emotional reaction", desc: "I check in with how I'm genuinely feeling about it", t: 'E' },
+  { id: 2, label: "Identify potential risks", desc: "I think through what could go wrong before moving forward", t: 'O' },
+  { id: 3, label: "Talk it through with someone", desc: "I get an outside perspective I can trust", t: 'B' },
+  { id: 4, label: "Make a decision and act", desc: "I commit to a direction and start moving", t: 'D' },
+  { id: 5, label: "Reflect on the outcome", desc: "I review what happened and what I want to do differently", t: 'B' }
+];
+
+/* =====================================================
+   TENDENCY PROFILES
+===================================================== */
+const TENDENCIES = {
+  A: {
+    name: 'Analytical Thinker',
+    color: '#3b82f6',
+    bgColor: 'rgba(59,130,246,0.07)',
+    borderColor: 'rgba(59,130,246,0.2)',
+    emoji: '🔍',
+    tag: 'Data-Driven',
+    profile: 'You often approach uncertainty by seeking information first. Data, structure, and systematic thinking feel natural and grounding. Before acting, you want to understand.',
+    strength: 'Your decisions tend to be well-informed and considered. You're less likely to act impulsively and more likely to have thought through the real implications.',
+    watchFor: 'The search for complete information can sometimes become its own form of delay. Good enough information is often enough to take the next meaningful step.',
+    insight: 'Your tendency to think before acting is a genuine strength — especially in complex situations. The growth edge is trusting that you don\'t always need to see the full picture to take the next step.'
+  },
+  E: {
+    name: 'Emotional Intuitive',
+    color: '#ec4899',
+    bgColor: 'rgba(236,72,153,0.07)',
+    borderColor: 'rgba(236,72,153,0.2)',
+    emoji: '🌊',
+    tag: 'Feeling-Led',
+    profile: 'You often tune into the emotional current of a situation before anything else. Your feelings are information — and you\'ve learned to trust them, even when logic isn\'t fully lined up.',
+    strength: 'You read people, relationships, and situations with depth. Your empathy helps you navigate complexity that pure logic would miss or underweight.',
+    watchFor: 'Strong emotional reactions can sometimes make it harder to access logical perspectives in the moment. Both are valid sources of information — the art is integrating them.',
+    insight: 'Your emotional attunement is a real strength in building genuine connections and understanding what matters to people. The growth edge is learning when to draw on structured thinking alongside feeling.'
+  },
+  O: {
+    name: 'Overthinking Loop Style',
+    color: '#8b5cf6',
+    bgColor: 'rgba(139,92,246,0.07)',
+    borderColor: 'rgba(139,92,246,0.2)',
+    emoji: '🌀',
+    tag: 'Deep Processor',
+    profile: 'You often find yourself cycling through possibilities before you can settle on a path. This reflects a genuine desire to make the right choice and avoid mistakes — which is a form of care.',
+    strength: 'Your careful attention to potential downsides helps you spot things others miss. You\'re rarely caught off guard, and your thoroughness is real.',
+    watchFor: 'The thinking loop can keep running even when you have enough information to decide. Recognizing when you\'re in the loop — and choosing to step out — is a learnable skill.',
+    insight: 'Your thoroughness is a genuine asset. The growth edge is learning to distinguish between productive analysis and circular worry — and trusting that done is often better than perfect.'
+  },
+  D: {
+    name: 'Action-First Thinker',
+    color: '#f97316',
+    bgColor: 'rgba(249,115,22,0.07)',
+    borderColor: 'rgba(249,115,22,0.2)',
+    emoji: '⚡',
+    tag: 'Movement-Oriented',
+    profile: 'You often move before the full picture emerges, trusting that you can adjust as you go. Speed and momentum feel natural and necessary — staying still too long feels costly.',
+    strength: 'You maintain forward progress even when things are unclear. Your bias toward action prevents paralysis and creates energy that others often benefit from.',
+    watchFor: 'Moving quickly can sometimes mean skipping over emotional or analytical information that would have been useful to sit with first.',
+    insight: 'Your action orientation is genuinely valuable — it creates momentum and keeps things alive. The growth edge is learning when a brief pause to feel or think would actually accelerate your progress rather than slow it.'
+  },
+  B: {
+    name: 'Balanced Reflective Thinker',
+    color: '#10b981',
+    bgColor: 'rgba(16,185,129,0.07)',
+    borderColor: 'rgba(16,185,129,0.2)',
+    emoji: '⚖️',
+    tag: 'Adaptive',
+    profile: 'You often draw on multiple modes of thinking depending on what the situation calls for. You\'re neither fully analytical nor fully emotional — you flex between approaches.',
+    strength: 'Your adaptability means you\'re less likely to get stuck in one fixed response pattern. You can hold complexity without needing to collapse it into a simple answer.',
+    watchFor: 'Balancing multiple approaches can sometimes make it hard to know which one to prioritize when a situation moves quickly and decisions need to be made fast.',
+    insight: 'Your flexibility is a genuine strength. The growth edge is developing a \'home base\' — a clear default approach you can return to when the situation is murky and multiple modes feel equally valid.'
+  }
+};
+
+/* =====================================================
+   GAME STATE
+===================================================== */
+const STATE = {
+  mode: null,
+  scores: { A: 0, E: 0, O: 0, D: 0, B: 0 },
+  scenarioIdx: 0,
+  scenarios: [],
+  priorityOrder: [],
+  sequenceOrder: []
+};
+
+/* =====================================================
+   SCREEN NAVIGATION
+===================================================== */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const target = document.getElementById(id);
+  if (target) {
+    target.style.display = 'block';
+    target.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+/* =====================================================
+   PROGRESS DOTS
+===================================================== */
+const STEPS = ['start','ch1-intro','scenario','ch2-intro','ch2','ch3-intro','ch3','journal'];
+function updateProgress(currentStep) {
+  const dotContainers = ['pd-ch1-intro','pd-scenario','pd-ch2-intro','pd-ch2','pd-ch3-intro','pd-ch3'];
+  const positions = ['ch1-intro','scenario','ch2-intro','ch2','ch3-intro','ch3'];
+  const currentPos = positions.indexOf(currentStep);
+  
+  dotContainers.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    positions.forEach((pos, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'p-dot ' + (i < currentPos ? 'done' : i === currentPos ? 'active' : '');
+      el.appendChild(dot);
+    });
+  });
+}
+
+/* =====================================================
+   MODE SELECTION
+===================================================== */
+function selectMode(mode) {
+  STATE.mode = mode;
+  STATE.scenarios = mode === 'calm' ? SCENARIOS_CALM : SCENARIOS_STRESS;
+  
+  if (mode === 'stress') {
+    document.body.classList.add('stress');
+  } else {
+    document.body.classList.remove('stress');
+  }
+  
+  showScreen('sc-ch1-intro');
+  updateProgress('ch1-intro');
+}
+
+/* =====================================================
+   CHAPTER 1 — SCENARIOS
+===================================================== */
+function startCh1() {
+  STATE.scenarioIdx = 0;
+  STATE.scores = { A: 0, E: 0, O: 0, D: 0, B: 0 };
+  showScreen('sc-scenario');
+  loadScenario();
+  updateProgress('scenario');
+}
+
+function loadScenario() {
+  const sc = STATE.scenarios[STATE.scenarioIdx];
+  if (!sc) return;
+
+  document.getElementById('scenario-counter').textContent =
+    `Scenario ${STATE.scenarioIdx + 1} of ${STATE.scenarios.length}`;
+  document.getElementById('scenario-text').textContent = sc.text;
+
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+
+  // Shuffle options
+  const shuffled = [...sc.options].sort(() => Math.random() - 0.5);
+  shuffled.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-card';
+    btn.textContent = opt.text;
+    btn.dataset.tendency = opt.t;
+    btn.setAttribute('role', 'radio');
+    btn.setAttribute('aria-label', opt.text);
+    btn.addEventListener('click', () => selectOption(opt.t, btn));
+    container.appendChild(btn);
+  });
+}
+
+function selectOption(tendency, btn) {
+  const allBtns = document.querySelectorAll('.option-card');
+  allBtns.forEach(b => {
+    b.classList.remove('selected');
+    b.disabled = true;
+  });
+  btn.classList.add('selected');
+
+  STATE.scores[tendency] = (STATE.scores[tendency] || 0) + 1;
+
+  setTimeout(() => {
+    STATE.scenarioIdx++;
+    if (STATE.scenarioIdx < STATE.scenarios.length) {
+      loadScenario();
+    } else {
+      showScreen('sc-ch2-intro');
+      updateProgress('ch2-intro');
+    }
+  }, 700);
+}
+
+/* =====================================================
+   CHAPTER 2 — PRIORITY DRAG
+===================================================== */
+function startCh2() {
+  showScreen('sc-ch2');
+  updateProgress('ch2');
+  renderDragList('priority-list', [...PRIORITY_CARDS].sort(() => Math.random() - 0.5));
+}
+
+function renderDragList(containerId, items) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  items.forEach((item, i) => {
+    const el = createDragItem(item, i + 1, true);
+    container.appendChild(el);
+  });
+  initDragDrop(container);
+}
+
+function createDragItem(item, rank, showDesc) {
+  const el = document.createElement('div');
+  el.className = 'drag-item';
+  el.setAttribute('draggable', 'true');
+  el.dataset.id = item.id;
+  el.role = 'listitem';
+  el.innerHTML = `
+    <span class="drag-handle" aria-hidden="true">⠿</span>
+    <div class="drag-rank">${rank}</div>
+    <div class="drag-content">
+      <div class="drag-label">${item.label}</div>
+      ${showDesc && item.desc ? `<div class="drag-desc">${item.desc}</div>` : ''}
+    </div>
+  `;
+  return el;
+}
+
+function initDragDrop(container) {
+  let dragSrc = null;
+
+  function updateRanks() {
+    const items = container.querySelectorAll('.drag-item');
+    items.forEach((item, i) => {
+      const rank = item.querySelector('.drag-rank');
+      if (rank) rank.textContent = i + 1;
+    });
+  }
+
+  function getOrder() {
+    return Array.from(container.querySelectorAll('.drag-item')).map(el => parseInt(el.dataset.id));
+  }
+
+  // Desktop drag events
+  container.addEventListener('dragstart', e => {
+    dragSrc = e.target.closest('.drag-item');
+    if (dragSrc) {
+      dragSrc.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+  });
+
+  container.addEventListener('dragend', () => {
+    if (dragSrc) { dragSrc.classList.remove('dragging'); dragSrc = null; }
+    container.querySelectorAll('.drag-item').forEach(i => i.classList.remove('drag-over'));
+  });
+
+  container.addEventListener('dragover', e => {
+    e.preventDefault();
+    const target = e.target.closest('.drag-item');
+    container.querySelectorAll('.drag-item').forEach(i => i.classList.remove('drag-over'));
+    if (target && target !== dragSrc) {
+      target.classList.add('drag-over');
+    }
+  });
+
+  container.addEventListener('drop', e => {
+    e.preventDefault();
+    const target = e.target.closest('.drag-item');
+    if (target && dragSrc && target !== dragSrc) {
+      const allItems = Array.from(container.children);
+      const srcIdx = allItems.indexOf(dragSrc);
+      const destIdx = allItems.indexOf(target);
+      if (srcIdx < destIdx) { target.after(dragSrc); }
+      else { target.before(dragSrc); }
+      updateRanks();
+    }
+    container.querySelectorAll('.drag-item').forEach(i => i.classList.remove('drag-over'));
+  });
+
+  // Touch drag
+  let touchSrc = null;
+  let touchLastOver = null;
+
+  container.addEventListener('touchstart', e => {
+    const item = e.target.closest('.drag-item');
+    if (item) { touchSrc = item; touchSrc.classList.add('dragging'); }
+  }, { passive: true });
+
+  container.addEventListener('touchmove', e => {
+    if (!touchSrc) return;
+    const touch = e.touches[0];
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    const target = el?.closest('.drag-item');
+    container.querySelectorAll('.drag-item').forEach(i => i.classList.remove('drag-over'));
+    if (target && target !== touchSrc) {
+      target.classList.add('drag-over');
+      touchLastOver = target;
+    }
+  }, { passive: true });
+
+  container.addEventListener('touchend', () => {
+    if (touchSrc) {
+      touchSrc.classList.remove('dragging');
+      if (touchLastOver && touchLastOver !== touchSrc) {
+        const allItems = Array.from(container.children);
+        const srcIdx = allItems.indexOf(touchSrc);
+        const destIdx = allItems.indexOf(touchLastOver);
+        if (srcIdx < destIdx) { touchLastOver.after(touchSrc); }
+        else { touchLastOver.before(touchSrc); }
+        updateRanks();
+      }
+      container.querySelectorAll('.drag-item').forEach(i => i.classList.remove('drag-over'));
+      touchSrc = null; touchLastOver = null;
+    }
+  });
+
+  container._getOrder = getOrder;
+}
+
+function submitPriorities() {
+  const container = document.getElementById('priority-list');
+  const order = container._getOrder ? container._getOrder() : [];
+
+  // Score top 2 picks
+  order.slice(0, 2).forEach((cardId, pos) => {
+    const card = PRIORITY_CARDS.find(c => c.id === cardId);
+    if (card) {
+      const pts = pos === 0 ? 3 : 2;
+      STATE.scores[card.t] = (STATE.scores[card.t] || 0) + pts;
+    }
+  });
+
+  STATE.priorityOrder = order;
+  showScreen('sc-ch3-intro');
+  updateProgress('ch3-intro');
+}
+
+/* =====================================================
+   CHAPTER 3 — SEQUENCE DRAG
+===================================================== */
+function startCh3() {
+  showScreen('sc-ch3');
+  updateProgress('ch3');
+  renderDragList('sequence-list', [...THINKING_STEPS].sort(() => Math.random() - 0.5));
+}
+
+function submitSequence() {
+  const container = document.getElementById('sequence-list');
+  const order = container._getOrder ? container._getOrder() : [];
+
+  // Score first 3 positions
+  order.slice(0, 3).forEach((stepId, pos) => {
+    const step = THINKING_STEPS.find(s => s.id === stepId);
+    if (step) {
+      const pts = pos === 0 ? 3 : pos === 1 ? 2 : 1;
+      STATE.scores[step.t] = (STATE.scores[step.t] || 0) + pts;
+    }
+  });
+
+  STATE.sequenceOrder = order;
+  generateJournal();
+}
+
+/* =====================================================
+   JOURNAL GENERATION
+===================================================== */
+function generateJournal() {
+  const scores = STATE.scores;
+  const total = Object.values(scores).reduce((a, b) => a + b, 0) || 1;
+
+  // Calculate percentages
+  const pcts = {};
+  Object.keys(scores).forEach(k => { pcts[k] = Math.round((scores[k] / total) * 100); });
+
+  // Sort by score
+  const sorted = Object.entries(pcts).sort((a, b) => b[1] - a[1]);
+  const primary = sorted[0][0];
+  const secondary = sorted[1][0];
+  const secondaryClose = sorted[1][1] >= sorted[0][1] - 10;
+
+  // Journal mode badge
+  const modeEl = document.getElementById('journal-mode-badge');
+  modeEl.textContent = STATE.mode === 'calm' ? '🌿 Calm Mode' : '⚡ Stress Mode';
+
+  // Render tendency bars
+  renderTendencyBars(pcts);
+
+  // Primary tendency card
+  renderTendencyCard('primary-tendency-content', primary, pcts[primary], true);
+
+  // Secondary (if close)
+  if (secondaryClose && secondary !== primary) {
+    document.getElementById('secondary-tendency-section').classList.remove('hidden');
+    renderTendencyCard('secondary-tendency-content', secondary, pcts[secondary], false);
+  }
+
+  // 3 Insights
+  renderInsights(primary, secondary, secondaryClose);
+
+  // Mode note
+  renderModeNote();
+
+  showScreen('sc-journal');
+  // Animate bars after render
+  setTimeout(animateBars, 200);
+}
+
+function renderTendencyBars(pcts) {
+  const order = ['A','E','O','D','B'];
+  const container = document.getElementById('tendency-bars');
+  container.innerHTML = '';
+
+  order.forEach(key => {
+    const td = TENDENCIES[key];
+    const pct = pcts[key] || 0;
+    const div = document.createElement('div');
+    div.className = 'tendency-row';
+    div.innerHTML = `
+      <div class="tendency-meta">
+        <span class="tendency-name">${td.emoji} ${td.name}</span>
+        <span class="tendency-pct">${pct}%</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" data-target="${pct}" style="background:${td.color}"></div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function animateBars() {
+  document.querySelectorAll('.bar-fill').forEach(bar => {
+    const target = bar.dataset.target;
+    setTimeout(() => { bar.style.width = target + '%'; }, 50);
+  });
+}
+
+function renderTendencyCard(containerId, key, pct, isPrimary) {
+  const td = TENDENCIES[key];
+  const el = document.getElementById(containerId);
+  el.innerHTML = `
+    <div style="background:${td.bgColor};border:1px solid ${td.borderColor};border-radius:12px;padding:16px 18px;margin-bottom:12px">
+      <div class="tendency-tag" style="background:${td.bgColor};color:${td.color};border:1px solid ${td.borderColor}">${td.emoji} ${td.tag}</div>
+      <div class="tendency-headline">${td.name} <span style="font-size:14px;font-weight:600;color:var(--text-sub)">(${pct}%)</span></div>
+      <div class="tendency-profile">${td.profile}</div>
+    </div>
+    ${isPrimary ? `
+    <div style="margin-bottom:10px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px">Where this shows up as strength</div>
+      <div style="font-size:13px;color:var(--text-sub);line-height:1.65">${td.strength}</div>
+    </div>
+    <div style="background:var(--chip);border-radius:10px;padding:12px 14px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--text-muted);text-transform:uppercase;margin-bottom:5px">Worth noticing</div>
+      <div style="font-size:13px;color:var(--text-sub);line-height:1.65">${td.watchFor}</div>
+    </div>` : ''}
+  `;
+}
+
+function renderInsights(primary, secondary, secondaryClose) {
+  const td = TENDENCIES[primary];
+  const insights = [
+    {
+      icon: '💡',
+      text: `<strong>Growth Edge:</strong> ${td.insight}`
+    },
+    {
+      icon: secondaryClose ? '🔀' : '🎯',
+      text: secondaryClose
+        ? `<strong>Dual Tendency:</strong> Your responses show a notable blend of ${td.name} and ${TENDENCIES[secondary].name} patterns. This suggests you may shift modes depending on the stakes or context of a situation.`
+        : `<strong>Clear Pattern:</strong> Your ${td.name} tendency showed up consistently across all three chapters — scenarios, priorities, and how you sequence your thinking.`
+    },
+    {
+      icon: '🔄',
+      text: STATE.mode === 'calm'
+        ? '<strong>Calm vs. Stress:</strong> This exploration was done in Calm Mode. Try Stress Mode to see if your patterns shift under pressure — many people discover interesting differences between their everyday defaults and how they respond when stakes are higher.'
+        : '<strong>Calm vs. Stress:</strong> This exploration was done in Stress Mode. Try Calm Mode to see if your patterns feel different when the framing is less pressured. Noticing the gap between your stressed and calm defaults can be genuinely illuminating.'
+    }
+  ];
+
+  const list = document.getElementById('insight-list');
+  list.innerHTML = insights.map(ins => `
+    <div class="insight-item">
+      <span class="insight-icon">${ins.icon}</span>
+      <span class="insight-text">${ins.text}</span>
+    </div>
+  `).join('');
+}
+
+function renderModeNote() {
+  const el = document.getElementById('mode-note-content');
+  if (STATE.mode === 'calm') {
+    el.innerHTML = 'You explored your thinking patterns through an everyday lens in <strong>Calm Mode</strong>. The scenarios were framed with gentle, low-pressure context. <br><br>Trying <strong>Stress Mode</strong> reframes the same activities with higher-stakes language. Many people find that their thinking tendencies shift — sometimes dramatically — when the pressure is higher. That gap is often where the most interesting self-knowledge lives.';
+  } else {
+    el.innerHTML = 'You explored your thinking patterns through a high-pressure lens in <strong>Stress Mode</strong>. The scenarios were framed with urgency and stakes. <br><br>Trying <strong>Calm Mode</strong> reframes the same activities with gentle, everyday language. You might notice that your thinking patterns feel more balanced — or surprisingly different — when you remove the pressure framing. Both versions of you are real.';
+  }
+}
+
+/* =====================================================
+   REPLAY
+===================================================== */
+function replay() {
+  STATE.scores = { A: 0, E: 0, O: 0, D: 0, B: 0 };
+  STATE.scenarioIdx = 0;
+  STATE.priorityOrder = [];
+  STATE.sequenceOrder = [];
+  STATE.mode = null;
+  document.body.classList.remove('stress');
+  showScreen('sc-start');
+}
+
+/* =====================================================
+   INIT
+===================================================== */
+document.addEventListener('DOMContentLoaded', () => {
+  showScreen('sc-start');
+  // Keyboard accessibility for mode cards
+  document.querySelectorAll('.mode-card').forEach(card => {
+    card.setAttribute('tabindex', '0');
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+    });
+  });
+});
+</script>
+</body>
+</html>
