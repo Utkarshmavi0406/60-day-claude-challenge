@@ -66,6 +66,7 @@ Each day I will:
 | 34 | July 03, 2026 | Marketing Detective — Interactive Marketing Mystery Game | ✅ |
 | 35 | July 04, 2026 | Prompt Puzzle — Interactive Prompt Engineering Game | ✅ |
 | 36 | July 05, 2026 | Cognitive Pattern Explorer — Psychology-Inspired Self-Reflection | ✅ |
+| 37 | July 06, 2026 | Task Compass — Management Simulation, Ownership & Workflow | ✅ |
 
 
 *(I'll update this table as I go.)*
