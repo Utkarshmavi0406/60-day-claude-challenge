@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probability Distributions — Interactive Learning Studio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,600;7..72,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#f6f5f2;
+  --bg-soft:#efece5;
+  --surface:#ffffff;
+  --surface-2:#faf9f6;
+  --border:#e2ddd1;
+  --border-strong:#cfc7b4;
+  --text:#221f1a;
+  --text-dim:#63594a;
+  --text-faint:#9c9280;
+  --indigo:#4438ca;
+  --indigo-soft:#eae7fb;
+  --indigo-deep:#2c2296;
+  --blue:#1d6fd6; --blue-soft:#e2edfc;
+  --amber:#c07a12; --amber-soft:#faedd6;
+  --violet:#7d3bd1; --violet-soft:#f0e6fb;
+  --teal:#11816b; --teal-soft:#dcf3ee;
+  --ok:#1f8a5f; --ok-soft:#e2f5ec;
+  --error:#c0392b; --error-soft:#fbe4e1;
+  --radius:16px;
+  --serif:'Literata', Georgia, serif;
+  --body:'Inter', sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, monospace;
+  --shadow:0 20px 50px rgba(40,30,10,.10);
+}
+[data-theme="dark"]{
+  --bg:#111014; --bg-soft:#161620; --surface:#1a1a24; --surface-2:#20202c;
+  --border:#2c2c3a; --border-strong:#3d3d4f; --text:#f0eee8; --text-dim:#a8a396; --text-faint:#6b6759;
+  --indigo:#8b7dff; --indigo-soft:#242040; --indigo-deep:#b3a8ff;
+  --blue:#6fa8f5; --blue-soft:#1a2740;
+  --amber:#e3b45c; --amber-soft:#332a15;
+  --violet:#b28cf0; --violet-soft:#2a1f42;
+  --teal:#5fd3b8; --teal-soft:#12302a;
+  --ok:#5fd3a1; --ok-soft:#12301f; --error:#ff8078; --error-soft:#3a1a1a;
+  --shadow:0 24px 60px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:
+    radial-gradient(1000px 550px at 100% -10%, var(--indigo-soft), transparent 55%),
+    var(--bg);
+  color:var(--text); font-family:var(--body); min-height:100vh; transition:background .3s, color .3s;
+  -webkit-font-smoothing:antialiased;
+}
+button{ font-family:inherit; }
+::selection{ background:var(--indigo); color:#fff; }
+h1,h2,h3,h4{ font-family:var(--serif); font-weight:700; letter-spacing:-.01em; }
+code{ font-family:var(--mono); background:var(--surface-2); border:1px solid var(--border); border-radius:5px; padding:1px 6px; font-size:.85em; }
+
+.shell{ max-width:1180px; margin:0 auto; padding:22px 22px 90px; }
+
+/* ---------------- Topbar ---------------- */
+.topbar{ display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:20px; flex-wrap:wrap; position:sticky; top:0; z-index:50; background:var(--bg); padding:10px 0; }
+.brand{ display:flex; align-items:center; gap:12px; }
+.brand-mark{ width:42px; height:42px; border-radius:11px; background:linear-gradient(150deg, var(--indigo), var(--indigo-deep)); display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--serif); font-weight:700; font-size:1.15rem; box-shadow:var(--shadow); }
+.brand-text h1{ font-size:1.2rem; margin:0; }
+.brand-text span{ font-family:var(--mono); font-size:.65rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.08em; }
+.top-controls{ display:flex; gap:10px; align-items:center; }
+.icon-btn{ width:38px; height:38px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--text-dim); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1rem; transition:all .15s ease; }
+.icon-btn:hover{ color:var(--text); border-color:var(--indigo); }
+
+.progress-shell{ display:flex; align-items:center; gap:10px; }
+.progress-track{ width:140px; height:7px; background:var(--surface-2); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+.progress-fill{ height:100%; width:0%; background:linear-gradient(90deg, var(--indigo), var(--violet)); transition:width .4s ease; }
+.progress-label{ font-family:var(--mono); font-size:.68rem; color:var(--text-dim); white-space:nowrap; }
+
+/* ---------------- Module nav ---------------- */
+.module-nav{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:26px; }
+.nav-pill{
+  display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:.74rem; font-weight:600;
+  padding:9px 14px; border-radius:20px; border:1px solid var(--border); background:var(--surface); color:var(--text-faint);
+  cursor:pointer; transition:all .18s ease;
+}
+.nav-pill .dot{ width:7px; height:7px; border-radius:50%; background:var(--border-strong); }
+.nav-pill.unlocked{ color:var(--text-dim); }
+.nav-pill.unlocked .dot{ background:var(--indigo); }
+.nav-pill.done{ color:var(--ok); border-color:var(--ok); background:var(--ok-soft); }
+.nav-pill.done .dot{ background:var(--ok); }
+.nav-pill.locked{ opacity:.5; cursor:not-allowed; }
+.nav-pill:not(.locked):hover{ border-color:var(--indigo); }
+
+/* ---------------- Sections ---------------- */
+.section{ display:none; animation:fadeIn .4s ease; }
+.section.active{ display:block; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+.hero{ background:linear-gradient(135deg, var(--surface), var(--surface-2)); border:1px solid var(--border); border-radius:var(--radius); padding:34px; margin-bottom:24px; box-shadow:var(--shadow); position:relative; overflow:hidden; }
+.hero::after{ content:''; position:absolute; right:-80px; top:-80px; width:260px; height:260px; border-radius:50%; background:radial-gradient(circle, var(--indigo-soft), transparent 70%); }
+.hero-eyebrow{ font-family:var(--mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--indigo); font-weight:700; margin-bottom:10px; position:relative; }
+.hero h1{ font-size:2.1rem; margin:0 0 12px; position:relative; }
+.hero p.lead{ font-size:1rem; color:var(--text-dim); max-width:640px; line-height:1.6; position:relative; }
+.hero-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:24px; position:relative; }
+@media (max-width:800px){ .hero-grid{ grid-template-columns:repeat(2,1fr);} }
+.hero-stat{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px; }
+.hero-stat .v{ font-family:var(--serif); font-weight:700; font-size:1.3rem; color:var(--indigo); }
+.hero-stat .l{ font-family:var(--mono); font-size:.66rem; text-transform:uppercase; color:var(--text-faint); letter-spacing:.05em; margin-top:2px; }
+
+.obj-list{ margin-top:22px; position:relative; }
+.obj-list h3{ font-size:1rem; margin:0 0 10px; }
+.obj-list ul{ margin:0; padding-left:20px; color:var(--text-dim); line-height:1.8; font-size:.92rem; }
+
+.reward-box{ display:flex; align-items:center; gap:14px; background:var(--indigo-soft); border:1px solid var(--indigo); border-radius:12px; padding:16px 18px; margin-top:22px; position:relative; }
+.reward-box .ic{ font-size:1.6rem; }
+.reward-box p{ margin:0; font-size:.86rem; color:var(--text); }
+
+.start-btn{ margin-top:24px; background:var(--indigo); color:#fff; border:none; padding:14px 28px; border-radius:11px; font-family:var(--mono); font-weight:700; font-size:.85rem; cursor:pointer; position:relative; transition:all .15s ease; }
+.start-btn:hover{ filter:brightness(1.1); transform:translateY(-1px); }
+
+/* ---------------- Module content ---------------- */
+.module-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:30px; margin-bottom:20px; box-shadow:var(--shadow); }
+.module-head{ display:flex; align-items:center; gap:14px; margin-bottom:6px; }
+.module-badge{ width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-weight:700; font-size:1.15rem; color:#fff; flex-shrink:0; }
+.module-head h2{ font-size:1.5rem; margin:0; }
+.module-head .sub{ font-family:var(--mono); font-size:.72rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em; }
+
+.m1 .module-badge{ background:linear-gradient(150deg, var(--blue), #0d4fa8); }
+.m2 .module-badge{ background:linear-gradient(150deg, var(--amber), #8a5709); }
+.m3 .module-badge{ background:linear-gradient(150deg, var(--violet), #521e96); }
+.m4 .module-badge{ background:linear-gradient(150deg, var(--teal), #0a5645); }
+
+.m1-accent{ --acc:var(--blue); --acc-soft:var(--blue-soft); }
+.m2-accent{ --acc:var(--amber); --acc-soft:var(--amber-soft); }
+.m3-accent{ --acc:var(--violet); --acc-soft:var(--violet-soft); }
+.m4-accent{ --acc:var(--teal); --acc-soft:var(--teal-soft); }
+
+.lesson-block{ margin:26px 0; }
+.lesson-block h3{ font-size:1.12rem; margin:0 0 10px; color:var(--acc,var(--text)); }
+.lesson-block p{ font-size:.93rem; line-height:1.7; color:var(--text-dim); margin:0 0 12px; }
+.lesson-block ul, .lesson-block ol{ font-size:.93rem; line-height:1.75; color:var(--text-dim); padding-left:22px; }
+
+.callout{ border-left:3px solid var(--acc, var(--indigo)); background:var(--acc-soft, var(--indigo-soft)); border-radius:0 10px 10px 0; padding:14px 18px; margin:14px 0; font-size:.88rem; line-height:1.6; }
+.callout b{ color:var(--text); }
+.callout.analogy::before{ content:'💡 ANALOGY'; display:block; font-family:var(--mono); font-size:.65rem; font-weight:700; letter-spacing:.08em; color:var(--acc,var(--indigo)); margin-bottom:6px; }
+.callout.misconception::before{ content:'⚠ COMMON MISCONCEPTION'; display:block; font-family:var(--mono); font-size:.65rem; font-weight:700; letter-spacing:.08em; color:var(--error); margin-bottom:6px; }
+.callout.misconception{ border-left-color:var(--error); background:var(--error-soft); }
+.callout.takeaway::before{ content:'✓ KEY TAKEAWAY'; display:block; font-family:var(--mono); font-size:.65rem; font-weight:700; letter-spacing:.08em; color:var(--ok); margin-bottom:6px; }
+.callout.takeaway{ border-left-color:var(--ok); background:var(--ok-soft); }
+
+.formula-box{ background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:16px 20px; margin:14px 0; font-family:var(--mono); font-size:.95rem; text-align:center; color:var(--text); }
+.formula-box .label{ display:block; font-family:var(--mono); font-size:.65rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
+
+/* ---------------- Diagram / chart panels ---------------- */
+.diagram-panel{ background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:20px; margin:16px 0; }
+.diagram-panel h4{ font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-faint); margin:0 0 12px; }
+.chart-svg{ width:100%; height:auto; display:block; }
+.control-row{ display:flex; gap:18px; flex-wrap:wrap; margin-top:14px; align-items:center; }
+.control-item{ display:flex; flex-direction:column; gap:6px; min-width:160px; flex:1; }
+.control-item label{ font-family:var(--mono); font-size:.68rem; color:var(--text-dim); display:flex; justify-content:space-between; }
+.control-item label b{ color:var(--acc, var(--indigo)); }
+input[type=range]{ width:100%; accent-color:var(--acc, var(--indigo)); }
+.stat-chip-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+.stat-chip{ font-family:var(--mono); font-size:.74rem; padding:7px 13px; border-radius:20px; background:var(--surface); border:1px solid var(--border); color:var(--text-dim); }
+.stat-chip b{ color:var(--acc, var(--text)); }
+
+/* ---------------- Exercise blocks ---------------- */
+.exercise-box{ border:1px dashed var(--border-strong); border-radius:12px; padding:18px 20px; margin:16px 0; background:var(--surface); }
+.exercise-box h4{ font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--acc, var(--indigo)); margin:0 0 10px; }
+.reveal-btn{ font-family:var(--mono); font-size:.74rem; padding:8px 14px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2); color:var(--text-dim); cursor:pointer; margin-top:8px; }
+.reveal-btn:hover{ border-color:var(--acc, var(--indigo)); color:var(--text); }
+.reveal-content{ display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border); font-size:.88rem; color:var(--text-dim); line-height:1.6; }
+.reveal-content.show{ display:block; animation:fadeIn .3s ease; }
+
+/* ---------------- Comparison table ---------------- */
+.compare-table{ width:100%; border-collapse:collapse; font-size:.85rem; margin:16px 0; }
+.compare-table th, .compare-table td{ border:1px solid var(--border); padding:10px 12px; text-align:left; }
+.compare-table th{ background:var(--surface-2); font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); }
+.compare-table td{ color:var(--text-dim); }
+.compare-table tr:nth-child(1) td:first-child, .compare-table td:first-child{ font-weight:600; color:var(--text); }
+
+/* ---------------- Quiz ---------------- */
+.quiz-shell{ background:var(--surface-2); border:1px solid var(--border-strong); border-radius:14px; padding:26px; margin-top:28px; }
+.quiz-shell h3{ font-size:1.15rem; margin:0 0 4px; }
+.quiz-shell .sub{ font-family:var(--mono); font-size:.72rem; color:var(--text-faint); margin-bottom:18px; }
+.quiz-q{ background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:16px 18px; margin-bottom:14px; }
+.quiz-q .qtext{ font-size:.92rem; font-weight:600; margin-bottom:12px; }
+.quiz-opt{ display:flex; align-items:flex-start; gap:10px; padding:9px 10px; border-radius:8px; cursor:pointer; font-size:.86rem; color:var(--text-dim); transition:background .15s ease; }
+.quiz-opt:hover{ background:var(--surface-2); }
+.quiz-opt input{ margin-top:3px; accent-color:var(--acc, var(--indigo)); }
+.quiz-opt.correct-answer{ background:var(--ok-soft); color:var(--ok); font-weight:600; }
+.quiz-opt.wrong-answer{ background:var(--error-soft); color:var(--error); font-weight:600; }
+.quiz-explain{ display:none; margin-top:10px; padding:10px 12px; background:var(--indigo-soft); border-radius:8px; font-size:.82rem; color:var(--text); }
+.quiz-explain.show{ display:block; }
+.quiz-submit{ background:var(--acc, var(--indigo)); color:#fff; border:none; padding:11px 22px; border-radius:9px; font-family:var(--mono); font-weight:700; font-size:.78rem; cursor:pointer; }
+.quiz-submit:disabled{ opacity:.5; cursor:not-allowed; }
+.quiz-result{ display:none; margin-top:18px; padding:18px; border-radius:12px; text-align:center; }
+.quiz-result.show{ display:block; animation:fadeIn .4s ease; }
+.quiz-result .score{ font-family:var(--serif); font-weight:700; font-size:2rem; }
+.quiz-result .msg{ font-family:var(--mono); font-size:.8rem; color:var(--text-dim); margin-top:6px; }
+.next-module-btn{ margin-top:16px; background:var(--ok); color:#fff; border:none; padding:12px 24px; border-radius:10px; font-family:var(--mono); font-weight:700; font-size:.8rem; cursor:pointer; }
+
+/* ---------------- Final section ---------------- */
+.cheat-sheet{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:28px; margin-bottom:20px; }
+.resource-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-top:16px; }
+@media (max-width:760px){ .resource-grid{ grid-template-columns:1fr; } }
+.resource-card{ background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+.resource-card h4{ font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--indigo); margin:0 0 10px; }
+.resource-card ul{ margin:0; padding-left:18px; font-size:.85rem; color:var(--text-dim); line-height:1.8; }
+.kw-tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.kw-tag{ font-family:var(--mono); font-size:.72rem; padding:5px 11px; border-radius:16px; background:var(--surface); border:1px solid var(--border); color:var(--text-dim); }
+
+.print-btn{ background:var(--surface); border:1px solid var(--border); color:var(--text-dim); font-family:var(--mono); font-size:.76rem; padding:9px 16px; border-radius:9px; cursor:pointer; }
+.print-btn:hover{ border-color:var(--indigo); color:var(--text); }
+
+footer{ text-align:center; margin-top:40px; font-family:var(--mono); font-size:.68rem; color:var(--text-faint); }
+
+@media print{
+  .topbar, .module-nav, .section:not(#finalSection), .start-btn, .icon-btn{ display:none !important; }
+  #finalSection{ display:block !important; }
+  body{ background:#fff; color:#000; }
+}
+@media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } }
+:focus-visible{ outline:2px solid var(--indigo); outline-offset:2px; }
+</style>
+</head>
+<body data-theme="light">
+<div class="shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">π</div>
+      <div class="brand-text"><h1>Probability Distributions</h1><span>Binomial · Poisson · Normal — Interactive Learning Studio</span></div>
+    </div>
+    <div class="top-controls">
+      <div class="progress-shell">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <span class="progress-label" id="progressLabel">0% complete</span>
+      </div>
+      <button class="icon-btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode">☾</button>
+      <button class="icon-btn" id="resetBtn" title="Reset progress" aria-label="Reset progress">⟲</button>
+    </div>
+  </div>
+
+  <div class="module-nav" id="moduleNav">
+    <div class="nav-pill unlocked" data-target="introSection"><span class="dot"></span>Introduction</div>
+    <div class="nav-pill locked" data-target="module1"><span class="dot"></span>1 · Binomial</div>
+    <div class="nav-pill locked" data-target="module2"><span class="dot"></span>2 · Poisson</div>
+    <div class="nav-pill locked" data-target="module3"><span class="dot"></span>3 · Normal</div>
+    <div class="nav-pill locked" data-target="module4"><span class="dot"></span>4 · Mastery</div>
+    <div class="nav-pill locked" data-target="finalSection"><span class="dot"></span>Final Challenge</div>
+  </div>
+
+  <!-- ============ INTRODUCTION ============ -->
+  <section class="section active" id="introSection">
+    <div class="hero">
+      <div class="hero-eyebrow">// Interactive Course</div>
+      <h1>Probability Distributions: Binomial, Normal &amp; Poisson</h1>
+      <p class="lead">A complete, hands-on tutorial that takes you from "what is a probability distribution" to confidently choosing and applying the right distribution for real data — with live simulators you control, not just static formulas.</p>
+
+      <div class="hero-grid">
+        <div class="hero-stat"><div class="v">~55 min</div><div class="l">Estimated Time</div></div>
+        <div class="hero-stat"><div class="v">4</div><div class="l">Modules</div></div>
+        <div class="hero-stat"><div class="v">16</div><div class="l">Quiz Questions</div></div>
+        <div class="hero-stat"><div class="v">Basic Algebra</div><div class="l">Prerequisite</div></div>
+      </div>
+
+      <div class="obj-list">
+        <h3>By the end of this course, you will be able to:</h3>
+        <ul>
+          <li>Explain what a probability distribution is and the difference between discrete and continuous random variables</li>
+          <li>Compute probabilities using the Binomial and Poisson probability mass functions by hand and interpret them</li>
+          <li>Read and reason about the Normal distribution using the empirical rule and z-scores</li>
+          <li>Recognize which of the three distributions fits a real-world scenario, and explain how they connect through the Central Limit Theorem</li>
+          <li>Work through a full applied problem that requires choosing a distribution and computing a real probability</li>
+        </ul>
+      </div>
+
+      <div class="reward-box">
+        <span class="ic">🏆</span>
+        <p><b>Reward system:</b> Each module unlocks the next only after you complete its quiz. Finish all 4 modules and the Final Challenge to unlock your <b>Distribution Master</b> completion badge and a printable cheat sheet.</p>
+      </div>
+
+      <button class="start-btn" id="startCourseBtn">▶ Start Module 1 — The Binomial Distribution</button>
+    </div>
+  </section>
+
+  <!-- Module sections and final section are injected/authored below -->
+  <!-- ============ MODULE 1: BINOMIAL ============ -->
+  <section class="section" id="module1">
+    <div class="module-card m1 m1-accent">
+      <div class="module-head">
+        <div class="module-badge">1</div>
+        <div><h2>The Binomial Distribution</h2><div class="sub">Foundational · Discrete Distributions</div></div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>What is a probability distribution?</h3>
+        <p>A <b>random variable</b> is a numeric outcome of something uncertain — the number of heads in 10 coin flips, the number of calls a helpdesk gets in an hour, someone's height. A <b>probability distribution</b> is simply the complete list of every possible value that random variable can take, paired with how likely each value is.</p>
+        <p>Distributions come in two families. <b>Discrete</b> distributions describe random variables that take countable values — 0, 1, 2, 3 defective items, never 2.5. <b>Continuous</b> distributions describe values that can fall anywhere on a range — height, temperature, time. Discrete distributions use a <b>PMF</b> (probability mass function); continuous ones use a <b>PDF</b> (probability density function). The Binomial and Poisson distributions you'll learn first are both discrete; the Normal distribution later in this course is continuous.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3>The Binomial setup: counting successes</h3>
+        <p>The Binomial distribution answers one very specific question: <i>"If I repeat the same yes/no experiment n times, how many times will I get a 'yes'?"</i> It applies whenever four conditions hold:</p>
+        <ul>
+          <li><b>Fixed number of trials (n)</b> — you decide in advance how many times you'll repeat the experiment</li>
+          <li><b>Two possible outcomes per trial</b> — success or failure (a "Bernoulli trial")</li>
+          <li><b>Constant probability of success (p)</b> — it doesn't change from trial to trial</li>
+          <li><b>Independent trials</b> — one outcome doesn't affect another</li>
+        </ul>
+        <div class="callout analogy">Think of the Binomial distribution as a <b>bag of coin flips</b>. Flip a coin 10 times (n=10), and count how many land heads. You could get 0 heads, or all 10 — the Binomial distribution tells you exactly how likely each of those 11 outcomes is, before you even flip.</div>
+
+        <div class="formula-box">
+          <span class="label">Binomial Probability Mass Function</span>
+          P(X = k) = C(n, k) · p<sup>k</sup> · (1−p)<sup>n−k</sup>
+        </div>
+        <p>Here <code>C(n, k)</code> is "n choose k" — the number of different ways to arrange k successes among n trials — multiplied by the probability of any one specific arrangement of k successes and (n−k) failures.</p>
+
+        <div class="formula-box">
+          <span class="label">Mean &amp; Variance</span>
+          Mean = n·p &nbsp;&nbsp;|&nbsp;&nbsp; Variance = n·p·(1−p)
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>Try it yourself: live Binomial simulator</h3>
+        <p>Drag the sliders below to change the number of trials (n) and probability of success (p), and watch the distribution shape change in real time.</p>
+        <div class="diagram-panel">
+          <h4>Binomial PMF — P(X = k) for k = 0…n</h4>
+          <svg class="chart-svg" id="binomChart" viewBox="0 0 640 260"></svg>
+          <div class="control-row">
+            <div class="control-item">
+              <label>Number of trials (n) <b id="binomNVal">10</b></label>
+              <input type="range" id="binomN" min="1" max="30" value="10">
+            </div>
+            <div class="control-item">
+              <label>Probability of success (p) <b id="binomPVal">0.50</b></label>
+              <input type="range" id="binomP" min="1" max="99" value="50">
+            </div>
+          </div>
+          <div class="stat-chip-row">
+            <div class="stat-chip">Mean (n·p) = <b id="binomMean">5.00</b></div>
+            <div class="stat-chip">Variance (n·p·(1−p)) = <b id="binomVar">2.50</b></div>
+            <div class="stat-chip">Std Dev = <b id="binomSd">1.58</b></div>
+          </div>
+        </div>
+        <div class="callout takeaway">Notice how the distribution is perfectly symmetric only when p = 0.50. Push p toward 0 or 1 and the shape skews — that visual skew <i>is</i> the imbalance between success and failure showing up directly in the probabilities.</div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>Worked example</h3>
+        <div class="exercise-box">
+          <h4>Exercise 1.1</h4>
+          <p>A factory's quality control process finds that 5% of light bulbs produced are defective (p = 0.05). A random sample of 20 bulbs is tested (n = 20). What is the probability that <b>exactly 2</b> bulbs are defective?</p>
+          <button class="reveal-btn" data-reveal="ex1-1">Show solution</button>
+          <div class="reveal-content" id="ex1-1">
+            <p>P(X=2) = C(20,2) · (0.05)<sup>2</sup> · (0.95)<sup>18</sup></p>
+            <p>C(20,2) = 190. (0.05)² = 0.0025. (0.95)<sup>18</sup> ≈ 0.3972</p>
+            <p>P(X=2) = 190 × 0.0025 × 0.3972 ≈ <b>0.1887</b>, or about 18.9%.</p>
+          </div>
+        </div>
+        <div class="exercise-box">
+          <h4>Exercise 1.2 — Try it in the simulator above</h4>
+          <p>Set n = 20 and p = 5 (representing 0.05) in the simulator. Read off the bar at k = 2. Does the height roughly match the ~18.9% you calculated? This is exactly how you'll sanity-check hand calculations against the visual distribution in practice.</p>
+        </div>
+      </div>
+
+      <div class="callout misconception">"Independent trials" doesn't mean the trials have to be physically different actions — it means the outcome of one trial gives you no information about another. Drawing cards <i>without replacement</i> from a deck is <b>not</b> binomial (each draw changes the odds for the next), but drawing <i>with replacement</i>, or flipping a coin repeatedly, is.</div>
+
+      <div class="callout takeaway">The Binomial distribution is fully described by just two numbers: n and p. If you can identify "how many trials" and "probability of success per trial" in a word problem, you can compute any probability from the PMF formula.</div>
+    </div>
+
+    <!-- QUIZ 1 -->
+    <div class="quiz-shell m1-accent" id="quiz1">
+      <h3>Module 1 Check — Binomial Distribution</h3>
+      <div class="sub">4 questions · instant feedback · unlocks Module 2</div>
+      <div id="quiz1Questions"></div>
+      <button class="quiz-submit" id="quiz1Submit">Submit Answers</button>
+      <div class="quiz-result" id="quiz1Result">
+        <div class="score" id="quiz1Score">0/4</div>
+        <div class="msg" id="quiz1Msg"></div>
+        <button class="next-module-btn" id="quiz1Next">Continue to Module 2 — Poisson →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODULE 2: POISSON ============ -->
+  <section class="section" id="module2">
+    <div class="module-card m2 m2-accent">
+      <div class="module-head">
+        <div class="module-badge">2</div>
+        <div><h2>The Poisson Distribution</h2><div class="sub">Modeling Rare Events · Discrete Distributions</div></div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>From counting successes to counting events</h3>
+        <p>The Binomial distribution needed a fixed number of trials, n. But some things don't come in trials at all — you don't "attempt" a customer arrival 1,000 times and count successes. Instead, events just happen, scattered across a continuous stretch of time or space: emails arriving, potholes on a stretch of road, typos on a page.</p>
+        <p>The <b>Poisson distribution</b> models the count of independent events that occur at a known <b>average rate</b> over a fixed interval, when the events could in principle happen any number of times.</p>
+        <div class="callout analogy">Picture <b>raindrops falling on a sidewalk square</b>. You know the average rate — say 4 drops per square per minute — but you can't say "how many trials" there were; rain doesn't have trials. The Poisson distribution tells you the probability of counting exactly 0, 1, 2, 10 drops in that square in a given minute.</div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>The Poisson formula</h3>
+        <div class="formula-box">
+          <span class="label">Poisson Probability Mass Function</span>
+          P(X = k) = (λ<sup>k</sup> · e<sup>−λ</sup>) / k!
+        </div>
+        <p>λ (lambda) is the single parameter — the average number of events per interval. Unlike the Binomial's two parameters (n and p), Poisson needs only λ, because it's really describing the limit of a Binomial where n grows huge and p shrinks tiny, while n·p stays fixed at λ.</p>
+        <div class="formula-box">
+          <span class="label">Mean &amp; Variance</span>
+          Mean = λ &nbsp;&nbsp;|&nbsp;&nbsp; Variance = λ
+        </div>
+        <p>That's a distinctive Poisson fingerprint: mean and variance are always equal. If you're looking at count data and the sample variance is roughly equal to the sample mean, Poisson is a strong candidate model.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3>How Poisson connects back to Binomial</h3>
+        <p>Imagine slicing an hour into 3,600 one-second intervals and asking "did a call arrive in this second?" as a yes/no Binomial trial with tiny p. As you slice time into smaller and smaller intervals (n → ∞) while keeping the average rate n·p = λ constant, the Binomial distribution's shape converges exactly to the Poisson distribution. Poisson is what Binomial becomes when trials become too frequent and individually improbable to count.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3>Try it yourself: live Poisson simulator</h3>
+        <p>Drag λ and watch the distribution shift and change shape.</p>
+        <div class="diagram-panel">
+          <h4>Poisson PMF — P(X = k) for k = 0…20</h4>
+          <svg class="chart-svg" id="poissonChart" viewBox="0 0 640 260"></svg>
+          <div class="control-row">
+            <div class="control-item">
+              <label>Average rate (λ) <b id="poissonLVal">4.0</b></label>
+              <input type="range" id="poissonL" min="1" max="150" value="40">
+            </div>
+          </div>
+          <div class="stat-chip-row">
+            <div class="stat-chip">Mean = <b id="poissonMean">4.00</b></div>
+            <div class="stat-chip">Variance = <b id="poissonVar">4.00</b></div>
+            <div class="stat-chip">Std Dev = <b id="poissonSd">2.00</b></div>
+          </div>
+        </div>
+        <div class="callout takeaway">Watch what happens as you drag λ above ~10–15: the once heavily-skewed Poisson shape starts looking symmetric and bell-like. That's your first hint at a pattern that reappears in Module 4 — many distributions start resembling the Normal distribution as their scale grows.</div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>Worked example</h3>
+        <div class="exercise-box">
+          <h4>Exercise 2.1</h4>
+          <p>A support inbox receives an average of 6 emails per hour (λ = 6). What is the probability that exactly 4 emails arrive in a given hour?</p>
+          <button class="reveal-btn" data-reveal="ex2-1">Show solution</button>
+          <div class="reveal-content" id="ex2-1">
+            <p>P(X=4) = (6<sup>4</sup> · e<sup>−6</sup>) / 4!</p>
+            <p>6<sup>4</sup> = 1296. e<sup>−6</sup> ≈ 0.002479. 4! = 24</p>
+            <p>P(X=4) = (1296 × 0.002479) / 24 ≈ <b>0.1339</b>, or about 13.4%.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout misconception">λ doesn't have to be a whole number — "an average of 2.3 defects per meter" is a perfectly valid Poisson rate, even though you'll never observe exactly 2.3 defects in any single meter. The mean of a distribution describing counts can still be fractional; only the outcomes k are whole numbers.</div>
+
+      <div class="callout takeaway">Reach for Poisson when you're counting how many times something happens in a fixed window of time, space, or another continuous measure, and events happen independently at a roughly constant average rate.</div>
+    </div>
+
+    <!-- QUIZ 2 -->
+    <div class="quiz-shell m2-accent" id="quiz2">
+      <h3>Module 2 Check — Poisson Distribution</h3>
+      <div class="sub">4 questions · instant feedback · unlocks Module 3</div>
+      <div id="quiz2Questions"></div>
+      <button class="quiz-submit" id="quiz2Submit">Submit Answers</button>
+      <div class="quiz-result" id="quiz2Result">
+        <div class="score" id="quiz2Score">0/4</div>
+        <div class="msg" id="quiz2Msg"></div>
+        <button class="next-module-btn" id="quiz2Next">Continue to Module 3 — Normal →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODULE 3: NORMAL ============ -->
+  <section class="section" id="module3">
+    <div class="module-card m3 m3-accent">
+      <div class="module-head">
+        <div class="module-badge">3</div>
+        <div><h2>The Normal Distribution</h2><div class="sub">Continuous Distributions · The Bell Curve</div></div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>A different kind of distribution</h3>
+        <p>Binomial and Poisson both describe <b>counts</b> — whole numbers you could list out one by one. The <b>Normal distribution</b> (also called the Gaussian distribution) is <b>continuous</b>: it describes measurements that can take any value on a range, like height, blood pressure, or measurement error. Because there are infinitely many possible values, we can't ask "what's the probability of exactly 5.7?" — that probability is technically zero. Instead, we ask about probability <i>over a range</i>, represented as the area under the curve.</p>
+        <div class="callout analogy">Think of the Normal distribution as <b>sand poured through a funnel onto a table</b>. Most of it piles up directly under the funnel's center — that's the mean. Less and less lands as you move away in either direction, and the pile is symmetric left and right. That pile shape is the bell curve.</div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>The Normal formula</h3>
+        <div class="formula-box">
+          <span class="label">Normal Probability Density Function</span>
+          f(x) = ( 1 / (σ√(2π)) ) · e<sup>−(x−μ)²/(2σ²)</sup>
+        </div>
+        <p>Two parameters fully describe it: <b>μ (mu)</b>, the mean — where the peak sits — and <b>σ (sigma)</b>, the standard deviation — how spread out it is. You will rarely compute f(x) by hand; what matters far more in practice is the <b>empirical rule</b> and <b>z-scores</b>, both below.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3>The empirical rule (68–95–99.7)</h3>
+        <p>For any Normal distribution, no matter its mean or spread:</p>
+        <ul>
+          <li>About <b>68%</b> of values fall within <b>1 standard deviation</b> of the mean</li>
+          <li>About <b>95%</b> fall within <b>2 standard deviations</b></li>
+          <li>About <b>99.7%</b> fall within <b>3 standard deviations</b></li>
+        </ul>
+        <p>This single rule is why the Normal distribution is so useful for quick judgment calls: if you know the mean and standard deviation of something normally distributed, you already know roughly where almost all the data lives.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3>Try it yourself: live Normal curve + empirical rule</h3>
+        <div class="diagram-panel">
+          <h4>Normal PDF with 68–95–99.7 shading</h4>
+          <svg class="chart-svg" id="normalChart" viewBox="0 0 640 260"></svg>
+          <div class="control-row">
+            <div class="control-item">
+              <label>Mean (μ) <b id="normalMuVal">0</b></label>
+              <input type="range" id="normalMu" min="-30" max="30" value="0">
+            </div>
+            <div class="control-item">
+              <label>Std Dev (σ) <b id="normalSigVal">10</b></label>
+              <input type="range" id="normalSig" min="3" max="25" value="10">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>Z-scores: putting any value on a common scale</h3>
+        <div class="formula-box"><span class="label">Z-Score</span> z = (x − μ) / σ</div>
+        <p>A z-score tells you how many standard deviations a value sits from the mean. It turns any Normal distribution into the same "standard" reference frame, which is why z-tables exist as one universal table instead of one per possible μ and σ.</p>
+        <div class="diagram-panel">
+          <h4>Z-score calculator</h4>
+          <div class="control-row">
+            <div class="control-item"><label>Value (x)</label><input type="range" id="zX" min="-20" max="80" value="30"></div>
+            <div class="control-item"><label>Mean (μ)</label><input type="range" id="zMu" min="-20" max="80" value="50"></div>
+            <div class="control-item"><label>Std Dev (σ)</label><input type="range" id="zSigma" min="1" max="30" value="10"></div>
+          </div>
+          <div class="stat-chip-row">
+            <div class="stat-chip">x = <b id="zXVal">30</b></div>
+            <div class="stat-chip">μ = <b id="zMuVal">50</b></div>
+            <div class="stat-chip">σ = <b id="zSigmaVal">10</b></div>
+            <div class="stat-chip">z-score = <b id="zResult">-2.00</b></div>
+            <div class="stat-chip">Approx. percentile = <b id="zPercentile">2.3%</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>Worked example</h3>
+        <div class="exercise-box">
+          <h4>Exercise 3.1</h4>
+          <p>Adult male heights are approximately Normal with μ = 70 inches and σ = 3 inches. What is the z-score for a height of 76 inches, and roughly what percentile does that correspond to?</p>
+          <button class="reveal-btn" data-reveal="ex3-1">Show solution</button>
+          <div class="reveal-content" id="ex3-1">
+            <p>z = (76 − 70) / 3 = 2.00</p>
+            <p>A z-score of 2.00 means this height is exactly 2 standard deviations above the mean. By the empirical rule, ~95% of values lie within ±2σ, so ~2.5% lie above +2σ — this height is roughly at the <b>97.5th percentile</b>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>When can Binomial be approximated by Normal?</h3>
+        <p>As n grows large in a Binomial distribution, its shape becomes smoother and increasingly bell-like — you may have noticed this already in the Module 1 simulator with large n near p = 0.5. A common rule of thumb: if <code>n·p ≥ 5</code> and <code>n·(1−p) ≥ 5</code>, the Binomial(n, p) can be reasonably approximated by a Normal distribution with μ = n·p and σ = √(n·p·(1−p)). This is a preview of the Central Limit Theorem you'll see formally in Module 4.</p>
+      </div>
+
+      <div class="callout misconception">"Normal" doesn't mean "typical" or "the default distribution real-world data follows." Many real quantities — income, city population, word frequency — are heavily skewed, not Normal. The name is historical, not a claim that it's the natural baseline for everything.</div>
+
+      <div class="callout takeaway">The Normal distribution is defined entirely by μ and σ. Once you know those two numbers, the empirical rule and z-scores let you reason about probabilities without ever touching the density formula directly.</div>
+    </div>
+
+    <!-- QUIZ 3 -->
+    <div class="quiz-shell m3-accent" id="quiz3">
+      <h3>Module 3 Check — Normal Distribution</h3>
+      <div class="sub">4 questions · instant feedback · unlocks Module 4</div>
+      <div id="quiz3Questions"></div>
+      <button class="quiz-submit" id="quiz3Submit">Submit Answers</button>
+      <div class="quiz-result" id="quiz3Result">
+        <div class="score" id="quiz3Score">0/4</div>
+        <div class="msg" id="quiz3Msg"></div>
+        <button class="next-module-btn" id="quiz3Next">Continue to Module 4 — Mastery →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODULE 4: MASTERY ============ -->
+  <section class="section" id="module4">
+    <div class="module-card m4 m4-accent">
+      <div class="module-head">
+        <div class="module-badge">4</div>
+        <div><h2>Choosing &amp; Connecting the Three</h2><div class="sub">Application &amp; Mastery</div></div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>Side-by-side comparison</h3>
+        <table class="compare-table">
+          <thead><tr><th>Property</th><th>Binomial</th><th>Poisson</th><th>Normal</th></tr></thead>
+          <tbody>
+            <tr><td>Type</td><td>Discrete</td><td>Discrete</td><td>Continuous</td></tr>
+            <tr><td>Parameters</td><td>n, p</td><td>λ</td><td>μ, σ</td></tr>
+            <tr><td>Describes</td><td>Count of successes in n fixed trials</td><td>Count of events in a fixed interval</td><td>A continuously measured quantity</td></tr>
+            <tr><td>Mean</td><td>n·p</td><td>λ</td><td>μ</td></tr>
+            <tr><td>Variance</td><td>n·p·(1−p)</td><td>λ</td><td>σ²</td></tr>
+            <tr><td>Ask yourself</td><td>"How many trials, and what's success?"</td><td>"What's the average rate over this window?"</td><td>"Is this a measurement, not a count?"</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3>The Central Limit Theorem: why Normal shows up everywhere</h3>
+        <p>The <b>Central Limit Theorem (CLT)</b> is the reason the Normal distribution keeps reappearing throughout this course, even in Modules about entirely different distributions. It states: <i>if you take many independent samples from almost any distribution and look at the distribution of their <b>averages</b> (or sums), that distribution of averages approaches Normal as the sample size grows — regardless of the shape of the original distribution.</i></p>
+        <div class="callout analogy">Imagine rolling a single six-sided die — the outcomes 1 through 6 are equally likely, a flat distribution, not bell-shaped at all. Now roll <b>5 dice</b> and record the <i>average</i>. Do that thousands of times. The average is rarely exactly 1 or exactly 6 — most averages cluster near 3.5, tapering off symmetrically. That clustering-and-tapering is the Normal shape emerging from a distribution that wasn't Normal at all.</div>
+
+        <div class="diagram-panel">
+          <h4>CLT Simulator — average of rolling N dice, repeated 2,000 times</h4>
+          <svg class="chart-svg" id="cltChart" viewBox="0 0 640 260"></svg>
+          <div class="control-row">
+            <div class="control-item">
+              <label>Dice averaged per sample (N) <b id="cltNVal">1</b></label>
+              <input type="range" id="cltN" min="1" max="12" value="1">
+            </div>
+          </div>
+          <div class="stat-chip-row">
+            <div class="stat-chip" id="cltHint">N = 1: this is just a single die roll — flat, not Normal yet.</div>
+          </div>
+        </div>
+        <div class="callout takeaway">Slide N up from 1 to 12 and watch a flat, uniform distribution morph into a bell curve. This is the same mathematical force that lets a Normal distribution approximate a Binomial with large n, and it's why so many real-world measurements — which are often the sum of many small independent effects — end up looking roughly Normal even when no one designed them to.</div>
+      </div>
+
+      <div class="lesson-block">
+        <h3>Choosing the right distribution — practice scenarios</h3>
+        <div class="exercise-box">
+          <h4>Exercise 4.1</h4>
+          <p><b>Scenario A:</b> You flip a fair coin 15 times and count how many land heads.</p>
+          <button class="reveal-btn" data-reveal="ex4-1">Which distribution, and why?</button>
+          <div class="reveal-content" id="ex4-1"><p><b>Binomial(n=15, p=0.5)</b> — fixed number of trials, two outcomes per trial, constant probability, independent flips. Textbook Binomial setup.</p></div>
+        </div>
+        <div class="exercise-box">
+          <h4>Exercise 4.2</h4>
+          <p><b>Scenario B:</b> A website logs an average of 12 sign-ups per day and you want the distribution of daily sign-up counts.</p>
+          <button class="reveal-btn" data-reveal="ex4-2">Which distribution, and why?</button>
+          <div class="reveal-content" id="ex4-2"><p><b>Poisson(λ=12)</b> — no fixed "number of trials," just a count of independent events (sign-ups) over a fixed interval (a day) at a known average rate.</p></div>
+        </div>
+        <div class="exercise-box">
+          <h4>Exercise 4.3</h4>
+          <p><b>Scenario C:</b> You measure the exact weight (in grams) of 500 apples from an orchard.</p>
+          <button class="reveal-btn" data-reveal="ex4-3">Which distribution, and why?</button>
+          <div class="reveal-content" id="ex4-3"><p><b>Normal(μ, σ)</b> — weight is a continuous measurement, not a count, and biological measurements like this commonly cluster symmetrically around an average due to many small independent growth factors (a CLT-flavored intuition).</p></div>
+        </div>
+      </div>
+
+      <div class="callout misconception">Choosing a distribution isn't about which formula looks most convenient — it's about matching the <i>structure</i> of the real process (fixed trials vs. rate-based counts vs. continuous measurement) to the distribution's assumptions. When the structure doesn't fit, the numbers you get out are meaningless even if the arithmetic is correct.</div>
+
+      <div class="callout takeaway">Binomial counts successes out of a known number of attempts. Poisson counts events at a known rate with no fixed number of attempts. Normal describes continuous measurements — and, via the Central Limit Theorem, describes the behavior of averages and sums of almost anything, including Binomial and Poisson themselves at large scale.</div>
+    </div>
+
+    <!-- QUIZ 4 -->
+    <div class="quiz-shell m4-accent" id="quiz4">
+      <h3>Module 4 Check — Choosing &amp; Connecting</h3>
+      <div class="sub">4 questions · instant feedback · unlocks the Final Challenge</div>
+      <div id="quiz4Questions"></div>
+      <button class="quiz-submit" id="quiz4Submit">Submit Answers</button>
+      <div class="quiz-result" id="quiz4Result">
+        <div class="score" id="quiz4Score">0/4</div>
+        <div class="msg" id="quiz4Msg"></div>
+        <button class="next-module-btn" id="quiz4Next">Continue to Final Challenge →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL SECTION ============ -->
+  <section class="section" id="finalSection">
+    <div class="module-card">
+      <div class="module-head">
+        <div class="module-badge" style="background:linear-gradient(150deg,var(--indigo),var(--indigo-deep));">★</div>
+        <div><h2>Final Practical Challenge</h2><div class="sub">Apply all three distributions in one scenario</div></div>
+      </div>
+
+      <div class="lesson-block">
+        <p>You're a data analyst at a regional call center. Work through all three parts below — each uses a different distribution from this course.</p>
+
+        <div class="exercise-box">
+          <h4>Part A — Poisson</h4>
+          <p>The call center receives an average of <b>8 calls per 10-minute window</b> (λ = 8). What is the probability of receiving <b>exactly 5 calls</b> in a given 10-minute window?</p>
+          <button class="reveal-btn" data-reveal="final-a">Show solution</button>
+          <div class="reveal-content" id="final-a">
+            <p>P(X=5) = (8<sup>5</sup> · e<sup>−8</sup>) / 5! = (32768 × 0.000335) / 120 ≈ <b>0.0916</b>, about 9.2%.</p>
+          </div>
+        </div>
+
+        <div class="exercise-box">
+          <h4>Part B — Binomial</h4>
+          <p>Historically, <b>4% of calls</b> result in a formal complaint (p = 0.04). In a batch of <b>50 calls</b> (n = 50), what is the <i>expected number</i> of complaints, and what distribution governs the exact count?</p>
+          <button class="reveal-btn" data-reveal="final-b">Show solution</button>
+          <div class="reveal-content" id="final-b">
+            <p>Expected complaints = n·p = 50 × 0.04 = <b>2 complaints</b>. The exact count of complaints in 50 calls follows a <b>Binomial(n=50, p=0.04)</b> distribution — fixed number of trials (calls), two outcomes (complaint or not), constant probability, independent calls.</p>
+          </div>
+        </div>
+
+        <div class="exercise-box">
+          <h4>Part C — Normal (via CLT)</h4>
+          <p>Average call-handling time across many agents is roughly Normal with μ = 6.2 minutes and σ = 1.4 minutes. What z-score corresponds to a call that took <b>9 minutes</b>, and is that unusually long?</p>
+          <button class="reveal-btn" data-reveal="final-c">Show solution</button>
+          <div class="reveal-content" id="final-c">
+            <p>z = (9 − 6.2) / 1.4 ≈ <b>2.00</b>. A z-score of 2 sits at roughly the 97.5th percentile — this call is notably longer than about 97–98% of calls, worth flagging as an outlier.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout takeaway">Notice the pattern: you didn't need three different mental frameworks, only one question each time — "is this counting successes out of fixed attempts, counting events at a rate, or measuring something continuous?" That question is the whole skill this course was built to teach.</div>
+    </div>
+
+    <!-- CHEAT SHEET -->
+    <div class="cheat-sheet" id="cheatSheet">
+      <div class="module-head">
+        <div><h2 style="margin:0;">📋 Cheat Sheet</h2><div class="sub" style="font-family:var(--mono); font-size:.72rem; color:var(--text-faint);">Printable quick reference</div></div>
+        <button class="print-btn" id="printBtn" style="margin-left:auto;">🖨 Print / Save PDF</button>
+      </div>
+      <table class="compare-table">
+        <thead><tr><th>Distribution</th><th>Formula</th><th>Mean</th><th>Variance</th><th>Use when…</th></tr></thead>
+        <tbody>
+          <tr><td>Binomial(n, p)</td><td>C(n,k)·p<sup>k</sup>·(1−p)<sup>n−k</sup></td><td>n·p</td><td>n·p·(1−p)</td><td>Fixed # trials, 2 outcomes, constant p, independent</td></tr>
+          <tr><td>Poisson(λ)</td><td>λ<sup>k</sup>e<sup>−λ</sup>/k!</td><td>λ</td><td>λ</td><td>Counting events at a known rate over an interval</td></tr>
+          <tr><td>Normal(μ, σ)</td><td>(1/σ√2π)·e<sup>−(x−μ)²/2σ²</sup></td><td>μ</td><td>σ²</td><td>Continuous measurement; sums/averages of many things (CLT)</td></tr>
+        </tbody>
+      </table>
+      <div class="lesson-block">
+        <h3 style="font-size:.95rem;">Summary notes</h3>
+        <ul style="font-size:.85rem;">
+          <li>Empirical rule: 68% within 1σ, 95% within 2σ, 99.7% within 3σ of the Normal mean.</li>
+          <li>Z-score: z = (x − μ) / σ — standardizes any Normal value for comparison.</li>
+          <li>Binomial → Normal approximation valid when n·p ≥ 5 and n·(1−p) ≥ 5.</li>
+          <li>Poisson is the limit of Binomial as n→∞, p→0, with n·p held constant at λ.</li>
+          <li>CLT: averages of samples from almost any distribution trend toward Normal as sample size grows.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CONTINUE LEARNING -->
+    <div class="module-card">
+      <h2>Continue Learning</h2>
+      <div class="resource-grid">
+        <div class="resource-card">
+          <h4>📚 Books</h4>
+          <ul>
+            <li><i>Introduction to Probability</i> — Blitzstein &amp; Hwang</li>
+            <li><i>All of Statistics</i> — Larry Wasserman</li>
+            <li><i>Probability and Statistics for Engineers</i> — Walpole et al.</li>
+          </ul>
+        </div>
+        <div class="resource-card">
+          <h4>📖 Documentation</h4>
+          <ul>
+            <li><code>scipy.stats</code> — binom, poisson, norm modules</li>
+            <li>Wolfram MathWorld — Distribution reference pages</li>
+            <li>NIST/SEMATECH e-Handbook of Statistical Methods</li>
+          </ul>
+        </div>
+        <div class="resource-card">
+          <h4>🔬 Research Directions</h4>
+          <ul>
+            <li>History of the Poisson process in queueing theory</li>
+            <li>De Moivre–Laplace theorem (Normal approximation to Binomial)</li>
+            <li>Modern CLT variants for dependent/non-identical samples</li>
+          </ul>
+        </div>
+        <div class="resource-card">
+          <h4>💬 Communities</h4>
+          <ul>
+            <li>Cross Validated (stats.stackexchange.com)</li>
+            <li>r/statistics, r/AskStatistics</li>
+            <li>Local university statistics office hours / study groups</li>
+          </ul>
+        </div>
+        <div class="resource-card">
+          <h4>🧪 Practice Platforms</h4>
+          <ul>
+            <li>Khan Academy — Statistics &amp; Probability course</li>
+            <li>Brilliant.org — Probability courses</li>
+            <li>DataCamp / StatQuest (YouTube) for applied walkthroughs</li>
+          </ul>
+        </div>
+        <div class="resource-card">
+          <h4>🔎 Search Keywords</h4>
+          <div class="kw-tags">
+            <span class="kw-tag">binomial vs poisson</span>
+            <span class="kw-tag">central limit theorem explained</span>
+            <span class="kw-tag">empirical rule statistics</span>
+            <span class="kw-tag">z-score calculator</span>
+            <span class="kw-tag">poisson process</span>
+          </div>
+        </div>
+      </div>
+      <div class="resource-card" style="margin-top:16px;">
+        <h4>🤖 Prompts to keep learning with Claude</h4>
+        <ul>
+          <li>"Quiz me on when to use Binomial vs Poisson vs Normal with 5 new real-world scenarios."</li>
+          <li>"Walk me through deriving the mean of a Binomial distribution step by step."</li>
+          <li>"Explain the Poisson-Binomial limit relationship using a different analogy than raindrops."</li>
+          <li>"Give me 3 practice problems that require choosing between all three distributions, with solutions."</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="reward-box" id="completionBadge">
+      <span class="ic">🏆</span>
+      <p><b>Course complete!</b> You've earned the <b>Distribution Master</b> badge. You can now identify, compute, and reason about Binomial, Poisson, and Normal distributions — and explain how the Central Limit Theorem ties them together.</p>
+    </div>
+  </section>
+
+
+  <footer>Probability Distributions · Interactive Learning Studio · Built with Claude · Day 41 / 60 · #60DayClaudeChallenge</footer>
+</div>
+<script>
+(function(){
+"use strict";
+const $ = (id)=>document.getElementById(id);
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+/* ============================================================
+   MATH UTILITIES
+   ============================================================ */
+function factorial(n){ let r=1; for(let i=2;i<=n;i++) r*=i; return r; }
+function combination(n,k){
+  if(k<0||k>n) return 0;
+  k = Math.min(k, n-k);
+  let num=1, den=1;
+  for(let i=0;i<k;i++){ num *= (n-i); den *= (i+1); }
+  return num/den;
+}
+function binomialPMF(n,p,k){ return combination(n,k) * Math.pow(p,k) * Math.pow(1-p, n-k); }
+function poissonPMF(lambda,k){ return Math.pow(lambda,k) * Math.exp(-lambda) / factorial(k); }
+function normalPDF(x,mu,sigma){ return (1/(sigma*Math.sqrt(2*Math.PI))) * Math.exp(-((x-mu)**2)/(2*sigma*sigma)); }
+function erf(x){
+  // Abramowitz-Stegun approximation
+  const sign = x<0?-1:1; x=Math.abs(x);
+  const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  const t=1/(1+p*x);
+  const y=1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+  return sign*y;
+}
+function normalCDF(x,mu,sigma){ return 0.5*(1+erf((x-mu)/(sigma*Math.sqrt(2)))); }
+
+/* ============================================================
+   CHART RENDERING (SVG)
+   ============================================================ */
+function clearSvg(svg){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
+
+function renderBarChart(svg, data, opts){
+  clearSvg(svg);
+  const W=640,H=260, padL=38,padR=14,padT=14,padB=32;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const maxV = Math.max(...data.map(d=>d.v), 1e-9);
+  const barW = plotW/data.length;
+  const color = opts.color || '#4438ca';
+
+  // axis line
+  const axis = document.createElementNS(SVGNS,'line');
+  axis.setAttribute('x1',padL); axis.setAttribute('y1',padT+plotH);
+  axis.setAttribute('x2',padL+plotW); axis.setAttribute('y2',padT+plotH);
+  axis.setAttribute('stroke','var(--border-strong)'); axis.setAttribute('stroke-width','1');
+  svg.appendChild(axis);
+
+  data.forEach((d,i)=>{
+    const barH = (d.v/maxV) * (plotH-6);
+    const x = padL + i*barW;
+    const y = padT + plotH - barH;
+    const rect = document.createElementNS(SVGNS,'rect');
+    rect.setAttribute('x', x+barW*0.12);
+    rect.setAttribute('y', y);
+    rect.setAttribute('width', Math.max(barW*0.76,1));
+    rect.setAttribute('height', Math.max(barH,0.5));
+    rect.setAttribute('fill', d.highlight ? (opts.highlightColor||'#c07a12') : color);
+    rect.setAttribute('rx','2');
+    rect.setAttribute('opacity', d.v<0.0005 ? 0.15 : 0.9);
+    svg.appendChild(rect);
+
+    if(data.length<=25 || i % Math.ceil(data.length/25)===0){
+      const label = document.createElementNS(SVGNS,'text');
+      label.setAttribute('x', x+barW/2);
+      label.setAttribute('y', padT+plotH+14);
+      label.setAttribute('text-anchor','middle');
+      label.setAttribute('font-size','9');
+      label.setAttribute('fill','var(--text-faint)');
+      label.setAttribute('font-family','JetBrains Mono, monospace');
+      label.textContent = d.k;
+      svg.appendChild(label);
+    }
+  });
+}
+
+function renderCurve(svg, points, opts){
+  clearSvg(svg);
+  const W=640,H=260, padL=38,padR=14,padT=14,padB=32;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const xs = points.map(p=>p.x), ys = points.map(p=>p.y);
+  const xMin=Math.min(...xs), xMax=Math.max(...xs), yMax=Math.max(...ys,1e-9);
+
+  const axis = document.createElementNS(SVGNS,'line');
+  axis.setAttribute('x1',padL); axis.setAttribute('y1',padT+plotH);
+  axis.setAttribute('x2',padL+plotW); axis.setAttribute('y2',padT+plotH);
+  axis.setAttribute('stroke','var(--border-strong)'); axis.setAttribute('stroke-width','1');
+  svg.appendChild(axis);
+
+  function xFor(x){ return padL + ((x-xMin)/(xMax-xMin))*plotW; }
+  function yFor(y){ return padT + plotH - (y/yMax)*(plotH-8); }
+
+  // shaded bands (68/95/99.7) if provided
+  if(opts.bands){
+    opts.bands.forEach(band=>{
+      const pathPts = points.filter(p=>p.x>=band.from && p.x<=band.to);
+      if(!pathPts.length) return;
+      let d = 'M '+xFor(pathPts[0].x)+' '+(padT+plotH);
+      pathPts.forEach(p=> d += ' L '+xFor(p.x)+' '+yFor(p.y));
+      d += ' L '+xFor(pathPts[pathPts.length-1].x)+' '+(padT+plotH)+' Z';
+      const path = document.createElementNS(SVGNS,'path');
+      path.setAttribute('d',d);
+      path.setAttribute('fill', band.color);
+      path.setAttribute('opacity', band.opacity);
+      svg.appendChild(path);
+    });
+  }
+
+  let d = 'M '+xFor(points[0].x)+' '+yFor(points[0].y);
+  points.forEach(p=> d += ' L '+xFor(p.x)+' '+yFor(p.y));
+  const path = document.createElementNS(SVGNS,'path');
+  path.setAttribute('d',d);
+  path.setAttribute('fill','none');
+  path.setAttribute('stroke', opts.color||'#7d3bd1');
+  path.setAttribute('stroke-width','2.5');
+  svg.appendChild(path);
+
+  if(opts.markX !== undefined){
+    const mx = xFor(opts.markX);
+    const line = document.createElementNS(SVGNS,'line');
+    line.setAttribute('x1',mx); line.setAttribute('y1',padT);
+    line.setAttribute('x2',mx); line.setAttribute('y2',padT+plotH);
+    line.setAttribute('stroke','#c0392b'); line.setAttribute('stroke-width','1.5'); line.setAttribute('stroke-dasharray','4,3');
+    svg.appendChild(line);
+  }
+
+  [xMin, (xMin+xMax)/2, xMax].forEach(xv=>{
+    const label = document.createElementNS(SVGNS,'text');
+    label.setAttribute('x', xFor(xv)); label.setAttribute('y', padT+plotH+16);
+    label.setAttribute('text-anchor','middle'); label.setAttribute('font-size','9');
+    label.setAttribute('fill','var(--text-faint)'); label.setAttribute('font-family','JetBrains Mono, monospace');
+    label.textContent = Math.round(xv);
+    svg.appendChild(label);
+  });
+}
+
+/* ============================================================
+   MODULE 1 — BINOMIAL SIMULATOR
+   ============================================================ */
+function updateBinomialChart(){
+  const n = parseInt($('binomN').value,10);
+  const p = parseInt($('binomP').value,10)/100;
+  $('binomNVal').textContent = n;
+  $('binomPVal').textContent = p.toFixed(2);
+  const data = [];
+  for(let k=0;k<=n;k++) data.push({k, v: binomialPMF(n,p,k)});
+  renderBarChart($('binomChart'), data, {color:'#1d6fd6'});
+  const mean = n*p, variance = n*p*(1-p);
+  $('binomMean').textContent = mean.toFixed(2);
+  $('binomVar').textContent = variance.toFixed(2);
+  $('binomSd').textContent = Math.sqrt(variance).toFixed(2);
+}
+['binomN','binomP'].forEach(id=>$(id) && $(id).addEventListener('input', updateBinomialChart));
+
+/* ============================================================
+   MODULE 2 — POISSON SIMULATOR
+   ============================================================ */
+function updatePoissonChart(){
+  const lambda = parseInt($('poissonL').value,10)/10;
+  $('poissonLVal').textContent = lambda.toFixed(1);
+  const maxK = Math.max(20, Math.ceil(lambda*3));
+  const data = [];
+  for(let k=0;k<=maxK;k++) data.push({k, v: poissonPMF(lambda,k)});
+  renderBarChart($('poissonChart'), data, {color:'#c07a12'});
+  $('poissonMean').textContent = lambda.toFixed(2);
+  $('poissonVar').textContent = lambda.toFixed(2);
+  $('poissonSd').textContent = Math.sqrt(lambda).toFixed(2);
+}
+$('poissonL') && $('poissonL').addEventListener('input', updatePoissonChart);
+
+/* ============================================================
+   MODULE 3 — NORMAL CURVE + Z-SCORE
+   ============================================================ */
+function updateNormalChart(){
+  const mu = parseInt($('normalMu').value,10);
+  const sigma = parseInt($('normalSig').value,10);
+  $('normalMuVal').textContent = mu;
+  $('normalSigVal').textContent = sigma;
+  const points = [];
+  for(let x=mu-4*sigma; x<=mu+4*sigma; x+= (8*sigma)/120) points.push({x, y: normalPDF(x,mu,sigma)});
+  renderCurve($('normalChart'), points, {
+    color:'#7d3bd1',
+    bands:[
+      {from:mu-3*sigma, to:mu+3*sigma, color:'#7d3bd1', opacity:0.08},
+      {from:mu-2*sigma, to:mu+2*sigma, color:'#7d3bd1', opacity:0.12},
+      {from:mu-1*sigma, to:mu+1*sigma, color:'#7d3bd1', opacity:0.18}
+    ]
+  });
+}
+['normalMu','normalSig'].forEach(id=>$(id) && $(id).addEventListener('input', updateNormalChart));
+
+function updateZScore(){
+  const x = parseInt($('zX').value,10);
+  const mu = parseInt($('zMu').value,10);
+  const sigma = Math.max(parseInt($('zSigma').value,10),1);
+  $('zXVal').textContent = x; $('zMuVal').textContent = mu; $('zSigmaVal').textContent = sigma;
+  const z = (x-mu)/sigma;
+  $('zResult').textContent = z.toFixed(2);
+  const pct = normalCDF(x,mu,sigma)*100;
+  $('zPercentile').textContent = pct.toFixed(1)+'%';
+}
+['zX','zMu','zSigma'].forEach(id=>$(id) && $(id).addEventListener('input', updateZScore));
+
+/* ============================================================
+   MODULE 4 — CLT SIMULATOR (average of N dice, repeated trials)
+   ============================================================ */
+function updateCltChart(){
+  const N = parseInt($('cltN').value,10);
+  $('cltNVal').textContent = N;
+  const trials = 2000;
+  const counts = {};
+  for(let t=0;t<trials;t++){
+    let sum=0;
+    for(let d=0; d<N; d++) sum += 1+Math.floor(Math.random()*6);
+    const avg = Math.round((sum/N)*4)/4; // bucket to quarter-steps
+    counts[avg] = (counts[avg]||0)+1;
+  }
+  const keys = Object.keys(counts).map(Number).sort((a,b)=>a-b);
+  const data = keys.map(k=>({k: k.toFixed(2), v: counts[k]}));
+  renderBarChart($('cltChart'), data, {color:'#11816b'});
+  const hint = N===1
+    ? 'N = 1: this is just a single die roll — flat, not Normal yet.'
+    : N<4
+    ? 'N = '+N+': already less flat — a hint of central clustering appears.'
+    : 'N = '+N+': clearly bell-shaped now — the Central Limit Theorem in action.';
+  $('cltHint').innerHTML = hint;
+}
+$('cltN') && $('cltN').addEventListener('input', updateCltChart);
+
+/* ============================================================
+   REVEAL BUTTONS
+   ============================================================ */
+document.querySelectorAll('.reveal-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = $(btn.dataset.reveal);
+    const showing = target.classList.toggle('show');
+    btn.textContent = showing ? 'Hide solution' : (btn.textContent.replace('Hide','Show'));
+    if(!showing) btn.textContent = btn.textContent.replace('Hide','Show');
+    else btn.textContent = btn.textContent.replace('Show','Hide').replace('Which distribution, and why?','Hide answer');
+  });
+});
+
+/* ============================================================
+   QUIZ DATA
+   ============================================================ */
+const QUIZZES = {
+  quiz1:[
+    {q:"Which of the following is NOT a requirement for a Binomial distribution?", opts:["A fixed number of trials","Two possible outcomes per trial","Outcomes must be measured on a continuous scale","Independent trials with constant probability of success"], correct:2, explain:"Binomial trials must have exactly two discrete outcomes (success/failure) — 'continuous outcomes' describes distributions like the Normal, not the Binomial."},
+    {q:"For a Binomial distribution with n=5 and p=0.5, what is P(X=5), i.e. all five trials succeed?", opts:["0.5","0.03125","0.15625","0.5⁵ is undefined"], correct:1, explain:"P(X=5) = C(5,5)·(0.5)⁵·(0.5)⁰ = 1 × 0.03125 × 1 = 0.03125."},
+    {q:"In the Binomial formula P(X=k) = C(n,k)·pᵏ·(1−p)ⁿ⁻ᵏ, what does C(n,k) represent?", opts:["The probability of success", "The number of ways to arrange k successes among n trials", "The variance of the distribution", "The mean number of failures"], correct:1, explain:"C(n,k), 'n choose k', counts the number of distinct orderings of k successes within n trials."},
+    {q:"What is the variance of a Binomial(n=20, p=0.3) distribution?", opts:["6", "4.2", "0.3", "20"], correct:1, explain:"Variance = n·p·(1−p) = 20 × 0.3 × 0.7 = 4.2."}
+  ],
+  quiz2:[
+    {q:"The Poisson distribution is most appropriate for modeling:", opts:["A fixed number of yes/no trials", "The count of independent events occurring at a known average rate over an interval", "A continuously measured quantity like height", "The ranking of items in a list"], correct:1, explain:"Poisson models event counts over time/space at a constant average rate, without a fixed 'number of trials.'"},
+    {q:"What does the parameter λ (lambda) represent in a Poisson distribution?", opts:["The number of trials", "The probability of success per trial", "The average rate of events per interval", "The standard deviation"], correct:2, explain:"λ is the average number of events expected in the given interval — Poisson's only parameter."},
+    {q:"As λ increases, the shape of the Poisson distribution tends to:", opts:["Stay exactly the same", "Become more skewed and irregular", "Approach a symmetric, bell-like (Normal) shape", "Become bimodal"], correct:2, explain:"For larger λ, Poisson increasingly resembles a Normal distribution — a preview of the Central Limit Theorem."},
+    {q:"For a Poisson distribution with λ = 3, what is the variance?", opts:["9", "1.73", "3", "Cannot be determined from λ alone"], correct:2, explain:"A defining property of Poisson: variance always equals λ, so variance = 3."}
+  ],
+  quiz3:[
+    {q:"According to the empirical rule, approximately what percentage of Normally distributed data falls within 1 standard deviation of the mean?", opts:["50%", "68%", "95%", "99.7%"], correct:1, explain:"The empirical rule states ~68% of data lies within ±1σ of the mean."},
+    {q:"What does a z-score of −2.0 tell you about a value?", opts:["It's 2 units above the mean", "It's 2 standard deviations below the mean", "It has a 2% probability of occurring", "It's twice the mean"], correct:1, explain:"A z-score measures distance from the mean in standard deviations; −2.0 means 2 standard deviations below the mean."},
+    {q:"The Normal distribution's shape is best described as:", opts:["Skewed right with a long tail", "Uniform and flat", "Symmetric and bell-shaped around the mean", "Always identical regardless of σ"], correct:2, explain:"The Normal distribution is symmetric around μ, forming the classic bell curve — though its width varies with σ."},
+    {q:"A Binomial(n, p) distribution can typically be approximated by a Normal distribution when:", opts:["n is very small", "p equals exactly 0.5 only", "n·p ≥ 5 and n·(1−p) ≥ 5", "The trials are dependent"], correct:2, explain:"This rule of thumb (n·p ≥ 5 and n(1−p) ≥ 5) ensures the Binomial shape is smooth and symmetric enough for a Normal approximation to be reasonable."}
+  ],
+  quiz4:[
+    {q:"You count how many heads appear in 20 flips of a fair coin. Which distribution applies?", opts:["Poisson", "Normal", "Binomial", "None of these"], correct:2, explain:"Fixed number of trials (20), two outcomes per trial, constant probability — classic Binomial."},
+    {q:"A hospital records an average of 3 emergency arrivals per hour and wants the distribution of arrivals per hour. Which distribution applies?", opts:["Binomial", "Poisson", "Normal", "Uniform"], correct:1, explain:"Counting independent events at a known average rate over a fixed interval, with no fixed 'number of trials' — Poisson."},
+    {q:"You measure the exact blood pressure of 1,000 patients. Which distribution most naturally applies?", opts:["Binomial", "Poisson", "Normal", "None — blood pressure has no distribution"], correct:2, explain:"Blood pressure is a continuous measurement that tends to cluster symmetrically around a population mean — a Normal model."},
+    {q:"What does the Central Limit Theorem state?", opts:["All data is eventually Binomial", "Averages of samples from almost any distribution trend toward Normal as sample size grows", "Poisson and Binomial are always identical", "Standard deviation always equals the mean"], correct:1, explain:"The CLT is exactly this: regardless of the original distribution's shape, the distribution of sample averages approaches Normal as n grows."}
+  ]
+};
+
+function renderQuiz(quizId){
+  const container = $(quizId+'Questions');
+  const accentMap = {quiz1:'var(--blue)', quiz2:'var(--amber)', quiz3:'var(--violet)', quiz4:'var(--teal)'};
+  container.innerHTML = '';
+  QUIZZES[quizId].forEach((item, qi)=>{
+    const qDiv = document.createElement('div');
+    qDiv.className = 'quiz-q';
+    qDiv.style.setProperty('--acc', accentMap[quizId]);
+    const qText = document.createElement('div');
+    qText.className = 'qtext';
+    qText.textContent = (qi+1)+'. '+item.q;
+    qDiv.appendChild(qText);
+    item.opts.forEach((opt, oi)=>{
+      const label = document.createElement('label');
+      label.className = 'quiz-opt';
+      label.innerHTML = `<input type="radio" name="${quizId}_q${qi}" value="${oi}"><span>${opt}</span>`;
+      qDiv.appendChild(label);
+    });
+    const explain = document.createElement('div');
+    explain.className = 'quiz-explain';
+    explain.id = quizId+'_explain'+qi;
+    explain.textContent = item.explain;
+    qDiv.appendChild(explain);
+    container.appendChild(qDiv);
+  });
+}
+
+function gradeQuiz(quizId, nextSectionId, moduleIdx){
+  const items = QUIZZES[quizId];
+  let score = 0;
+  items.forEach((item, qi)=>{
+    const selected = document.querySelector(`input[name="${quizId}_q${qi}"]:checked`);
+    const selVal = selected ? parseInt(selected.value,10) : -1;
+    const opts = document.querySelectorAll(`#${quizId}Questions .quiz-q:nth-child(${qi+1}) .quiz-opt`);
+    opts.forEach((optEl, oi)=>{
+      if(oi === item.correct) optEl.classList.add('correct-answer');
+      else if(oi === selVal) optEl.classList.add('wrong-answer');
+    });
+    $(quizId+'_explain'+qi).classList.add('show');
+    if(selVal === item.correct) score++;
+  });
+  $(quizId+'Score').textContent = score+'/4';
+  const msgs = {4:"Perfect score! You've mastered this module.", 3:"Great work — solid understanding.", 2:"Good effort — consider reviewing the callouts above.", 1:"Worth another pass through the lesson before moving on.", 0:"Let's revisit the key concepts above before continuing."};
+  $(quizId+'Msg').textContent = msgs[score];
+  $(quizId+'Result').classList.add('show');
+  $(quizId+'Submit').disabled = true;
+  markModuleComplete(moduleIdx);
+}
+
+['quiz1','quiz2','quiz3','quiz4'].forEach(qid=>renderQuiz(qid));
+
+$('quiz1Submit').addEventListener('click', ()=>gradeQuiz('quiz1','module2',1));
+$('quiz2Submit').addEventListener('click', ()=>gradeQuiz('quiz2','module3',2));
+$('quiz3Submit').addEventListener('click', ()=>gradeQuiz('quiz3','module4',3));
+$('quiz4Submit').addEventListener('click', ()=>gradeQuiz('quiz4','finalSection',4));
+
+$('quiz1Next').addEventListener('click', ()=>goToSection('module2'));
+$('quiz2Next').addEventListener('click', ()=>goToSection('module3'));
+$('quiz3Next').addEventListener('click', ()=>goToSection('module4'));
+$('quiz4Next').addEventListener('click', ()=>{ goToSection('finalSection'); markModuleComplete(5); });
+
+/* ============================================================
+   PROGRESS / NAVIGATION / PERSISTENCE
+   ============================================================ */
+const SECTIONS = ['introSection','module1','module2','module3','module4','finalSection'];
+let progress = loadProgress();
+
+function loadProgress(){
+  try{
+    const raw = localStorage.getItem('ils_probdist_progress');
+    return raw ? JSON.parse(raw) : {completed:[0]};
+  }catch(e){ return {completed:[0]}; }
+}
+function saveProgress(){ try{ localStorage.setItem('ils_probdist_progress', JSON.stringify(progress)); }catch(e){} }
+
+function markModuleComplete(idx){
+  if(!progress.completed.includes(idx)) progress.completed.push(idx);
+  saveProgress();
+  updateNavState();
+}
+
+function updateNavState(){
+  const pills = document.querySelectorAll('.nav-pill');
+  pills.forEach((pill, idx)=>{
+    pill.classList.remove('locked','unlocked','done');
+    if(progress.completed.includes(idx)) pill.classList.add('done');
+    else if(progress.completed.includes(idx-1) || idx===0) pill.classList.add('unlocked');
+    else pill.classList.add('locked');
+  });
+  const pct = Math.round((progress.completed.length / SECTIONS.length) * 100);
+  $('progressFill').style.width = pct+'%';
+  $('progressLabel').textContent = pct+'% complete';
+}
+
+function goToSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+  // trigger chart renders for freshly-shown module
+  if(id==='module1') updateBinomialChart();
+  if(id==='module2') updatePoissonChart();
+  if(id==='module3'){ updateNormalChart(); updateZScore(); }
+  if(id==='module4') updateCltChart();
+}
+
+document.querySelectorAll('.nav-pill').forEach((pill, idx)=>{
+  pill.addEventListener('click', ()=>{
+    if(pill.classList.contains('locked')) return;
+    goToSection(pill.dataset.target);
+  });
+});
+$('startCourseBtn').addEventListener('click', ()=>{ markModuleComplete(0); goToSection('module1'); });
+
+$('resetBtn').addEventListener('click', ()=>{
+  if(!confirm('Reset all course progress? This clears your saved completion state.')) return;
+  progress = {completed:[0]};
+  saveProgress();
+  document.querySelectorAll('.quiz-result').forEach(r=>r.classList.remove('show'));
+  document.querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('correct-answer','wrong-answer'));
+  document.querySelectorAll('.quiz-explain').forEach(e=>e.classList.remove('show'));
+  document.querySelectorAll('.quiz-submit').forEach(b=>b.disabled=false);
+  document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+  updateNavState();
+  goToSection('introSection');
+});
+
+$('themeBtn').addEventListener('click', ()=>{
+  const isDark = document.body.getAttribute('data-theme')==='dark';
+  document.body.setAttribute('data-theme', isDark?'light':'dark');
+  $('themeBtn').textContent = isDark ? '☾' : '☀';
+});
+
+$('printBtn').addEventListener('click', ()=>window.print());
+
+/* ============================================================
+   INIT
+   ============================================================ */
+updateNavState();
+updateBinomialChart();
+updatePoissonChart();
+updateNormalChart();
+updateZScore();
+updateCltChart();
+
+})();
+</script>
+
+</body>
+</html>
