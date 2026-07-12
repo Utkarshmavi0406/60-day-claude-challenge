@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Workflow Architect — Delinquency &amp; Default Trend Monitoring</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#0b0f14;
+  --bg-soft:#0f151c;
+  --surface:#131a22;
+  --surface-2:#182028;
+  --border:#232e39;
+  --border-strong:#334353;
+  --text:#e8edf2;
+  --text-dim:#95a3b3;
+  --text-faint:#5c6b7a;
+  --cyan:#2dd4da;
+  --cyan-deep:#1aa3a8;
+  --cyan-soft:#0e2e30;
+  --amber:#f2b134;
+  --amber-soft:#332b12;
+  --red:#ef4444;
+  --red-soft:#3a1616;
+  --green:#34d399;
+  --green-soft:#0f2e24;
+  --violet:#a78bfa;
+  --violet-soft:#241f3d;
+  --radius:16px;
+  --display:'Manrope', sans-serif;
+  --body:'Inter', sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, monospace;
+  --shadow:0 20px 50px rgba(0,0,0,.4);
+}
+[data-theme="light"]{
+  --bg:#f4f6f8; --bg-soft:#eceff2; --surface:#ffffff; --surface-2:#f7f9fa;
+  --border:#dde3e9; --border-strong:#c3ccd6; --text:#131a22; --text-dim:#576572; --text-faint:#93a0ac;
+  --cyan-soft:#e0f7f8; --amber-soft:#fbeed2; --red-soft:#fbe2e2; --green-soft:#dcf5ea; --violet-soft:#ede8fd;
+  --shadow:0 20px 50px rgba(20,30,45,.10);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:
+    radial-gradient(1100px 600px at 100% -12%, var(--cyan-soft), transparent 55%),
+    var(--bg);
+  color:var(--text); font-family:var(--body); min-height:100vh; transition:background .3s, color .3s;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size:40px 40px; opacity:.35;
+  mask-image:radial-gradient(ellipse 80% 55% at 75% 0%, black, transparent 70%);
+}
+button{ font-family:inherit; }
+::selection{ background:var(--cyan); color:#04211f; }
+h1,h2,h3,h4{ font-family:var(--display); font-weight:800; letter-spacing:-.01em; margin:0; }
+code{ font-family:var(--mono); background:var(--surface-2); border:1px solid var(--border); border-radius:5px; padding:1px 6px; font-size:.85em; }
+
+.app-shell{ position:relative; z-index:1; display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+@media (max-width:940px){ .app-shell{ grid-template-columns:1fr; } .sidebar{ position:static; height:auto; } }
+
+/* ---------------- Sidebar ---------------- */
+.sidebar{ background:var(--surface); border-right:1px solid var(--border); padding:20px 14px; position:sticky; top:0; height:100vh; overflow-y:auto; display:flex; flex-direction:column; }
+.brand{ display:flex; align-items:center; gap:11px; padding:6px 8px 18px; }
+.brand-mark{ width:38px; height:38px; border-radius:10px; background:linear-gradient(150deg, var(--cyan), var(--cyan-deep)); display:flex; align-items:center; justify-content:center; color:#04211f; font-family:var(--display); font-weight:800; font-size:1rem; flex-shrink:0; }
+.brand-text h1{ font-size:.92rem; margin:0; line-height:1.25; }
+.brand-text span{ font-family:var(--mono); font-size:.6rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; }
+
+.nav-section-label{ font-family:var(--mono); font-size:.62rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); padding:14px 12px 6px; }
+.nav-list{ display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; cursor:pointer;
+  font-size:.82rem; font-weight:600; color:var(--text-dim); transition:all .15s ease; border:1px solid transparent;
+}
+.nav-item .ic{ font-size:.95rem; width:20px; text-align:center; flex-shrink:0; }
+.nav-item .stage-check{ margin-left:auto; width:16px; height:16px; border-radius:5px; border:1.5px solid var(--border-strong); font-size:.6rem; display:flex; align-items:center; justify-content:center; color:transparent; flex-shrink:0; }
+.nav-item .stage-check.done{ background:var(--green); border-color:var(--green); color:#04211f; }
+.nav-item:hover{ background:var(--surface-2); color:var(--text); }
+.nav-item.active{ background:var(--cyan-soft); color:var(--cyan); border-color:var(--cyan-deep); }
+
+.sidebar-footer{ display:flex; flex-direction:column; gap:8px; padding-top:14px; border-top:1px solid var(--border); margin-top:14px; }
+.sidebar-btn{ display:flex; align-items:center; gap:9px; font-family:var(--mono); font-size:.7rem; padding:9px 11px; border-radius:9px; border:1px solid var(--border); background:var(--surface-2); color:var(--text-dim); cursor:pointer; }
+.sidebar-btn:hover{ color:var(--text); border-color:var(--cyan); }
+
+/* ---------------- Main ---------------- */
+.main{ padding:26px 34px 90px; min-width:0; }
+.topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
+.topbar h2{ font-size:1.5rem; }
+.topbar .sub{ font-family:var(--mono); font-size:.72rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; margin-top:3px; }
+.topbar-actions{ display:flex; gap:10px; align-items:center; }
+
+.view{ display:none; animation:fadeIn .35s ease; }
+.view.active{ display:block; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+.card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); margin-bottom:18px; }
+.card h3{ font-size:1.08rem; margin-bottom:4px; }
+.card .card-sub{ font-family:var(--mono); font-size:.7rem; color:var(--text-faint); margin-bottom:16px; text-transform:uppercase; letter-spacing:.04em; }
+
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+@media (max-width:900px){ .grid-2,.grid-3,.grid-4{ grid-template-columns:1fr 1fr; } }
+@media (max-width:600px){ .grid-2,.grid-3,.grid-4{ grid-template-columns:1fr; } }
+
+/* ---------------- Metric cards ---------------- */
+.metric-card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 18px; }
+.metric-card .m-label{ font-family:var(--mono); font-size:.64rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); margin-bottom:8px; }
+.metric-card .m-value{ font-family:var(--display); font-weight:800; font-size:1.5rem; color:var(--text); }
+.metric-card .m-value.accent{ color:var(--cyan); }
+
+/* ---------------- Pipeline diagram ---------------- */
+.pipeline-wrap{ overflow-x:auto; padding:10px 4px 18px; }
+.pipeline{ display:flex; align-items:stretch; gap:0; min-width:820px; }
+.pipe-node{ flex:1; display:flex; flex-direction:column; align-items:center; cursor:pointer; position:relative; padding:0 4px; }
+.pipe-node .node-circle{
+  width:56px; height:56px; border-radius:50%; background:var(--surface-2); border:2px solid var(--border-strong);
+  display:flex; align-items:center; justify-content:center; font-family:var(--display); font-weight:800; font-size:1.1rem;
+  color:var(--text-dim); transition:all .2s ease; position:relative; z-index:2;
+}
+.pipe-node.done .node-circle{ background:var(--green); border-color:var(--green); color:#04211f; }
+.pipe-node:hover .node-circle{ border-color:var(--cyan); transform:scale(1.06); }
+.pipe-node .node-label{ font-size:.76rem; font-weight:700; text-align:center; margin-top:10px; max-width:120px; }
+.pipe-node .node-time{ font-family:var(--mono); font-size:.65rem; color:var(--text-faint); margin-top:3px; }
+.pipe-connector{ flex:0 0 auto; width:40px; height:56px; display:flex; align-items:center; margin-top:0; position:relative; top:0; }
+.pipe-connector svg{ width:100%; height:8px; }
+
+/* ---------------- Progress ring ---------------- */
+.progress-ring-wrap{ position:relative; width:110px; height:110px; flex-shrink:0; }
+.progress-ring-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.progress-ring-center .n{ font-family:var(--display); font-weight:800; font-size:1.3rem; }
+.progress-ring-center .l{ font-family:var(--mono); font-size:.58rem; color:var(--text-faint); }
+
+/* ---------------- Stage view sections ---------------- */
+.stage-hero{ display:flex; align-items:center; gap:16px; margin-bottom:6px; }
+.stage-num-badge{ width:48px; height:48px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-family:var(--display); font-weight:800; font-size:1.2rem; color:#04211f; flex-shrink:0; }
+.stage-time-badge{ font-family:var(--mono); font-size:.7rem; padding:5px 12px; border-radius:20px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-dim); margin-left:auto; }
+.mark-reviewed-btn{ font-family:var(--mono); font-size:.72rem; padding:8px 14px; border-radius:9px; border:1px solid var(--border); background:var(--surface-2); color:var(--text-dim); cursor:pointer; white-space:nowrap; }
+.mark-reviewed-btn.done{ background:var(--green-soft); border-color:var(--green); color:var(--green); }
+
+.sub-section{ margin:22px 0; }
+.sub-section h4{ font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--cyan); margin:0 0 12px; display:flex; align-items:center; gap:8px; }
+.sub-section ul{ margin:0; padding-left:20px; font-size:.87rem; line-height:1.75; color:var(--text-dim); }
+.sub-section ul li{ margin-bottom:4px; }
+
+.tool-card{ background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:10px; }
+.tool-card .tname{ font-weight:700; font-size:.9rem; color:var(--text); display:flex; align-items:center; gap:8px; }
+.tool-card .tname .primary-badge{ font-family:var(--mono); font-size:.6rem; background:var(--cyan-soft); color:var(--cyan); padding:2px 8px; border-radius:10px; }
+.tool-card .twhy{ font-size:.82rem; color:var(--text-dim); margin-top:6px; line-height:1.55; }
+
+.alt-tools-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+.alt-chip{ font-family:var(--mono); font-size:.72rem; padding:5px 12px; border-radius:16px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-dim); }
+
+.prompt-card{ background:var(--surface-2); border:1px solid var(--border); border-radius:11px; padding:13px 15px; margin-bottom:10px; position:relative; }
+.prompt-card .ptext{ font-family:var(--mono); font-size:.8rem; color:var(--text); line-height:1.6; padding-right:70px; }
+.prompt-actions{ position:absolute; top:10px; right:10px; display:flex; gap:6px; }
+.prompt-actions button{ width:26px; height:26px; border-radius:7px; border:1px solid var(--border); background:var(--surface); color:var(--text-faint); cursor:pointer; font-size:.8rem; display:flex; align-items:center; justify-content:center; }
+.prompt-actions button:hover{ color:var(--text); border-color:var(--cyan); }
+.prompt-actions button.bookmarked{ background:var(--amber-soft); border-color:var(--amber); color:var(--amber); }
+.prompt-actions button.copied{ background:var(--green-soft); border-color:var(--green); color:var(--green); }
+
+.two-col-callouts{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media (max-width:760px){ .two-col-callouts{ grid-template-columns:1fr; } }
+.callout-list{ border-radius:12px; padding:14px 16px; }
+.callout-list.good{ background:var(--green-soft); border:1px solid var(--green); }
+.callout-list.bad{ background:var(--red-soft); border:1px solid var(--red); }
+.callout-list h5{ font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; margin:0 0 8px; }
+.callout-list.good h5{ color:var(--green); } .callout-list.bad h5{ color:var(--red); }
+.callout-list ul{ margin:0; padding-left:18px; font-size:.82rem; color:var(--text-dim); line-height:1.7; }
+
+.efficiency-box{ background:var(--violet-soft); border:1px solid var(--violet); border-radius:12px; padding:14px 16px; margin-top:8px; }
+.efficiency-box h5{ font-family:var(--mono); font-size:.68rem; text-transform:uppercase; color:var(--violet); margin:0 0 8px; letter-spacing:.05em; }
+.efficiency-box ul{ margin:0; padding-left:18px; font-size:.83rem; color:var(--text-dim); line-height:1.7; }
+
+.notes-area{ width:100%; min-height:90px; background:var(--surface-2); border:1px solid var(--border); border-radius:11px; padding:12px 14px; font-family:var(--body); font-size:.85rem; color:var(--text); resize:vertical; }
+.notes-area:focus{ outline:2px solid var(--cyan); outline-offset:1px; border-color:var(--cyan); }
+.notes-saved-tag{ font-family:var(--mono); font-size:.66rem; color:var(--text-faint); margin-top:6px; display:block; }
+
+/* ---------------- Decision tree ---------------- */
+.dtree-box{ background:var(--surface-2); border:1px solid var(--border-strong); border-radius:14px; padding:22px; text-align:center; }
+.dtree-question{ font-family:var(--display); font-weight:700; font-size:1.05rem; margin-bottom:16px; }
+.dtree-btns{ display:flex; gap:12px; justify-content:center; }
+.dtree-btn{ font-family:var(--mono); font-weight:700; font-size:.82rem; padding:11px 26px; border-radius:10px; cursor:pointer; border:none; }
+.dtree-btn.yes{ background:var(--cyan); color:#04211f; }
+.dtree-btn.no{ background:var(--surface); border:1px solid var(--border-strong); color:var(--text-dim); }
+.dtree-path{ display:flex; justify-content:center; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.dtree-path .step{ font-family:var(--mono); font-size:.68rem; padding:4px 10px; border-radius:14px; background:var(--surface); border:1px solid var(--border); color:var(--text-faint); }
+.dtree-result{ background:var(--surface); border:1px solid var(--cyan); border-radius:12px; padding:18px; margin-top:14px; text-align:left; }
+.dtree-result .rtitle{ font-family:var(--mono); font-size:.7rem; text-transform:uppercase; color:var(--cyan); margin-bottom:8px; letter-spacing:.05em; }
+.dtree-result p{ font-size:.88rem; color:var(--text-dim); line-height:1.6; margin:0; }
+.dtree-restart{ margin-top:14px; font-family:var(--mono); font-size:.72rem; padding:8px 16px; border-radius:8px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-dim); cursor:pointer; }
+
+/* ---------------- Comparison table ---------------- */
+.compare-table{ width:100%; border-collapse:collapse; font-size:.83rem; }
+.compare-table th, .compare-table td{ border:1px solid var(--border); padding:10px 12px; text-align:left; vertical-align:top; }
+.compare-table th{ background:var(--surface-2); font-family:var(--mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); }
+.compare-table td{ color:var(--text-dim); }
+.compare-table td:first-child{ font-weight:700; color:var(--text); }
+
+/* ---------------- Resource cards ---------------- */
+.resource-card{ background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+.resource-card h4{ font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; color:var(--cyan); margin-bottom:10px; }
+.resource-card ul{ margin:0; padding-left:18px; font-size:.84rem; color:var(--text-dim); line-height:1.8; }
+.kw-tag{ font-family:var(--mono); font-size:.72rem; padding:5px 11px; border-radius:16px; background:var(--surface); border:1px solid var(--border); color:var(--text-dim); display:inline-block; margin:3px 4px 3px 0; }
+
+/* ---------------- Future automation ---------------- */
+.automation-card{ display:flex; gap:14px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px; }
+.automation-card .aic{ font-size:1.4rem; flex-shrink:0; }
+.automation-card .atitle{ font-weight:700; font-size:.88rem; margin-bottom:4px; }
+.automation-card .adesc{ font-size:.82rem; color:var(--text-dim); line-height:1.6; }
+.automation-card .aimpact{ font-family:var(--mono); font-size:.65rem; color:var(--cyan); text-transform:uppercase; margin-top:6px; display:inline-block; }
+
+/* ---------------- Notes & bookmarks aggregate ---------------- */
+.bm-item{ background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:8px; }
+.bm-item .bm-source{ font-family:var(--mono); font-size:.65rem; color:var(--cyan); margin-bottom:5px; }
+.bm-item .bm-text{ font-family:var(--mono); font-size:.8rem; color:var(--text); }
+.note-summary-item{ background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:8px; }
+.note-summary-item .ns-source{ font-family:var(--mono); font-size:.65rem; color:var(--violet); margin-bottom:5px; }
+.note-summary-item .ns-text{ font-size:.85rem; color:var(--text-dim); white-space:pre-wrap; }
+
+.icon-btn{ width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--text-dim); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.95rem; transition:all .15s ease; }
+.icon-btn:hover{ color:var(--text); border-color:var(--cyan); }
+.empty-note{ font-size:.82rem; color:var(--text-faint); font-style:italic; }
+
+footer{ text-align:center; margin-top:36px; font-family:var(--mono); font-size:.65rem; color:var(--text-faint); }
+
+@media print{
+  .sidebar, .topbar-actions, .icon-btn, .mark-reviewed-btn, .prompt-actions{ display:none !important; }
+  .app-shell{ display:block; }
+  .view:not(#printView){ display:none !important; }
+  #printView{ display:block !important; }
+  body{ background:#fff; color:#000; }
+  .main{ padding:0; }
+}
+@media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } }
+:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+</style>
+</head>
+<body data-theme="dark">
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">AW</div>
+      <div class="brand-text"><h1>Workflow Architect</h1><span>Delinquency Trend Monitoring</span></div>
+    </div>
+    <nav class="nav-list" id="navList">
+      <div class="nav-item active" data-target="overviewView"><span class="ic">◈</span>Overview</div>
+    </nav>
+    <div class="nav-section-label">The 6-Stage Workflow</div>
+    <nav class="nav-list" id="stageNavList"></nav>
+    <div class="nav-section-label">Reference</div>
+    <nav class="nav-list" id="refNavList">
+      <div class="nav-item" data-target="stackView"><span class="ic">⬡</span>AI Stack &amp; Resources</div>
+      <div class="nav-item" data-target="notesView"><span class="ic">✎</span>Notes &amp; Bookmarks</div>
+      <div class="nav-item" data-target="printView"><span class="ic">🖨</span>Printable Guide</div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="sidebar-btn" id="themeBtn"><span>☀</span> Light mode</button>
+      <button class="sidebar-btn" id="resetProgressBtn"><span>⟲</span> Reset progress</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div id="viewsRoot">
+<div class="view active" id="overviewView">
+  <div class="topbar">
+    <div><h2>Workflow Overview</h2><div class="sub">Delinquency &amp; Default Trend Monitoring — End-to-End Process Map</div></div>
+  </div>
+
+  <div class="card">
+    <h3>What this workflow does</h3>
+    <div class="card-sub">The recurring process a credit risk analyst runs to monitor an existing loan book for early signs of deterioration</div>
+    <p style="font-size:.9rem; color:var(--text-dim); line-height:1.7; margin:0;">This workflow takes you from raw loan performance data to a committee-ready escalation decision — six stages, each with the specific AI tools, prompts, and pitfalls that matter for that step. It's built for a monthly (or more frequent) portfolio monitoring cadence on a consumer or retail loan book, tracking delinquency bucket migration and default trends to catch deterioration before it shows up in losses.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>Your Progress</h3>
+      <div class="card-sub">Mark each stage reviewed as you work through it</div>
+      <div style="display:flex; align-items:center; gap:22px;">
+        <div class="progress-ring-wrap">
+          <svg viewBox="0 0 110 110" width="110" height="110">
+            <circle cx="55" cy="55" r="46" fill="none" stroke="var(--surface-2)" stroke-width="11"/>
+            <circle id="overviewRingArc" cx="55" cy="55" r="46" fill="none" stroke="var(--cyan)" stroke-width="11" stroke-linecap="round" transform="rotate(-90 55 55)"/>
+          </svg>
+          <div class="progress-ring-center"><div class="n" id="overviewRingNum">0/6</div><div class="l">STAGES DONE</div></div>
+        </div>
+        <div style="flex:1;">
+          <div class="metric-card" style="margin-bottom:10px;"><div class="m-label">Total Cycle Time</div><div class="m-value accent">~14.5 hrs</div></div>
+          <div class="metric-card"><div class="m-label">Recommended Cadence</div><div class="m-value" style="font-size:1.1rem;">Monthly</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Quick Stats</h3>
+      <div class="card-sub">This workflow at a glance</div>
+      <div class="grid-2">
+        <div class="metric-card"><div class="m-label">Stages</div><div class="m-value">6</div></div>
+        <div class="metric-card"><div class="m-label">AI Tools Referenced</div><div class="m-value">9</div></div>
+        <div class="metric-card"><div class="m-label">Ready-to-Use Prompts</div><div class="m-value">18</div></div>
+        <div class="metric-card"><div class="m-label">Decision Points</div><div class="m-value">1 tree</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Interactive Pipeline</h3>
+    <div class="card-sub">Click any stage to jump straight to its detail</div>
+    <div class="pipeline-wrap">
+      <div class="pipeline" id="pipelineDiagram"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Why This Workflow Matters</h3>
+    <div class="insight-list" id="whyItMattersList">
+      <div class="tool-card"><div class="tname">🎯 Catches deterioration before it hits losses</div><div class="twhy">Delinquency trends typically lead charge-offs by 2–4 months. A disciplined monitoring cadence is the earliest lever risk teams have.</div></div>
+      <div class="tool-card"><div class="tname">🤖 AI compresses the analysis bottleneck, not the judgment</div><div class="twhy">The slow part of this workflow has always been query-writing, narrative synthesis, and memo drafting — exactly where Claude adds the most leverage, while the actual risk judgment stays human.</div></div>
+      <div class="tool-card"><div class="tname">🔁 It's a loop, not a report</div><div class="twhy">Stage 6 exists specifically to close the feedback loop — checking whether last cycle's actions actually worked is what separates monitoring from box-checking.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="stackView">
+  <div class="topbar">
+    <div><h2>AI Stack &amp; Resources</h2><div class="sub">Consolidated tooling, learning resources &amp; automation roadmap</div></div>
+  </div>
+
+  <div class="card">
+    <h3>Recommended AI Stack</h3>
+    <div class="card-sub">The consolidated tool set across all 6 stages</div>
+    <div style="overflow-x:auto;">
+      <table class="compare-table" id="stackTable"></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Workflow Summary</h3>
+    <div class="card-sub">The full 6-stage process, recapped</div>
+    <div id="workflowSummaryList"></div>
+  </div>
+
+  <div class="card">
+    <h3>Future Automation Opportunities</h3>
+    <div class="card-sub">Where this workflow can go from AI-assisted to AI-automated</div>
+    <div id="automationList"></div>
+  </div>
+
+  <div class="card">
+    <h3>Learning Resources &amp; Communities</h3>
+    <div class="grid-2" id="resourcesGrid"></div>
+  </div>
+
+  <div class="card">
+    <h3>Search Keywords</h3>
+    <div id="keywordsRoot"></div>
+  </div>
+
+  <div class="card">
+    <h3>Additional AI Prompts for Going Deeper</h3>
+    <div id="extraPromptsRoot"></div>
+  </div>
+</div>
+
+<div class="view" id="notesView">
+  <div class="topbar">
+    <div><h2>Notes &amp; Bookmarks</h2><div class="sub">Everything you've saved while working through the workflow</div></div>
+  </div>
+  <div class="card">
+    <h3>⭐ Bookmarked Prompts &amp; Practices</h3>
+    <div id="bookmarksAggregate"></div>
+  </div>
+  <div class="card">
+    <h3>✎ Your Stage Notes</h3>
+    <div id="notesAggregate"></div>
+  </div>
+</div>
+
+<div class="view" id="printView">
+  <div class="topbar">
+    <div><h2>Printable Workflow Guide</h2><div class="sub">A clean reference sheet for offline use</div></div>
+    <div class="topbar-actions"><button class="sidebar-btn" id="printBtn" style="width:auto;">🖨 Print / Save PDF</button></div>
+  </div>
+  <div class="card" id="printContent"></div>
+</div>
+
+    </div>
+    <footer>AI Workflow Architect · Built with Claude · Day 43 / 60 · #60DayClaudeChallenge · All progress &amp; notes stored locally in your browser</footer>
+  </main>
+
+</div>
+<script>
+(function(){
+"use strict";
+const $ = (id)=>document.getElementById(id);
+const uid = ()=> 'id'+Math.random().toString(36).slice(2,9);
+
+/* ============================================================
+   STAGE DATA — the entire workflow content lives here
+   ============================================================ */
+const STAGES = [
+{
+  id:'stage1', num:1, title:'Data Collection & Preparation', icon:'📥', accent:'#2dd4da', time:'2–4 hrs',
+  objectives:[
+    'Pull complete loan-level performance data for the reporting period from core servicing/risk systems',
+    'Validate completeness and reconcile against the prior period\'s closing balances',
+    'Flag and resolve missing, stale, or inconsistent records before any analysis begins'
+  ],
+  tasks:[
+    'Extract the loan tape (balances, DPD status, payment history) as of period-end',
+    'Join origination attributes (FICO band, product, channel, vintage) to the performance data',
+    'Reconcile total portfolio balance against the general ledger / prior month closing figure',
+    'Tag loans with modifications, forbearance, or restructuring flags so they can be segmented separately',
+    'Document any data quality exceptions and their resolution'
+  ],
+  tools:[
+    {name:'Claude', primary:true, why:'Fastest way to turn a data requirement into correct SQL or Python — describe the join logic in plain language and get a query you can review line-by-line, plus it catches edge cases like double-counting paid-off loans.'},
+    {name:'Python (pandas)', primary:false, why:'The actual execution environment for validation logic and reconciliation checks once Claude has helped draft the approach.'},
+    {name:'dbt', primary:false, why:'Good fit if this extract is already a recurring, version-controlled pipeline rather than an ad hoc pull.'}
+  ],
+  alternativeTools:['Alteryx','Informatica','Excel Power Query'],
+  prompts:[
+    {text:'Write a SQL query to pull monthly delinquency bucket transitions (Current, 30, 60, 90+ DPD) by loan_id for [period], joined to origination_date, fico_band, product_type, and channel.'},
+    {text:'Write a Python function using pandas that reconciles a loan-level extract\'s total balance against a target GL balance and returns any loan_ids responsible for a variance above $[threshold].'},
+    {text:'Given this list of column names from our servicing extract, flag any fields that look like they could contain stale or duplicated records, and suggest a validation check for each.'}
+  ],
+  bestPractices:[
+    'Keep every extract query in version control with a comment block stating the reporting period and author',
+    'Set an explicit completeness threshold (e.g., total balance within 0.1% of GL) before proceeding to analysis',
+    'Always pull one extra trailing period so roll-rate calculations in Stage 2 have a prior-period baseline'
+  ],
+  commonMistakes:[
+    'Excluding charged-off or recovered loans instead of tagging them, which silently shrinks the denominator',
+    'Missing loan modification/forbearance flags, making genuinely current-but-modified loans look identical to normal current loans',
+    'Reporting-period misalignment — servicing system "month-end" and risk warehouse "month-end" cutoffs don\'t always match'
+  ],
+  outputs:['A validated, loan-level performance dataset for the current and prior period','A short data-quality exception log'],
+  efficiencyTips:[
+    'Build one parameterized extract template (period as a variable) instead of rewriting the query every cycle',
+    'Automate the GL reconciliation check to run and alert automatically rather than checking it by hand each month'
+  ]
+},
+{
+  id:'stage2', num:2, title:'Delinquency & Roll Rate Calculation', icon:'📊', accent:'#2dd4da', time:'1–2 hrs',
+  objectives:[
+    'Calculate current-period delinquency rates by DPD bucket across the portfolio and key segments',
+    'Compute roll-rate transition matrices (e.g., 30→60, 60→90, 90→charge-off)',
+    'Build vintage curves to compare how each origination cohort is performing at the same age'
+  ],
+  tasks:[
+    'Classify every loan into a DPD bucket (Current, 30, 60, 90+, Charge-off) for the period',
+    'Compute a transition matrix showing what share of last period\'s bucket moved to each bucket this period',
+    'Segment delinquency rates by vintage, product, channel, and FICO band',
+    'Build vintage curves plotting default rate against months-on-book for the last 6–8 cohorts'
+  ],
+  tools:[
+    {name:'Claude (Code)', primary:true, why:'Generates the roll-rate matrix and vintage-curve computation logic correctly on the first pass far more reliably than writing pivot logic by hand, and can explain the transition matrix back in plain language.'},
+    {name:'Python (pandas/numpy)', primary:false, why:'Execution engine for the bucket classification and matrix math.'},
+    {name:'Excel', primary:false, why:'Fine for smaller books or a quick sanity-check pivot, less reliable at scale for roll-rate matrices.'}
+  ],
+  alternativeTools:['R','Tableau Prep','SAS'],
+  prompts:[
+    {text:'Generate a Python function that takes a dataframe with loan_id, period, and dpd_bucket, and returns a roll-rate transition matrix (previous bucket → current bucket) as percentages.'},
+    {text:'Write pandas code to build a vintage curve: for each origination month cohort, compute the cumulative default rate at each month-on-book from 1 to 24.'},
+    {text:'Explain this roll-rate transition matrix in plain language — which transitions are the most concerning and why.'}
+  ],
+  bestPractices:[
+    'Use identical DPD bucket cutoffs every period — never adjust bucket definitions mid-series',
+    'Exclude paid-off and refinanced loans from the denominator correctly so cure rates aren\'t inflated',
+    'Compute roll rates on a same-loan basis (not aggregate bucket totals) to avoid mix-shift distortion'
+  ],
+  commonMistakes:[
+    'Comparing aggregate bucket totals period-over-period instead of tracking individual loan transitions — this hides roll-rate deterioration behind portfolio growth',
+    'Double-counting cured loans that moved from 60→30→Current within the same reporting window',
+    'Using inconsistent vintage cohort definitions (calendar month vs. fiscal month) across the curve'
+  ],
+  outputs:['Roll-rate transition matrix for the current period','Delinquency rate table by segment','Updated vintage curves'],
+  efficiencyTips:[
+    'Parameterize the segment cuts (vintage/product/channel/FICO) into one reusable function instead of four separate scripts',
+    'Cache the prior 12 months of roll-rate matrices so trend charts don\'t require recomputation every cycle'
+  ]
+},
+{
+  id:'stage3', num:3, title:'Trend Analysis & Anomaly Detection', icon:'🔍', accent:'#f2b134', time:'2–3 hrs',
+  objectives:[
+    'Identify which segments are deviating meaningfully from historical trend or seasonal pattern',
+    'Separate genuine structural deterioration from normal seasonal noise',
+    'Produce a ranked, evidence-backed list of segments/vintages worth investigating further'
+  ],
+  tasks:[
+    'Compare current-period metrics against trailing 3/6/12-month moving averages',
+    'Run segment-level scans (vintage × product × geography × FICO) for statistically meaningful deviations',
+    'Cross-check flagged deviations against known seasonal patterns (e.g., post-holiday delinquency upticks)',
+    'Benchmark portfolio trends against any available industry or bureau-level comparison data'
+  ],
+  tools:[
+    {name:'Claude', primary:true, why:'Strong at synthesizing many segment cuts into a coherent narrative and generating plausible, testable hypotheses for what\'s driving a flagged deviation — this is the highest-value, most time-consuming part of the stage to do manually.'},
+    {name:'Python (statistical libraries)', primary:false, why:'Executes the actual z-score / control-chart anomaly detection against historical distributions.'},
+    {name:'Tableau / Power BI', primary:false, why:'Best for the visual exploration layer once anomalies are identified — quickly slicing a flagged segment six different ways.'}
+  ],
+  alternativeTools:['Moody\'s Analytics','SAS Risk Analytics','Looker'],
+  prompts:[
+    {text:'Given this table of 60+ DPD rates by vintage and quarter, identify which vintages are trending worse than their trailing 6-quarter average and suggest 3 hypotheses for what could be driving each.'},
+    {text:'Write a Python function that flags any segment where the current period\'s delinquency rate is more than 1.5 standard deviations above its trailing 12-month mean.'},
+    {text:'Here is our delinquency trend alongside national seasonal patterns — help me separate which part of this month\'s increase is likely seasonal versus structural.'}
+  ],
+  bestPractices:[
+    'Always express a deviation both in absolute (percentage points) and relative (%) terms — either alone can mislead',
+    'Require a minimum segment size (e.g., >1% of portfolio balance) before treating a deviation as noteworthy',
+    'Corroborate any flagged trend against at least one external or macro data point before writing it up'
+  ],
+  commonMistakes:[
+    'Chasing statistically loud but practically irrelevant noise in tiny segments',
+    'Ignoring seasonality and treating a normal Q1 uptick as a structural red flag every year',
+    'Mixing up correlation and causation — a flagged segment overlapping with a macro trend doesn\'t confirm the macro trend caused it'
+  ],
+  outputs:['A ranked list of flagged segments/vintages with supporting evidence','A short "what\'s seasonal vs. structural" note'],
+  efficiencyTips:[
+    'Maintain a living library of known seasonal patterns so they\'re automatically excluded from future anomaly scans',
+    'Save the anomaly-detection thresholds as configuration, not hardcoded, so they can be tuned without rewriting logic'
+  ]
+},
+{
+  id:'stage4', num:4, title:'Root Cause & Driver Investigation', icon:'🧭', accent:'#f2b134', time:'3–5 hrs',
+  objectives:[
+    'Understand *why* the flagged segments are deteriorating, not just that they are',
+    'Triangulate quantitative evidence with practitioner context from underwriting, servicing, and collections',
+    'Land on a defensible, evidence-backed root-cause hypothesis before recommending action'
+  ],
+  tasks:[
+    'Cross-reference flagged vintages against underwriting policy or credit-box changes at origination',
+    'Check for macro conditions relevant to the flagged period or geography (employment, rates, local events)',
+    'Review servicing/collections process changes that coincide with the deterioration',
+    'Interview or message underwriting/collections stakeholders with targeted, evidence-driven questions'
+  ],
+  tools:[
+    {name:'Claude', primary:true, why:'Drafts sharp, specific stakeholder questions from the data pattern instead of vague ones, and helps synthesize qualitative interview notes alongside the quantitative evidence into one coherent root-cause memo.'},
+    {name:'Internal wiki / policy archive', primary:false, why:'System of record for underwriting policy change history — needed to check whether a policy shift lines up with a flagged vintage.'},
+    {name:'ChatGPT / Claude (research mode)', primary:false, why:'Useful for quickly pulling relevant macroeconomic context (regional employment trends, rate environment) for the flagged period.'}
+  ],
+  alternativeTools:['Internal BI change-log tools','FRED / macro data APIs'],
+  prompts:[
+    {text:'Draft 5 targeted questions for the underwriting team about the Q2-2025 vintage, given rising 60+ DPD rates concentrated in the FICO 620–660 band.'},
+    {text:'Here are the underwriting policy changes made in the last 18 months alongside our vintage curves — help me identify which, if any, policy change most plausibly explains the deterioration in the flagged cohort.'},
+    {text:'Summarize these five stakeholder interview notes into a single root-cause hypothesis memo, noting where the qualitative and quantitative evidence agree and where they conflict.'}
+  ],
+  bestPractices:[
+    'Generate at least 2–3 competing hypotheses before settling on one — the first plausible explanation isn\'t always the right one',
+    'Involve underwriting and collections stakeholders early rather than presenting them with conclusions',
+    'Explicitly document what evidence would disprove each hypothesis, not just what supports it'
+  ],
+  commonMistakes:[
+    'Relying only on the data without practitioner context — the "why" often lives in institutional knowledge, not the dataset',
+    'Confirmation bias — building the investigation around the first hypothesis instead of testing it against alternatives',
+    'Treating correlation with a single macro variable as sufficient proof without ruling out other explanations'
+  ],
+  outputs:['A root-cause hypothesis memo with supporting quantitative and qualitative evidence'],
+  efficiencyTips:[
+    'Template the root-cause memo structure so each cycle only requires filling in new findings, not rebuilding the format',
+    'Keep a running log of past root-cause findings — patterns often repeat across cycles'
+  ]
+},
+{
+  id:'stage5', num:5, title:'Reporting & Escalation', icon:'📤', accent:'#ef4444', time:'2–3 hrs',
+  objectives:[
+    'Communicate findings clearly and concisely to the risk committee or relevant leadership',
+    'Apply a consistent, pre-defined escalation framework rather than an ad hoc judgment call',
+    'Ensure the single most urgent finding is impossible to miss'
+  ],
+  tasks:[
+    'Build or refresh the monitoring dashboard/report with current-period figures',
+    'Draft an executive summary that leads with the decision needed, not just the data',
+    'Run the flagged findings through the escalation decision framework (see interactive tree below)',
+    'Update the formal watchlist if any segment crosses the escalation threshold'
+  ],
+  tools:[
+    {name:'Claude', primary:true, why:'Turns a dense analytical writeup into a tight, decision-focused executive summary — the single highest-leverage editing pass in this whole workflow, since committee attention is the scarcest resource in the process.'},
+    {name:'PowerPoint / Google Slides', primary:false, why:'Delivery format for the committee memo/deck once content is finalized.'},
+    {name:'Tableau / Power BI', primary:false, why:'Source of the visual dashboard embedded in or linked from the report.'}
+  ],
+  alternativeTools:['Gamma (AI slide generation)','Notion (for a living report doc)'],
+  prompts:[
+    {text:'Summarize this delinquency trend analysis into a 150-word executive summary for a risk committee, leading with the single most urgent finding and the specific decision being requested.'},
+    {text:'Turn these bullet-point findings into a one-page committee memo with sections for Summary, Evidence, Root Cause, and Recommended Action.'},
+    {text:'Review this executive summary and flag anywhere the key finding is buried, hedged, or unclear about what decision is being asked of the reader.'}
+  ],
+  bestPractices:[
+    'Lead with the decision needed, not the methodology — committees read for "so what," not "how"',
+    'Keep escalation criteria pre-defined and applied consistently across cycles, not adjusted case-by-case',
+    'State explicitly what happens if no action is taken, not just what happens if the recommendation is approved'
+  ],
+  commonMistakes:[
+    'Burying the key finding in the fourth paragraph of methodology detail',
+    'Inconsistent escalation thresholds across periods, which erodes committee trust in the process over time',
+    'Presenting data without a clear recommended action, leaving the committee to do the synthesis work'
+  ],
+  outputs:['Risk committee memo/deck','Updated formal watchlist (if applicable)'],
+  efficiencyTips:[
+    'Maintain one living slide template that only needs a data refresh each cycle instead of a full rebuild',
+    'Pre-draft the "no action needed" version of the summary too — most cycles won\'t require escalation, and that\'s worth stating clearly and quickly'
+  ]
+},
+{
+  id:'stage6', num:6, title:'Action & Monitoring Cadence', icon:'🔁', accent:'#34d399', time:'1 hr',
+  objectives:[
+    'Ensure committee decisions actually get executed, not just recorded',
+    'Track whether last cycle\'s actions moved the metric they were meant to move',
+    'Lock in the next monitoring checkpoint so the cadence never slips'
+  ],
+  tasks:[
+    'Log every decided action item with an owner and due date',
+    'Update the reserve/watchlist system of record to reflect committee decisions',
+    'Review the status of last cycle\'s open action items before closing this one',
+    'Schedule the next review and confirm data owners are aware of the upcoming pull'
+  ],
+  tools:[
+    {name:'Claude', primary:true, why:'Fast, reliable way to convert a messy meeting outcome into a clean, owner-assigned action list, and to diff this cycle\'s open items against last cycle\'s to catch anything that quietly stalled.'},
+    {name:'Asana / Jira', primary:false, why:'System of record for action item tracking and ownership across cycles.'},
+    {name:'Calendar / scheduling tool', primary:false, why:'Locks in the recurring cadence so the next monitoring cycle isn\'t left to memory.'}
+  ],
+  alternativeTools:['Monday.com','Trello','A shared tracking spreadsheet'],
+  prompts:[
+    {text:'Convert this list of decided actions from today\'s committee meeting into a tracked task list with clear owners and due dates.'},
+    {text:'Here is last cycle\'s action item list and this cycle\'s — identify which items from last cycle are still open and flag them for follow-up.'},
+    {text:'Draft a short recurring calendar reminder description for the monthly delinquency monitoring cycle, including what data needs to be ready beforehand.'}
+  ],
+  bestPractices:[
+    'Always review last cycle\'s open items before presenting this cycle\'s findings — closing the loop is what makes this monitoring rather than reporting',
+    'Assign a single named owner per action item, never a team or department',
+    'Keep the monitoring cadence fixed (e.g., always the first week of the month) rather than "whenever there\'s time"'
+  ],
+  commonMistakes:[
+    'Treating each cycle as a one-off report instead of a continuous feedback loop',
+    'Letting action items go untracked once the committee meeting ends',
+    'Allowing the cadence to slip during busy periods, which is exactly when monitoring matters most'
+  ],
+  outputs:['Action item log with owners and due dates','Next-cycle calendar entry','Status update on prior cycle\'s actions'],
+  efficiencyTips:[
+    'Automate the recurring calendar invite and data-pull reminder so the cadence is self-sustaining',
+    'Keep a single running action-item tracker across cycles rather than a new list every month'
+  ]
+}
+];
+
+const RESOURCES = {
+  books:['"The Basel Handbook" — for regulatory capital & risk monitoring context','"Credit Risk Scorecards" — Naeem Siddiqi','"Quantitative Credit Portfolio Management" — Arik Ben Dor et al.'],
+  docs:['CFPB supervisory guidance on early warning indicators','OCC Comptroller\'s Handbook — Retail Lending','Your institution\'s internal credit risk policy manual'],
+  communities:['r/CreditRisk / r/FinancialCareers','Risk Management Association (RMA) forums','Local chapter meetups for credit risk professionals'],
+  practicePlatforms:['Kaggle credit risk datasets for practicing roll-rate analysis','Coursera — Credit Risk Modeling courses','Your own institution\'s sandbox/test environment for query practice'],
+  searchKeywords:['roll rate analysis credit risk','early warning indicators loan portfolio','vintage curve analysis','delinquency bucket migration','credit risk committee memo template']
+};
+
+const AI_STACK = [
+  {tool:'Claude', bestFor:'Query drafting, trend synthesis, root-cause hypothesis generation, executive summary writing', strength:'Handles ambiguous, judgment-heavy synthesis across every stage — the connective tissue of this workflow', alt:'ChatGPT'},
+  {tool:'Python (pandas/numpy)', bestFor:'Data extraction, roll-rate matrices, vintage curves, anomaly detection', strength:'Precise, reproducible, version-controllable computation', alt:'R'},
+  {tool:'Tableau / Power BI', bestFor:'Visual exploration and the committee-facing dashboard', strength:'Fast slicing across segments once anomalies are identified', alt:'Looker'},
+  {tool:'dbt', bestFor:'Recurring, version-controlled data pipelines', strength:'Turns a one-off extract into a reliable, testable pipeline', alt:'Alteryx'},
+  {tool:'Asana / Jira', bestFor:'Action item tracking across monitoring cycles', strength:'Keeps the feedback loop from Stage 6 from relying on memory', alt:'Monday.com'}
+];
+
+const AUTOMATION_OPPORTUNITIES = [
+  {ic:'⚙️', title:'Fully automate Stages 1–2', desc:'Data extraction, GL reconciliation, and roll-rate matrix computation are entirely mechanical once the logic is validated — a scheduled pipeline can produce them with zero manual work each cycle.', impact:'Saves ~3–6 hrs/cycle'},
+  {ic:'🤖', title:'Standing anomaly-detection agent', desc:'A Claude-powered agent could run the Stage 3 segment scan automatically against each new period\'s data and pre-draft the ranked list of flagged segments for analyst review.', impact:'Saves ~1–2 hrs/cycle'},
+  {ic:'📝', title:'Auto-drafted root-cause memo scaffolding', desc:'Once a segment is flagged, a templated prompt could auto-pull the relevant policy change log and macro data to pre-populate a first-draft root-cause memo for the analyst to refine.', impact:'Saves ~1–2 hrs/cycle'},
+  {ic:'📊', title:'Living dashboard instead of a rebuilt report', desc:'Replacing the manually refreshed committee deck with a connected, always-current dashboard removes the Stage 5 rebuild step entirely, leaving only the executive summary to write.', impact:'Saves ~1 hr/cycle'},
+  {ic:'🔔', title:'Automated action-item follow-up', desc:'A scheduled check against the action-item tracker could automatically flag overdue items before the next cycle starts, instead of relying on the analyst to remember to check.', impact:'Improves loop closure rate'}
+];
+
+const EXTRA_PROMPTS = [
+  'Act as a credit risk committee member and stress-test this escalation recommendation — what would make you push back on it?',
+  'Given our current roll-rate matrix, project the 90+ DPD rate two periods forward if current trends continue unchanged.',
+  'Compare our current escalation framework against typical industry practice for a [consumer/retail] loan portfolio and suggest one improvement.',
+  'Help me design a one-page early warning indicator (EWI) dashboard that would let a risk committee see portfolio health in under 30 seconds.'
+];
+
+window.__AWA_DATA__ = {STAGES, RESOURCES, AI_STACK, AUTOMATION_OPPORTUNITIES, EXTRA_PROMPTS};
+})();
+</script>
+
+<script>
+(function(){
+"use strict";
+const $ = (id)=>document.getElementById(id);
+const D = window.__AWA_DATA__;
+const STAGES = D.STAGES;
+
+/* ============================================================
+   PERSISTENCE
+   ============================================================ */
+const STORE_KEY = 'awa_v1';
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {progress:{}, notes:{}, bookmarks:{}};
+}
+function saveState(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); }catch(e){} }
+let STATE = loadState();
+STAGES.forEach(s=>{ if(!(s.id in STATE.progress)) STATE.progress[s.id]=false; });
+
+/* ============================================================
+   BUILD SIDEBAR STAGE NAV
+   ============================================================ */
+function buildStageNav(){
+  const nav = $('stageNavList');
+  nav.innerHTML = '';
+  STAGES.forEach(s=>{
+    const item = document.createElement('div');
+    item.className = 'nav-item';
+    item.dataset.target = s.id+'View';
+    item.innerHTML = `<span class="ic">${s.icon}</span>${s.num}. ${s.title}<span class="stage-check ${STATE.progress[s.id]?'done':''}">✓</span>`;
+    nav.appendChild(item);
+  });
+}
+
+/* ============================================================
+   BUILD STAGE VIEW CONTAINERS + RENDER CONTENT
+   ============================================================ */
+function buildStageViews(){
+  const root = $('viewsRoot');
+  STAGES.forEach(s=>{
+    const view = document.createElement('div');
+    view.className = 'view';
+    view.id = s.id+'View';
+    view.innerHTML = renderStageHTML(s);
+    root.appendChild(view);
+  });
+}
+
+function renderStageHTML(s){
+  const promptsHTML = s.prompts.map((p,i)=>{
+    const pid = s.id+'_p'+i;
+    const bookmarked = !!STATE.bookmarks[pid];
+    return `<div class="prompt-card">
+      <div class="ptext">"${p.text}"</div>
+      <div class="prompt-actions">
+        <button data-bookmark="${pid}" data-source="${s.title} — Prompt" data-text="${escapeAttr(p.text)}" class="${bookmarked?'bookmarked':''}" title="Bookmark">${bookmarked?'★':'☆'}</button>
+        <button data-copy="${escapeAttr(p.text)}" title="Copy">⧉</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const toolsHTML = s.tools.map(t=>`
+    <div class="tool-card">
+      <div class="tname">${t.name} ${t.primary?'<span class="primary-badge">RECOMMENDED</span>':''}</div>
+      <div class="twhy">${t.why}</div>
+    </div>`).join('');
+
+  const altHTML = s.alternativeTools.map(a=>`<span class="alt-chip">${a}</span>`).join('');
+
+  return `
+    <div class="topbar">
+      <div><h2>Stage ${s.num}: ${s.title}</h2><div class="sub">${s.icon} Workflow Stage ${s.num} of 6</div></div>
+    </div>
+
+    <div class="card">
+      <div class="stage-hero">
+        <div class="stage-num-badge" style="background:linear-gradient(150deg, ${s.accent}, ${s.accent}99);">${s.num}</div>
+        <h3 style="font-size:1.2rem;">${s.title}</h3>
+        <span class="stage-time-badge">⏱ ${s.time}</span>
+      </div>
+      <div style="margin-top:14px;">
+        <button class="mark-reviewed-btn ${STATE.progress[s.id]?'done':''}" data-mark-stage="${s.id}">${STATE.progress[s.id] ? '✓ Marked reviewed' : 'Mark this stage reviewed'}</button>
+      </div>
+
+      <div class="sub-section">
+        <h4>◆ Objectives</h4>
+        <ul>${s.objectives.map(o=>`<li>${o}</li>`).join('')}</ul>
+      </div>
+
+      <div class="sub-section">
+        <h4>◆ Tasks</h4>
+        <ul>${s.tasks.map(t=>`<li>${t}</li>`).join('')}</ul>
+      </div>
+
+      <div class="sub-section">
+        <h4>◆ Best AI Tools for This Stage</h4>
+        ${toolsHTML}
+        <div style="margin-top:10px; font-family:var(--mono); font-size:.7rem; color:var(--text-faint);">ALTERNATIVE TOOLS</div>
+        <div class="alt-tools-row">${altHTML}</div>
+      </div>
+
+      <div class="sub-section">
+        <h4>◆ Ready-to-Use Prompts</h4>
+        ${promptsHTML}
+      </div>
+
+      <div class="sub-section">
+        <div class="two-col-callouts">
+          <div class="callout-list good">
+            <h5>✓ Best Practices</h5>
+            <ul>${s.bestPractices.map(b=>`<li>${b}</li>`).join('')}</ul>
+          </div>
+          <div class="callout-list bad">
+            <h5>⚠ Common Mistakes</h5>
+            <ul>${s.commonMistakes.map(m=>`<li>${m}</li>`).join('')}</ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h4>◆ Expected Outputs</h4>
+        <ul>${s.outputs.map(o=>`<li>${o}</li>`).join('')}</ul>
+      </div>
+
+      <div class="efficiency-box">
+        <h5>⚡ Tips for Improving Efficiency</h5>
+        <ul>${s.efficiencyTips.map(e=>`<li>${e}</li>`).join('')}</ul>
+      </div>
+
+      ${s.id==='stage5' ? renderDecisionTreeBlock() : ''}
+
+      <div class="sub-section">
+        <h4>◆ Your Notes on This Stage</h4>
+        <textarea class="notes-area" data-notes="${s.id}" placeholder="Jot down anything specific to your team's process here…">${STATE.notes[s.id]||''}</textarea>
+        <span class="notes-saved-tag" id="${s.id}_savedTag">Saved automatically as you type</span>
+      </div>
+    </div>
+  `;
+}
+
+function escapeAttr(str){ return str.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+/* ============================================================
+   DECISION TREE (embedded in Stage 5)
+   ============================================================ */
+const DTREE = {
+  q1: {
+    q:'Is any segment\'s 60+ DPD rate more than 1.5× its trailing 6-month average?',
+    yes:'q2', no:{result:'No escalation needed', text:'Continue standard monitoring. Document that all segments are within normal trailing-average range and proceed to Stage 6.'}
+  },
+  q2: {
+    q:'Is the affected segment more than 5% of total portfolio balance?',
+    yes:'q3', no:{result:'Watchlist only', text:'Add the segment to the informal watchlist for closer tracking next cycle, but a full committee escalation isn\'t warranted yet given its limited size.'}
+  },
+  q3: {
+    q:'Did root-cause analysis (Stage 4) identify a systemic driver (underwriting, policy, or macro) rather than an isolated cause?',
+    yes:{result:'Escalate to Risk Committee', text:'Recommend a formal reserve review and consider underwriting policy or watchlist action. A systemic driver affecting a material segment warrants full committee visibility.'},
+    no:{result:'Escalate to segment owner only', text:'Document the finding and route it to the relevant segment/product owner for monitoring. A full committee escalation isn\'t necessary for an isolated, non-systemic cause — but keep it logged for pattern-tracking across cycles.'}
+  }
+};
+let dtreePath = [];
+function renderDecisionTreeBlock(){
+  return `<div class="sub-section">
+    <h4>◆ Interactive: Should This Escalate?</h4>
+    <div class="dtree-box" id="dtreeBox"></div>
+  </div>`;
+}
+function renderDtreeStep(){
+  const box = $('dtreeBox');
+  if(!box) return;
+  const pathHTML = dtreePath.length ? `<div class="dtree-path">${dtreePath.map(p=>`<span class="step">${p}</span>`).join('')}</div>` : '';
+
+  let currentKey = 'q1';
+  let node = DTREE.q1;
+  for(const ans of dtreePath){
+    const branch = ans.endsWith('YES') ? node.yes : node.no;
+    if(typeof branch === 'string'){ node = DTREE[branch]; }
+    else { box.innerHTML = pathHTML + renderDtreeResult(branch); return; }
+  }
+
+  box.innerHTML = `${pathHTML}<div class="dtree-question">${node.q}</div>
+    <div class="dtree-btns">
+      <button class="dtree-btn yes" id="dtreeYes">Yes</button>
+      <button class="dtree-btn no" id="dtreeNo">No</button>
+    </div>`;
+  $('dtreeYes').addEventListener('click', ()=>{ dtreePath.push('Q'+(dtreePath.length+1)+': YES'); renderDtreeStep(); });
+  $('dtreeNo').addEventListener('click', ()=>{ dtreePath.push('Q'+(dtreePath.length+1)+': NO'); renderDtreeStep(); });
+}
+function renderDtreeResult(branch){
+  return `<div class="dtree-result">
+    <div class="rtitle">Recommendation: ${branch.result}</div>
+    <p>${branch.text}</p>
+  </div>
+  <button class="dtree-restart" id="dtreeRestart">⟲ Start Over</button>`;
+}
+
+/* ============================================================
+   PIPELINE DIAGRAM (Overview)
+   ============================================================ */
+function renderPipeline(){
+  const wrap = $('pipelineDiagram');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  STAGES.forEach((s,i)=>{
+    const node = document.createElement('div');
+    node.className = 'pipe-node'+(STATE.progress[s.id]?' done':'');
+    node.dataset.target = s.id+'View';
+    node.innerHTML = `<div class="node-circle">${STATE.progress[s.id]?'✓':s.num}</div><div class="node-label">${s.title}</div><div class="node-time">${s.time}</div>`;
+    wrap.appendChild(node);
+    if(i < STAGES.length-1){
+      const conn = document.createElement('div');
+      conn.className = 'pipe-connector';
+      conn.innerHTML = `<svg viewBox="0 0 100 8"><line x1="0" y1="4" x2="100" y2="4" stroke="var(--border-strong)" stroke-width="2" stroke-dasharray="6,4"/></svg>`;
+      wrap.appendChild(conn);
+    }
+  });
+  document.querySelectorAll('.pipe-node').forEach(n=>{
+    n.addEventListener('click', ()=>goToView(n.dataset.target));
+  });
+}
+
+function updateOverviewProgress(){
+  const total = STAGES.length;
+  const done = STAGES.filter(s=>STATE.progress[s.id]).length;
+  const ringNum = $('overviewRingNum');
+  if(ringNum) ringNum.textContent = done+'/'+total;
+  const arc = $('overviewRingArc');
+  if(arc){
+    const r=46, circ=2*Math.PI*r;
+    arc.setAttribute('stroke-dasharray', circ);
+    arc.setAttribute('stroke-dashoffset', circ*(1-done/total));
+  }
+}
+
+/* ============================================================
+   AI STACK TABLE
+   ============================================================ */
+function renderStackTable(){
+  const table = $('stackTable');
+  if(!table) return;
+  table.innerHTML = `<thead><tr><th>Tool</th><th>Best For</th><th>Strength</th><th>Alternative</th></tr></thead>
+    <tbody>${D.AI_STACK.map(t=>`<tr><td>${t.tool}</td><td>${t.bestFor}</td><td>${t.strength}</td><td>${t.alt}</td></tr>`).join('')}</tbody>`;
+}
+
+function renderWorkflowSummary(){
+  const root = $('workflowSummaryList');
+  if(!root) return;
+  root.innerHTML = STAGES.map(s=>`
+    <div class="tool-card">
+      <div class="tname">${s.icon} Stage ${s.num}: ${s.title} <span style="margin-left:auto; font-family:var(--mono); font-size:.68rem; color:var(--text-faint);">${s.time}</span></div>
+      <div class="twhy">${s.objectives[0]}</div>
+    </div>`).join('');
+}
+
+function renderAutomationList(){
+  const root = $('automationList');
+  if(!root) return;
+  root.innerHTML = D.AUTOMATION_OPPORTUNITIES.map(a=>`
+    <div class="automation-card">
+      <div class="aic">${a.ic}</div>
+      <div><div class="atitle">${a.title}</div><div class="adesc">${a.desc}</div><span class="aimpact">${a.impact}</span></div>
+    </div>`).join('');
+}
+
+function renderResourcesGrid(){
+  const root = $('resourcesGrid');
+  if(!root) return;
+  const R = D.RESOURCES;
+  root.innerHTML = `
+    <div class="resource-card"><h4>📚 Books &amp; References</h4><ul>${R.books.map(b=>`<li>${b}</li>`).join('')}</ul></div>
+    <div class="resource-card"><h4>📖 Documentation &amp; Guidance</h4><ul>${R.docs.map(d=>`<li>${d}</li>`).join('')}</ul></div>
+    <div class="resource-card"><h4>💬 Communities</h4><ul>${R.communities.map(c=>`<li>${c}</li>`).join('')}</ul></div>
+    <div class="resource-card"><h4>🧪 Practice Platforms</h4><ul>${R.practicePlatforms.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+  `;
+}
+function renderKeywords(){
+  const root = $('keywordsRoot');
+  if(!root) return;
+  root.innerHTML = D.RESOURCES.searchKeywords.map(k=>`<span class="kw-tag">${k}</span>`).join('');
+}
+function renderExtraPrompts(){
+  const root = $('extraPromptsRoot');
+  if(!root) return;
+  root.innerHTML = D.EXTRA_PROMPTS.map(p=>`<div class="prompt-card"><div class="ptext" style="padding-right:0;">"${p}"</div></div>`).join('');
+}
+
+/* ============================================================
+   NOTES & BOOKMARKS AGGREGATE VIEW
+   ============================================================ */
+function renderBookmarksAggregate(){
+  const root = $('bookmarksAggregate');
+  if(!root) return;
+  const entries = Object.entries(STATE.bookmarks).filter(([k,v])=>v && v.text);
+  if(!entries.length){ root.innerHTML = '<div class="empty-note">No bookmarks yet — click the ☆ icon on any prompt card to save it here.</div>'; return; }
+  root.innerHTML = entries.map(([id,v])=>`<div class="bm-item"><div class="bm-source">${v.source}</div><div class="bm-text">"${v.text}"</div></div>`).join('');
+}
+function renderNotesAggregate(){
+  const root = $('notesAggregate');
+  if(!root) return;
+  const withNotes = STAGES.filter(s=>STATE.notes[s.id] && STATE.notes[s.id].trim());
+  if(!withNotes.length){ root.innerHTML = '<div class="empty-note">No notes yet — add notes at the bottom of any stage page.</div>'; return; }
+  root.innerHTML = withNotes.map(s=>`<div class="note-summary-item"><div class="ns-source">${s.icon} Stage ${s.num}: ${s.title}</div><div class="ns-text">${STATE.notes[s.id]}</div></div>`).join('');
+}
+
+/* ============================================================
+   PRINTABLE GUIDE
+   ============================================================ */
+function renderPrintView(){
+  const root = $('printContent');
+  if(!root) return;
+  root.innerHTML = `
+    <h3 style="font-size:1.3rem;">Delinquency &amp; Default Trend Monitoring — Workflow Guide</h3>
+    <div class="card-sub">Generated ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</div>
+    ${STAGES.map(s=>`
+      <div style="margin-top:22px; padding-top:16px; border-top:1px solid var(--border);">
+        <h4 style="font-size:1rem; margin-bottom:6px;">${s.icon} Stage ${s.num}: ${s.title} <span style="font-family:var(--mono); font-size:.7rem; color:var(--text-faint);">(${s.time})</span></h4>
+        <div style="font-size:.85rem; color:var(--text-dim); margin-bottom:6px;"><b>Objectives:</b> ${s.objectives.join(' · ')}</div>
+        <div style="font-size:.85rem; color:var(--text-dim); margin-bottom:6px;"><b>Key tool:</b> ${s.tools.find(t=>t.primary)?.name || s.tools[0].name}</div>
+        <div style="font-size:.85rem; color:var(--text-dim);"><b>Outputs:</b> ${s.outputs.join(' · ')}</div>
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function goToView(targetId){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.target===targetId));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id===targetId));
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(targetId==='stage5View'){ dtreePath=[]; setTimeout(renderDtreeStep, 30); }
+  if(targetId==='notesView'){ renderBookmarksAggregate(); renderNotesAggregate(); }
+  if(targetId==='printView'){ renderPrintView(); }
+}
+
+function wireNav(){
+  document.body.addEventListener('click', (e)=>{
+    const navItem = e.target.closest('.nav-item');
+    if(navItem){ goToView(navItem.dataset.target); }
+  });
+}
+
+/* ============================================================
+   EVENT WIRING (delegated, since content is dynamically built)
+   ============================================================ */
+function wireDelegatedEvents(){
+  document.body.addEventListener('click', (e)=>{
+    const markBtn = e.target.closest('[data-mark-stage]');
+    if(markBtn){
+      const sid = markBtn.dataset.markStage;
+      STATE.progress[sid] = !STATE.progress[sid];
+      saveState();
+      refreshDynamicUI();
+      return;
+    }
+    const bmBtn = e.target.closest('[data-bookmark]');
+    if(bmBtn){
+      const id = bmBtn.dataset.bookmark;
+      if(STATE.bookmarks[id]){ delete STATE.bookmarks[id]; }
+      else { STATE.bookmarks[id] = {source: bmBtn.dataset.source, text: bmBtn.dataset.text}; }
+      saveState();
+      bmBtn.classList.toggle('bookmarked');
+      bmBtn.textContent = STATE.bookmarks[id] ? '★' : '☆';
+      return;
+    }
+    const copyBtn = e.target.closest('[data-copy]');
+    if(copyBtn){
+      const text = copyBtn.dataset.copy;
+      navigator.clipboard && navigator.clipboard.writeText(text).catch(()=>{});
+      copyBtn.classList.add('copied'); copyBtn.textContent='✓';
+      setTimeout(()=>{ copyBtn.classList.remove('copied'); copyBtn.textContent='⧉'; }, 1200);
+      return;
+    }
+    if(e.target.id === 'dtreeRestart'){ dtreePath=[]; renderDtreeStep(); return; }
+  });
+
+  document.body.addEventListener('input', (e)=>{
+    const ta = e.target.closest('[data-notes]');
+    if(ta){
+      const sid = ta.dataset.notes;
+      STATE.notes[sid] = ta.value;
+      saveState();
+      const tag = $(sid+'_savedTag');
+      if(tag){ tag.textContent = 'Saved ✓'; clearTimeout(tag._t); tag._t = setTimeout(()=>{ tag.textContent='Saved automatically as you type'; }, 1500); }
+    }
+  });
+}
+
+function refreshDynamicUI(){
+  buildStageNav();
+  wireStageNavActive();
+  renderPipeline();
+  updateOverviewProgress();
+  // rebuild stage views to reflect updated mark-reviewed state without losing notes focus issues
+  document.querySelectorAll('[data-mark-stage]').forEach(btn=>{
+    const sid = btn.dataset.markStage;
+    btn.classList.toggle('done', !!STATE.progress[sid]);
+    btn.textContent = STATE.progress[sid] ? '✓ Marked reviewed' : 'Mark this stage reviewed';
+  });
+}
+function wireStageNavActive(){
+  const activeView = document.querySelector('.view.active');
+  if(!activeView) return;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.target===activeView.id));
+}
+
+/* ============================================================
+   THEME + RESET
+   ============================================================ */
+$('themeBtn').addEventListener('click', ()=>{
+  const isLight = document.body.getAttribute('data-theme')==='light';
+  document.body.setAttribute('data-theme', isLight?'dark':'light');
+  $('themeBtn').innerHTML = isLight ? '<span>☀</span> Light mode' : '<span>☾</span> Dark mode';
+});
+$('resetProgressBtn').addEventListener('click', ()=>{
+  if(!confirm('Reset all progress, notes, and bookmarks? This cannot be undone.')) return;
+  STATE = {progress:{}, notes:{}, bookmarks:{}};
+  STAGES.forEach(s=>STATE.progress[s.id]=false);
+  saveState();
+  location.reload();
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+buildStageNav();
+buildStageViews();
+renderPipeline();
+updateOverviewProgress();
+renderStackTable();
+renderWorkflowSummary();
+renderAutomationList();
+renderResourcesGrid();
+renderKeywords();
+renderExtraPrompts();
+renderBookmarksAggregate();
+renderNotesAggregate();
+renderPrintView();
+wireNav();
+wireDelegatedEvents();
+
+$('printBtn').addEventListener('click', ()=>{ renderPrintView(); window.print(); });
+
+})();
+</script>
+
+</body>
+</html>
