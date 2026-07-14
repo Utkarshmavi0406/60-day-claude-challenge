@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Report — Credit Risk Depth vs. Data Science Depth</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-main:#0f0f14;
+  --bg-card:#1a1a24;
+  --bg-card-alt:#1e1e2e;
+  --text-primary:#f0f0f5;
+  --text-secondary:#8888a0;
+  --accent-green:#34d399;
+  --accent-red:#f87171;
+  --accent-blue:#60a5fa;
+  --accent-gold:#fbbf24;
+  --accent-purple:#a78bfa;
+  --border-subtle:rgba(255,255,255,0.06);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg-main); color:var(--text-primary);
+  font-family:'Inter','Segoe UI',system-ui,sans-serif; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.page{ max-width:720px; margin:0 auto; padding:0 20px 60px; }
+
+/* ---------------- Header ---------------- */
+.header{ padding:44px 0 28px; text-align:center; }
+.header h1{ font-size:28px; font-weight:800; margin:0 0 8px; letter-spacing:-.01em; }
+.header .subtitle{ font-size:16px; color:var(--text-secondary); margin-bottom:6px; }
+.header .date{ font-size:12px; color:var(--text-secondary); }
+.header-line{ height:2px; margin-top:22px; border-radius:2px; background:linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-gold)); }
+
+/* ---------------- Card base ---------------- */
+.card{
+  background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:16px;
+  padding:28px; margin-top:28px; box-shadow:0 4px 24px rgba(0,0,0,0.3);
+  transition:transform .2s ease; border-left-width:4px; border-left-style:solid;
+}
+.card:hover{ transform:translateY(-2px); }
+.section-title{ font-size:20px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin:0 0 16px; }
+.card p{ font-size:15px; line-height:1.7; color:var(--text-primary); margin:0 0 10px; }
+.card p:last-child{ margin-bottom:0; }
+.label{ font-size:12px; font-weight:500; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px; display:block; }
+
+/* Section accents */
+.s1{ border-left-color:var(--accent-blue); }
+.s1 .section-title{ color:var(--accent-blue); }
+.s2{ border-left-color:var(--accent-green); }
+.s2 .section-title{ color:var(--accent-green); }
+.s3{ border-left-color:var(--accent-purple); }
+.s3 .section-title{ color:var(--accent-purple); }
+.s4{ border-left-color:var(--accent-blue); }
+.s4 .section-title{ color:var(--accent-blue); }
+.s5{ border-left-color:var(--accent-red); }
+.s5 .section-title{ color:var(--accent-red); }
+.s6{ border-left-color:var(--accent-green); }
+.s6 .section-title{ color:var(--accent-green); }
+.s7{ border-left-color:var(--accent-gold); background:var(--bg-card-alt); padding:36px; box-shadow:0 0 20px rgba(251,191,36,0.15); }
+.s7 .section-title{ color:var(--accent-gold); }
+.s8{ border-left-color:var(--accent-gold); }
+.s8 .section-title{ color:var(--accent-gold); }
+
+/* ---------------- Section 1 ---------------- */
+.real-decision-line{ font-size:15px; margin-bottom:10px; }
+.real-decision-line b{ color:var(--text-primary); }
+
+/* ---------------- Section 2: Option cards ---------------- */
+.option-card{ background:var(--bg-card-alt); border:1px solid var(--border-subtle); border-radius:12px; padding:20px; margin-bottom:16px; }
+.option-card:last-child{ margin-bottom:0; }
+.option-card h3{ font-size:17px; margin:0 0 12px; }
+.option-card h3.opt-a{ color:var(--accent-blue); }
+.option-card h3.opt-b{ color:var(--accent-green); }
+.opt-row{ margin-bottom:10px; }
+.opt-row .otag{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin-bottom:3px; display:block; }
+.opt-row.strong .otag{ color:var(--accent-green); }
+.opt-row.hidden .otag{ color:var(--accent-blue); }
+.opt-row.weak .otag{ color:var(--accent-red); }
+.opt-row.best .otag{ color:var(--accent-gold); }
+.opt-row p{ font-size:14px; color:var(--text-secondary); margin:0; }
+.opt-row.best p{ color:var(--text-primary); font-weight:600; }
+
+/* ---------------- Section 3: Assumption Buster ---------------- */
+.buster-block{ margin-bottom:18px; }
+.buster-block:last-child{ margin-bottom:0; }
+.buster-block .btag{ font-size:12px; font-weight:700; color:var(--accent-purple); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; display:block; }
+.buster-block ol, .buster-block ul{ margin:0; padding-left:20px; }
+.buster-block li{ font-size:14px; color:var(--text-primary); margin-bottom:8px; line-height:1.6; }
+.bias-name{ color:var(--accent-purple); font-weight:700; }
+.ignoring-box{ background:rgba(167,139,250,0.08); border:1px solid rgba(167,139,250,0.25); border-radius:10px; padding:14px 16px; font-size:14px; }
+
+/* ---------------- Section 4: Matrix ---------------- */
+.matrix-row{ margin-bottom:14px; }
+.matrix-label{ font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:6px; }
+.matrix-bar-group{ display:flex; flex-direction:column; gap:6px; }
+.bar-track{ height:28px; background:rgba(255,255,255,0.05); border-radius:8px; position:relative; overflow:hidden; }
+.bar-fill{ height:100%; border-radius:8px; display:flex; align-items:center; justify-content:flex-end; padding-right:10px; color:#fff; font-weight:700; font-size:13px; width:0%; animation:growBar 0.8s ease-out forwards; }
+.bar-fill.opt-a{ background:linear-gradient(90deg, #60a5fa, #3b82f6); }
+.bar-fill.opt-b{ background:linear-gradient(90deg, #34d399, #10b981); }
+@keyframes growBar{ to{ width:var(--target-width); } }
+.matrix-legend{ display:flex; gap:20px; margin-bottom:18px; font-size:13px; }
+.matrix-legend .lg-item{ display:flex; align-items:center; gap:7px; }
+.matrix-legend .sw{ width:12px; height:12px; border-radius:3px; }
+.total-row{ margin-top:20px; padding:16px 18px; background:rgba(255,255,255,0.04); border-radius:10px; display:flex; justify-content:space-between; align-items:center; }
+.total-row .tlabel{ font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--text-secondary); }
+.total-scores{ display:flex; gap:24px; }
+.total-scores .ts{ text-align:center; }
+.total-scores .ts .n{ font-size:24px; font-weight:800; }
+.total-scores .ts.a .n{ color:var(--accent-blue); }
+.total-scores .ts.b .n{ color:var(--accent-green); }
+.total-scores .ts .l{ font-size:11px; color:var(--text-secondary); }
+.winner-badge{ display:inline-block; margin-top:14px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.4); color:var(--accent-green); font-size:13px; font-weight:700; padding:8px 14px; border-radius:20px; }
+
+/* ---------------- Section 5: Premortem ---------------- */
+.premortem-block{ margin-bottom:22px; }
+.premortem-block:last-child{ margin-bottom:0; }
+.premortem-block h4{ font-size:15px; margin:0 0 12px; color:var(--text-primary); }
+.premortem-block h4 span{ color:var(--accent-red); }
+.premortem-block ul{ margin:0 0 12px; padding-left:20px; }
+.premortem-block li{ font-size:14px; color:var(--text-secondary); margin-bottom:6px; }
+.pm-tag{ display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; padding:3px 9px; border-radius:12px; margin-right:8px; margin-bottom:4px; }
+.pm-tag.warn{ background:rgba(248,113,113,0.12); color:var(--accent-red); }
+.pm-tag.prevent{ background:rgba(52,211,153,0.12); color:var(--accent-green); }
+
+/* ---------------- Section 6: 7-Day Plan ---------------- */
+.day-row{ display:flex; gap:14px; padding:12px 0; border-bottom:1px solid var(--border-subtle); }
+.day-row:last-child{ border-bottom:none; }
+.day-num{ font-size:12px; font-weight:700; color:var(--accent-green); min-width:74px; flex-shrink:0; padding-top:2px; }
+.day-text{ font-size:14px; color:var(--text-primary); line-height:1.6; }
+
+/* ---------------- Section 7: Verdict ---------------- */
+.verdict-winner{ font-size:30px; font-weight:800; color:var(--accent-gold); margin-bottom:14px; }
+.verdict-why{ font-size:15px; margin-bottom:16px; }
+.verdict-flip{ font-size:14px; color:var(--text-secondary); margin-bottom:16px; }
+.verdict-flip b{ color:var(--text-primary); }
+.hard-truth{ font-style:italic; color:var(--text-secondary); font-size:14px; border-top:1px solid var(--border-subtle); padding-top:16px; margin-top:16px; }
+
+/* ---------------- Section 8: Shareable ---------------- */
+.share-row{ display:flex; gap:14px; flex-wrap:wrap; }
+.mini-card{ background:var(--bg-card-alt); border:1px solid var(--border-subtle); border-radius:12px; padding:16px; flex:1; min-width:190px; display:flex; flex-direction:column; }
+.mini-card .mc-label{ font-size:10px; font-weight:700; color:var(--accent-gold); text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; }
+.mini-card .mc-body{ flex:1; font-size:13px; color:var(--text-primary); line-height:1.5; }
+.mini-card .mc-body b{ display:block; margin-bottom:4px; }
+.mini-card .mc-score{ font-size:20px; font-weight:800; margin:6px 0 2px; }
+.mini-card .mc-score.win{ color:var(--accent-green); }
+.mini-card .mc-watermark{ font-size:9px; color:var(--text-secondary); margin-top:12px; text-align:right; opacity:.7; }
+.copy-mini-btn{ margin-top:10px; font-size:11px; background:rgba(255,255,255,0.06); border:1px solid var(--border-subtle); color:var(--text-secondary); padding:6px 10px; border-radius:8px; cursor:pointer; align-self:flex-start; }
+.copy-mini-btn:hover{ color:var(--text-primary); border-color:var(--accent-gold); }
+.copy-mini-btn.copied{ color:var(--accent-green); border-color:var(--accent-green); }
+
+/* ---------------- Footer ---------------- */
+.footer{ text-align:center; color:var(--text-secondary); font-size:12px; margin-top:40px; }
+
+/* ---------------- Responsive ---------------- */
+@media (max-width:600px){
+  .card{ padding:20px; margin-top:24px; }
+  .s7{ padding:26px; }
+  .header h1{ font-size:24px; }
+  .section-title{ font-size:17px; }
+  .card p{ font-size:14px; }
+  .share-row{ flex-direction:column; }
+  .total-row{ flex-direction:column; align-items:flex-start; gap:10px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <h1>DECISION REPORT</h1>
+    <div class="subtitle">Credit Risk Depth vs. Data Science Depth Within Credit Risk</div>
+    <div class="date" id="reportDate"></div>
+    <div class="header-line"></div>
+  </div>
+
+  <!-- SECTION 1 — THE REAL DECISION -->
+  <div class="card s1">
+    <div class="section-title">The Real Decision</div>
+    <p class="real-decision-line">The real question isn't Credit Risk <i>or</i> Data Science — you're already doing both. It's how much further to lean into <b>technical depth</b> versus <b>domain depth</b> from here.</p>
+    <p class="real-decision-line">The real trade-off: familiar, faster-to-monetize domain expertise vs. a rarer, harder-to-automate combined skill set that takes longer to prove.</p>
+    <p class="real-decision-line">It's emotionally hard because it's really a bet on which version of yourself is safer — and "safe" and "already known" are quietly getting treated as the same thing.</p>
+  </div>
+
+  <!-- SECTION 2 — CASE FOR EACH OPTION -->
+  <div class="card s2">
+    <div class="section-title">The Case For Each Option</div>
+
+    <div class="option-card">
+      <h3 class="opt-a">Option A — Double Down on Credit Risk Domain Expertise</h3>
+      <div class="opt-row strong"><span class="otag">Strongest Case</span><p>You already have real hands-on credibility — 2+ years at Bajaj Finserv plus your current Republic Finance internship. Reputable firms hire senior risk people for judgment built over years, not just technical output.</p></div>
+      <div class="opt-row hidden"><span class="otag">Hidden Upside</span><p>Domain depth compounds toward leadership tracks (senior risk, CRO-track roles) where you're the one directing what gets modeled — not competing with the model.</p></div>
+      <div class="opt-row weak"><span class="otag">Biggest Weakness</span><p>If routine analysis work keeps getting automated, being "domain-only" without technical depth could quietly cap your ceiling at the mid-level.</p></div>
+      <div class="opt-row best"><span class="otag">Best If You Value</span><p>Stability and the fastest path to being seen as the go-to credit risk person at a reputable firm.</p></div>
+    </div>
+
+    <div class="option-card">
+      <h3 class="opt-b">Option B — Go Deep on Data Science Within Credit Risk</h3>
+      <div class="opt-row strong"><span class="otag">Strongest Case</span><p>You already have proof, not theory: XGBoost, Logistic Regression, and BERT models you built with measurable business impact. This directly answers your own fear about AI encroaching on the field.</p></div>
+      <div class="opt-row hidden"><span class="otag">Hidden Upside</span><p>Deep DS skill layered onto real credit risk experience is a rarer, better-paid combination than either skill alone — you stop competing as a generalist against thousands of bootcamp grads.</p></div>
+      <div class="opt-row weak"><span class="otag">Biggest Weakness</span><p>Going deeper technically takes real time, and could slow how fast you accumulate the "years of judgment" senior risk roles ultimately reward.</p></div>
+      <div class="opt-row best"><span class="otag">Best If You Value</span><p>Being the hardest person in the room to automate — because you'd be building the models, not just using their output.</p></div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 — ASSUMPTION BUSTER -->
+  <div class="card s3">
+    <div class="section-title">Assumption Buster</div>
+
+    <div class="buster-block">
+      <span class="btag">3 Assumptions You May Be Making</span>
+      <ol>
+        <li>That this is either/or — but you're already doing both. This may really be a question of ratio, not a binary switch.</li>
+        <li>That "AI taking over credit risk" means your specific skills become worthless — automation in finance has historically shifted analyst roles toward oversight and model governance, not eliminated them.</li>
+        <li>That "coming back to Credit Risk" would be hard if the DS bet doesn't pay off — but going deeper on DS <i>within</i> credit risk doesn't require leaving the field at all. That fear may rest on a premise that isn't actually true.</li>
+      </ol>
+    </div>
+
+    <div class="buster-block">
+      <span class="btag">2 Biases At Play</span>
+      <ul>
+        <li><span class="bias-name">Loss aversion</span> — the fear of "wasting" the credit risk expertise you've built is looming larger than the equally real upside of combining it with deeper technical skill.</li>
+        <li><span class="bias-name">Status quo bias</span> — "I already know the basics and advanced concepts" is being used as a reason not to go further, when familiarity isn't the same as the best long-term bet.</li>
+      </ul>
+    </div>
+
+    <div class="buster-block">
+      <span class="btag">1 Thing You're Definitely Ignoring</span>
+      <div class="ignoring-box">You're evaluating this as a future hypothetical when you're already partially living it — real production ML models with quantified business impact, built inside a credit risk job. You're further along the combined path than you're giving yourself credit for.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 — DECISION MATRIX -->
+  <div class="card s4">
+    <div class="section-title">Decision Matrix</div>
+    <div class="matrix-legend">
+      <div class="lg-item"><span class="sw" style="background:linear-gradient(90deg,#60a5fa,#3b82f6);"></span>Option A — Credit Risk Domain Depth</div>
+      <div class="lg-item"><span class="sw" style="background:linear-gradient(90deg,#34d399,#10b981);"></span>Option B — Data Science Depth</div>
+    </div>
+    <div id="matrixRoot"></div>
+    <div class="total-row">
+      <span class="tlabel">Total / 70</span>
+      <div class="total-scores">
+        <div class="ts a"><div class="n">45</div><div class="l">Option A</div></div>
+        <div class="ts b"><div class="n">54</div><div class="l">Option B</div></div>
+      </div>
+    </div>
+    <span class="winner-badge">🏆 Option B wins by 9 points</span>
+  </div>
+
+  <!-- SECTION 5 — PREMORTEM -->
+  <div class="card s5">
+    <div class="section-title">Premortem — Imagine It Failed After 12 Months</div>
+
+    <div class="premortem-block">
+      <h4>If <span>Option A</span> failed —</h4>
+      <ul>
+        <li>Automation crept into routine credit risk analysis faster than expected, and without technical depth you got passed over for senior "who directs the models" roles.</li>
+        <li>Reputable firms started expecting working ML fluency even for "domain" risk roles, and you found yourself behind peers who'd built it.</li>
+        <li>A year in, your MS in Business Analytics & AI sat unused relative to your day-to-day work — a mismatch between your credentials and your actual role.</li>
+      </ul>
+      <span class="pm-tag warn">⚠ Early Warning: job postings for target roles increasingly list Python/ML as required, not preferred</span><br>
+      <span class="pm-tag prevent">✓ Prevention: keep 20–30% of your time technical even while prioritizing domain depth</span>
+    </div>
+
+    <div class="premortem-block">
+      <h4>If <span>Option B</span> failed —</h4>
+      <ul>
+        <li>You spread yourself thin trying to go deep on both at once, and neither reached the depth needed to stand out in interviews.</li>
+        <li>You lost time chasing generic "AI roles" outside credit risk — exactly the crowded competition you feared — instead of the higher-value niche of DS-within-credit-risk.</li>
+        <li>Time spent upskilling technically came at the cost of the stakeholder-facing, judgment-building work that makes senior risk hires trusted.</li>
+      </ul>
+      <span class="pm-tag warn">⚠ Early Warning: interviews start feeling like you're competing against pure DS/SWE candidates, not being evaluated as a hybrid specialist</span><br>
+      <span class="pm-tag prevent">✓ Prevention: explicitly target "Credit Risk + ML" hybrid roles, not generic Data Scientist postings</span>
+    </div>
+  </div>
+
+  <!-- SECTION 6 — 7-DAY TEST PLAN -->
+  <div class="card s6">
+    <div class="section-title">7-Day Test Plan</div>
+    <div class="day-row"><div class="day-num">DAY 1–2</div><div class="day-text">Pull 15–20 real postings for "Credit Risk Data Scientist" / "Model Risk Analyst" / "Quantitative Credit Risk" at reputable firms — note which skills appear most often.</div></div>
+    <div class="day-row"><div class="day-num">DAY 3–4</div><div class="day-text">Take one real project (e.g. Straight Rolling Movement Analysis) and rebuild a small piece of it with a more advanced technique than you'd normally use — test how deeper technical work actually feels on real domain data.</div></div>
+    <div class="day-row"><div class="day-num">DAY 5–6</div><div class="day-text">Talk to one person with a hybrid Credit Risk + DS career and ask directly: "Did going deeper technically change your ceiling — would you do it again?"</div></div>
+    <div class="day-row"><div class="day-num">DAY 7</div><div class="day-text">Decision day: if postings confirm hybrid roles are common and well-paid, and the conversation confirms the path was worth it — commit to Option B. Otherwise, hold your current balance and revisit in 6 months.</div></div>
+  </div>
+
+  <!-- SECTION 7 — THE VERDICT -->
+  <div class="card s7">
+    <div class="section-title">The Verdict</div>
+    <div class="verdict-winner">Go Deep on Data Science Within Credit Risk</div>
+    <p class="verdict-why">You've already built real, quantified ML impact inside a credit risk job — this isn't a hypothetical bet, it's doubling down on evidence you already have. It also directly answers your own fear: the way to not be replaced by AI in credit risk is to be the person who builds and governs it.</p>
+    <p class="verdict-flip"><b>What could flip it:</b> if your next 1–2 job searches show reputable firms consistently filtering out hybrid candidates in favor of narrow domain specialists — that would be real evidence to rebalance toward Option A.</p>
+    <p class="hard-truth">You're not actually choosing between two unknowns — you're deciding whether to trust evidence you've already generated about yourself.</p>
+  </div>
+
+  <!-- SECTION 8 — SHAREABLE CARDS -->
+  <div class="card s8">
+    <div class="section-title">Shareable Cards</div>
+    <div class="share-row">
+      <div class="mini-card">
+        <div class="mc-label">Matrix Summary</div>
+        <div class="mc-body">
+          <b>Credit Risk Domain Depth</b>
+          <div class="mc-score">45<span style="font-size:13px; color:var(--text-secondary);">/70</span></div>
+          <b style="margin-top:10px;">Credit Risk + Data Science Depth</b>
+          <div class="mc-score win">54<span style="font-size:13px; color:var(--text-secondary);">/70</span></div>
+        </div>
+        <button class="copy-mini-btn" data-copy="Decision Matrix — Credit Risk Domain Depth: 45/70 vs Credit Risk + Data Science Depth: 54/70">⧉ Copy</button>
+        <div class="mc-watermark">Built with Claude AI</div>
+      </div>
+
+      <div class="mini-card">
+        <div class="mc-label">Verdict</div>
+        <div class="mc-body">
+          <b style="color:var(--accent-gold); font-size:15px;">Go Deep on Data Science Within Credit Risk</b>
+          <p style="margin-top:8px; color:var(--text-secondary); font-size:13px;">Because you already have the receipts, not just the theory.</p>
+        </div>
+        <button class="copy-mini-btn" data-copy="Verdict: Go Deep on Data Science Within Credit Risk — because I already have the receipts, not just the theory.">⧉ Copy</button>
+        <div class="mc-watermark">Built with Claude AI</div>
+      </div>
+
+      <div class="mini-card">
+        <div class="mc-label">LinkedIn Hook</div>
+        <div class="mc-body">
+          <b>I asked AI to help me decide between staying a Credit Risk generalist or going deep on Data Science within it.</b>
+          <p style="margin-top:8px; color:var(--text-secondary); font-size:13px;">The scariest part wasn't the decision — it was realizing I'd already made it, I just hadn't admitted it yet.<br>Sometimes clarity isn't new information — it's being honest with data you already have.<br><br>What decision have you been avoiding making official? 👇</p>
+        </div>
+        <button class="copy-mini-btn" data-copy="I asked AI to help me decide between staying a Credit Risk generalist or going deep on Data Science within it.
+
+The scariest part wasn't the decision — it was realizing I'd already made it, I just hadn't admitted it yet.
+Turns out the 'safe' choice and the 'ambitious' choice were closer than I thought.
+Sometimes clarity isn't new information — it's being honest with data you already have.
+
+What decision have you been avoiding making official? 👇">⧉ Copy</button>
+        <div class="mc-watermark">Built with Claude AI</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Built with Claude AI | ABTalks 60-Day Challenge</div>
+</div>
+
+<script>
+(function(){
+  document.getElementById('reportDate').textContent = new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+
+  const MATRIX = [
+    {label:'Life / Career Upside', a:7, b:9},
+    {label:'Financial Safety', a:8, b:6},
+    {label:'Growth & Learning', a:5, b:9},
+    {label:'Stress Level (10 = low stress)', a:8, b:5},
+    {label:'Reversibility (10 = easy to undo)', a:6, b:8},
+    {label:'Long-term Alignment', a:6, b:9},
+    {label:'Regret Risk (10 = low regret)', a:5, b:8}
+  ];
+
+  const root = document.getElementById('matrixRoot');
+  let delay = 0;
+  MATRIX.forEach(row=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'matrix-row';
+    wrap.innerHTML = `
+      <div class="matrix-label">${row.label}</div>
+      <div class="matrix-bar-group">
+        <div class="bar-track"><div class="bar-fill opt-a" style="--target-width:${row.a*10}%; animation-delay:${delay}s;">${row.a}</div></div>
+        <div class="bar-track"><div class="bar-fill opt-b" style="--target-width:${row.b*10}%; animation-delay:${delay+0.1}s;">${row.b}</div></div>
+      </div>
+    `;
+    root.appendChild(wrap);
+    delay += 0.1;
+  });
+
+  document.querySelectorAll('.copy-mini-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const text = btn.dataset.copy;
+      navigator.clipboard && navigator.clipboard.writeText(text).catch(()=>{});
+      const original = btn.textContent;
+      btn.classList.add('copied'); btn.textContent = '✓ Copied';
+      setTimeout(()=>{ btn.classList.remove('copied'); btn.textContent = original; }, 1400);
+    });
+  });
+})();
+</script>
+</body>
+</html>
