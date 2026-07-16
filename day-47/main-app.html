@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Intelligence Studio — LinkedIn Post Analyzer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#0c0a10;
+  --bg-soft:#100e15;
+  --surface:#161219;
+  --surface-2:#1c171f;
+  --border:#2b242f;
+  --border-strong:#3d3441;
+  --text:#f3f0f5;
+  --text-dim:#a196a8;
+  --text-faint:#655a6a;
+  --rose:#ec4899;
+  --rose-deep:#be185d;
+  --rose-soft:#33101f;
+  --amber:#f5a623;
+  --amber-soft:#332510;
+  --teal:#2dd4bf;
+  --teal-soft:#0f2e2a;
+  --green:#22c55e;
+  --green-soft:#122a1a;
+  --red:#f43f5e;
+  --red-soft:#33141c;
+  --radius:16px;
+  --display:'Lexend', sans-serif;
+  --body:'Inter', sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, monospace;
+  --shadow:0 20px 50px rgba(0,0,0,.5);
+}
+[data-theme="light"]{
+  --bg:#f7f5f8; --bg-soft:#efecf1; --surface:#ffffff; --surface-2:#f8f6f9;
+  --border:#e6e0e8; --border-strong:#cfc5d1; --text:#181420; --text-dim:#5c5266; --text-faint:#978c9c;
+  --rose-soft:#fce4ef; --amber-soft:#fdefd7; --teal-soft:#e0f7f3; --green-soft:#e2f7e9; --red-soft:#fce3e8;
+  --shadow:0 20px 50px rgba(30,20,40,.10);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:
+    radial-gradient(1100px 600px at 100% -12%, var(--rose-soft), transparent 55%),
+    var(--bg);
+  color:var(--text); font-family:var(--body); min-height:100vh; transition:background .3s,color .3s;
+  -webkit-font-smoothing:antialiased;
+}
+button{ font-family:inherit; }
+::selection{ background:var(--rose); color:#fff; }
+h1,h2,h3,h4{ font-family:var(--display); font-weight:700; letter-spacing:-.01em; margin:0; }
+
+.app{ max-width:1200px; margin:0 auto; padding:22px 20px 90px; display:grid; grid-template-columns:290px 1fr; gap:20px; }
+@media (max-width:980px){ .app{ grid-template-columns:1fr; } }
+
+/* ---------------- Topbar ---------------- */
+.topbar{ grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; flex-wrap:wrap; gap:12px; }
+.brand{ display:flex; align-items:center; gap:12px; }
+.brand-mark{ width:42px; height:42px; border-radius:11px; background:linear-gradient(150deg,var(--rose),var(--rose-deep)); display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--display); font-weight:800; font-size:1.05rem; box-shadow:var(--shadow); }
+.brand-text h1{ font-size:1.2rem; }
+.brand-text span{ font-family:var(--mono); font-size:.64rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; }
+.icon-btn{ width:38px; height:38px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--text-dim); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1rem; }
+.icon-btn:hover{ color:var(--text); border-color:var(--rose); }
+
+/* ---------------- Sidebar ---------------- */
+.sidebar{ display:flex; flex-direction:column; gap:14px; }
+.panel{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); }
+.panel h3{ font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin:0 0 12px; }
+.field{ margin-bottom:12px; }
+.field label{ display:block; font-family:var(--mono); font-size:.66rem; color:var(--text-dim); margin-bottom:6px; text-transform:uppercase; letter-spacing:.04em; }
+.field input, .field select, .field textarea{
+  width:100%; background:var(--surface-2); border:1px solid var(--border); border-radius:9px; padding:9px 11px;
+  font-family:var(--body); font-size:.82rem; color:var(--text);
+}
+.field textarea{ resize:vertical; min-height:140px; font-family:var(--body); font-size:.82rem; line-height:1.5; }
+.field input:focus, .field select:focus, .field textarea:focus{ outline:2px solid var(--rose); outline-offset:1px; border-color:var(--rose); }
+.field-hint{ font-size:.68rem; color:var(--text-faint); margin-top:6px; line-height:1.4; }
+.status-row{ display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:.7rem; color:var(--text-dim); margin-top:2px; }
+.status-dot{ width:7px; height:7px; border-radius:50%; background:var(--text-faint); flex-shrink:0; }
+.status-dot.ok{ background:var(--green); }
+.status-dot.busy{ background:var(--amber); animation:pulse-dot 1.2s infinite; }
+@keyframes pulse-dot{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+.upload-zone{ border:1.5px dashed var(--border-strong); border-radius:11px; padding:16px; text-align:center; cursor:pointer; background:var(--surface-2); font-size:.76rem; color:var(--text-faint); }
+.upload-zone:hover{ border-color:var(--rose); color:var(--text-dim); }
+.upload-zone.has-image{ padding:8px; }
+.upload-zone img{ max-width:100%; max-height:120px; border-radius:8px; display:block; margin:0 auto; }
+.remove-img-btn{ margin-top:8px; font-family:var(--mono); font-size:.66rem; color:var(--red); background:none; border:1px solid var(--red); padding:4px 10px; border-radius:8px; cursor:pointer; }
+
+.btn-primary{ width:100%; background:var(--rose); color:#fff; border:none; padding:11px 16px; border-radius:9px; font-family:var(--mono); font-weight:700; font-size:.76rem; cursor:pointer; }
+.btn-primary:hover{ filter:brightness(1.1); }
+.btn-primary:disabled{ opacity:.4; cursor:not-allowed; }
+.btn-ghost{ width:100%; background:var(--surface-2); border:1px solid var(--border); color:var(--text-dim); padding:9px 14px; border-radius:9px; font-family:var(--mono); font-size:.72rem; cursor:pointer; margin-top:8px; }
+.btn-ghost:hover{ color:var(--text); border-color:var(--rose); }
+
+.config-summary{ font-size:.76rem; color:var(--text-dim); line-height:1.7; }
+.config-summary b{ color:var(--text); }
+
+/* ---------------- Main column ---------------- */
+.main-col{ display:flex; flex-direction:column; gap:16px; min-width:0; }
+.card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); }
+.card h3{ font-size:1.02rem; margin-bottom:4px; }
+.card .card-sub{ font-family:var(--mono); font-size:.68rem; color:var(--text-faint); margin-bottom:14px; text-transform:uppercase; letter-spacing:.04em; }
+
+/* ---------------- Empty state ---------------- */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--text-faint); }
+.empty-state .ic{ font-size:2.4rem; margin-bottom:12px; }
+.empty-state h4{ color:var(--text-dim); margin-bottom:6px; }
+
+/* ---------------- Workflow diagram ---------------- */
+.diagram-wrap{ overflow-x:auto; padding:8px 4px 4px; }
+.diagram-svg{ min-width:760px; width:100%; height:auto; display:block; }
+.agent-node .node-box{ transition:all .25s ease; }
+.agent-node.active .node-box{ stroke:var(--rose); stroke-width:2.5; filter:drop-shadow(0 0 10px rgba(236,72,153,.5)); }
+.agent-node.done .node-box{ stroke:var(--green); stroke-width:2; }
+
+/* ---------------- Live status ---------------- */
+.live-status{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:14px 16px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; }
+.ls-item{ display:flex; flex-direction:column; gap:2px; }
+.ls-item .l{ font-family:var(--mono); font-size:.6rem; text-transform:uppercase; color:var(--text-faint); letter-spacing:.05em; }
+.ls-item .v{ font-family:var(--mono); font-size:.85rem; color:var(--text); font-weight:700; }
+.ls-item .v.rose{ color:var(--rose); }
+.ls-spinner{ width:14px; height:14px; border-radius:50%; border:2px solid var(--rose); border-top-color:transparent; animation:spin .7s linear infinite; display:inline-block; margin-left:6px; vertical-align:middle; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* ---------------- Activity log ---------------- */
+.activity-log{ max-height:220px; overflow-y:auto; display:flex; flex-direction:column-reverse; gap:6px; padding-right:4px; }
+.log-line{ font-family:var(--mono); font-size:.74rem; color:var(--text-dim); padding:6px 10px; border-radius:7px; background:var(--surface-2); display:flex; gap:8px; animation:logIn .25s ease; }
+@keyframes logIn{ from{opacity:0; transform:translateX(-6px);} to{opacity:1; transform:translateX(0);} }
+.log-line .t{ color:var(--text-faint); flex-shrink:0; }
+.log-line .tag{ font-weight:700; color:var(--rose); }
+
+/* ---------------- Score gauge + bars ---------------- */
+.overall-hero{ display:flex; align-items:center; gap:26px; flex-wrap:wrap; }
+.gauge-wrap{ position:relative; width:130px; height:130px; flex-shrink:0; }
+.gauge-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.gauge-center .n{ font-family:var(--display); font-weight:800; font-size:1.9rem; }
+.gauge-center .l{ font-family:var(--mono); font-size:.6rem; color:var(--text-faint); }
+
+.category-bars{ display:flex; flex-direction:column; gap:12px; flex:1; min-width:240px; }
+.cat-bar-row{ display:flex; align-items:center; gap:12px; }
+.cat-bar-row .lbl{ width:150px; font-size:.82rem; color:var(--text-dim); flex-shrink:0; }
+.cat-bar-track{ flex:1; height:9px; background:var(--surface-2); border-radius:5px; overflow:hidden; }
+.cat-bar-fill{ height:100%; border-radius:5px; }
+.cat-bar-row .sc{ font-family:var(--mono); font-size:.78rem; color:var(--text); width:38px; text-align:right; flex-shrink:0; }
+
+/* ---------------- Reviewer cards ---------------- */
+.reviewer-card{ border:1px solid var(--border); border-radius:12px; margin-bottom:10px; overflow:hidden; }
+.reviewer-head{ display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--surface-2); cursor:pointer; }
+.reviewer-head .ric{ width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; }
+.reviewer-head h4{ font-size:.9rem; flex:1; }
+.reviewer-head .rscore{ font-family:var(--mono); font-weight:700; font-size:.85rem; }
+.reviewer-head .chev{ color:var(--text-faint); transition:transform .2s ease; }
+.reviewer-head.open .chev{ transform:rotate(180deg); }
+.reviewer-body{ max-height:0; overflow:hidden; transition:max-height .3s ease; }
+.reviewer-body.open{ max-height:800px; }
+.reviewer-body-inner{ padding:16px; font-size:.85rem; color:var(--text-dim); line-height:1.65; }
+.subhead{ font-family:var(--mono); font-size:.64rem; text-transform:uppercase; color:var(--text-faint); letter-spacing:.05em; margin:10px 0 5px; }
+.subhead:first-child{ margin-top:0; }
+
+/* ---------------- Final report blocks ---------------- */
+.text-block{ background:var(--surface-2); border:1px solid var(--border); border-radius:11px; padding:14px 16px; font-size:.85rem; color:var(--text); white-space:pre-wrap; line-height:1.65; position:relative; }
+.copy-btn{ position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text-faint); cursor:pointer; }
+.copy-btn:hover{ color:var(--text); border-color:var(--rose); }
+.copy-btn.copied{ background:var(--green-soft); border-color:var(--green); color:var(--green); }
+.hook-option{ background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:8px; font-size:.85rem; position:relative; padding-right:44px; }
+
+.before-after{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media (max-width:760px){ .before-after{ grid-template-columns:1fr; } }
+.ba-col h5{ font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
+.ba-col.before h5{ color:var(--text-faint); }
+.ba-col.after h5{ color:var(--rose); }
+.ba-col .text-block{ min-height:140px; }
+
+.checklist-item{ display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:.85rem; color:var(--text-dim); }
+.checklist-item:last-child{ border-bottom:none; }
+.checklist-item .ic{ color:var(--rose); flex-shrink:0; }
+
+.disclaimer-tag{ display:inline-block; font-family:var(--mono); font-size:.62rem; background:var(--amber-soft); color:var(--amber); padding:3px 9px; border-radius:12px; margin-bottom:8px; }
+
+.stats-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+@media (max-width:700px){ .stats-grid{ grid-template-columns:repeat(2,1fr); } }
+.stat-card{ background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:14px; text-align:center; }
+.stat-card .v{ font-family:var(--mono); font-weight:700; font-size:1.15rem; color:var(--rose); }
+.stat-card .l{ font-family:var(--mono); font-size:.6rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; margin-top:3px; }
+
+.error-banner{ display:none; align-items:center; gap:10px; padding:12px 16px; background:var(--red-soft); border:1px solid var(--red); color:var(--red); border-radius:10px; font-size:.83rem; }
+.error-banner.show{ display:flex; }
+
+.resource-card{ background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+.resource-card h4{ font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; color:var(--rose); margin-bottom:10px; }
+.resource-card ul{ margin:0; padding-left:18px; font-size:.82rem; color:var(--text-dim); line-height:1.75; }
+
+footer{ text-align:center; margin-top:30px; font-family:var(--mono); font-size:.66rem; color:var(--text-faint); grid-column:1/-1; }
+@media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } }
+:focus-visible{ outline:2px solid var(--rose); outline-offset:2px; }
+</style>
+</head>
+<body data-theme="dark">
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">CI</div>
+      <div class="brand-text"><h1>Content Intelligence Studio</h1><span>LinkedIn Post Analyzer · Engagement Optimization</span></div>
+    </div>
+    <button class="icon-btn" id="themeBtn" title="Toggle theme">☀</button>
+  </div>
+
+  <!-- ============= SIDEBAR ============= -->
+  <aside class="sidebar">
+    <div class="panel">
+      <h3>Claude API Connection</h3>
+      <div class="field">
+        <label for="apiKey">API Key</label>
+        <input type="password" id="apiKey" placeholder="sk-ant-...">
+        <div class="field-hint">Kept only in this tab's memory, sent only to api.anthropic.com.</div>
+      </div>
+      <div class="field">
+        <label for="modelSelect">Model</label>
+        <select id="modelSelect">
+          <option value="claude-sonnet-5">claude-sonnet-5</option>
+          <option value="claude-opus-4-8">claude-opus-4-8</option>
+          <option value="claude-haiku-4-5-20251001">claude-haiku-4-5-20251001</option>
+        </select>
+      </div>
+      <div class="status-row"><span class="status-dot" id="connDot"></span><span id="connText">Not connected</span></div>
+    </div>
+
+    <div class="panel">
+      <h3>Content to Analyze</h3>
+      <div class="field">
+        <label for="postInput">Paste your LinkedIn post text</label>
+        <textarea id="postInput">Day 47 of my 60 day AI challenge.
+
+Today I built a tool that reviews LinkedIn posts using AI and gives you a score.
+
+It analyzes the hook, structure, and call to action, then rewrites the whole thing for you.
+
+I tested it on one of my own posts and it was pretty accurate.
+
+AI is changing content creation fast.
+
+Thoughts?</textarea>
+      </div>
+      <div class="field">
+        <label>Optional: attach a screenshot</label>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="imageInput" accept="image/*" style="display:none;">
+          <div id="uploadPrompt">📎 Click to attach a post screenshot or thumbnail</div>
+        </div>
+      </div>
+      <button class="btn-primary" id="startBtn">▶ Run Content Analysis</button>
+      <button class="btn-ghost" id="resetBtn">⟲ Reset</button>
+    </div>
+
+    <div class="panel">
+      <h3>Configuration Summary</h3>
+      <div class="config-summary">
+        <div><b>Content type:</b> LinkedIn post / caption</div>
+        <div><b>Platform:</b> LinkedIn</div>
+        <div><b>Goal:</b> Maximize engagement</div>
+        <div><b>Review tone:</b> Balanced</div>
+        <div><b>Reviewers:</b> 5 specialists (auto-designed)</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============= MAIN ============= -->
+  <div class="main-col">
+    <div id="viewsRoot">
+<div class="error-banner" id="errorBanner"><span>⚠</span><span id="errorText"></span></div>
+
+<div class="card" id="emptyStateCard">
+  <div class="empty-state">
+    <div class="ic">📊</div>
+    <h4>Ready to analyze your LinkedIn post</h4>
+    <p>Add your Claude API key and post text in the sidebar, then run the analysis.<br>Five specialist AI reviewers will evaluate it live — no canned scoring, no placeholder feedback.</p>
+  </div>
+</div>
+
+<div class="card" id="orchestrationCard" style="display:none;">
+  <h3>Review Pipeline</h3>
+  <div class="card-sub">5 specialist reviewers, each a live Claude call</div>
+  <div class="diagram-wrap">
+    <svg class="diagram-svg" id="diagramSvg" viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--text-faint)"/>
+        </marker>
+      </defs>
+      <g stroke="var(--border-strong)" stroke-width="2" fill="none" marker-end="url(#arrow)">
+        <line x1="130" y1="45" x2="158" y2="45"/>
+        <line x1="278" y1="45" x2="306" y2="45"/>
+        <line x1="426" y1="45" x2="454" y2="45"/>
+        <line x1="574" y1="45" x2="602" y2="45"/>
+      </g>
+      <g class="agent-node" id="node-hook">
+        <rect class="node-box" x="10" y="20" width="120" height="50" rx="10" fill="var(--surface-2)" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <text x="70" y="42" text-anchor="middle" font-family="Lexend, sans-serif" font-size="11" font-weight="700" fill="var(--text)">Hook</text>
+        <text x="70" y="57" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" fill="var(--text-faint)">Reviewer</text>
+      </g>
+      <g class="agent-node" id="node-structure">
+        <rect class="node-box" x="158" y="20" width="120" height="50" rx="10" fill="var(--surface-2)" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <text x="218" y="42" text-anchor="middle" font-family="Lexend, sans-serif" font-size="11" font-weight="700" fill="var(--text)">Structure</text>
+        <text x="218" y="57" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" fill="var(--text-faint)">Reviewer</text>
+      </g>
+      <g class="agent-node" id="node-engagement">
+        <rect class="node-box" x="306" y="20" width="120" height="50" rx="10" fill="var(--surface-2)" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <text x="366" y="42" text-anchor="middle" font-family="Lexend, sans-serif" font-size="11" font-weight="700" fill="var(--text)">Engagement</text>
+        <text x="366" y="57" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" fill="var(--text-faint)">Psychology</text>
+      </g>
+      <g class="agent-node" id="node-cta">
+        <rect class="node-box" x="454" y="20" width="120" height="50" rx="10" fill="var(--surface-2)" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <text x="514" y="42" text-anchor="middle" font-family="Lexend, sans-serif" font-size="11" font-weight="700" fill="var(--text)">CTA</text>
+        <text x="514" y="57" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" fill="var(--text-faint)">Reviewer</text>
+      </g>
+      <g class="agent-node" id="node-strategist">
+        <rect class="node-box" x="602" y="20" width="148" height="50" rx="10" fill="var(--surface-2)" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <text x="676" y="42" text-anchor="middle" font-family="Lexend, sans-serif" font-size="11" font-weight="700" fill="var(--text)">Content Strategist</text>
+        <text x="676" y="57" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" fill="var(--text-faint)">final synthesis</text>
+      </g>
+    </svg>
+  </div>
+  <div class="live-status">
+    <div class="ls-item"><span class="l">Active Reviewer</span><span class="v rose" id="activeAgentLabel">Idle</span></div>
+    <div class="ls-item"><span class="l">Stage</span><span class="v" id="stageLabel">—</span></div>
+    <div class="ls-item"><span class="l">Retry Count</span><span class="v" id="retryLabel">0</span></div>
+    <div class="ls-item"><span class="l">API Calls</span><span class="v" id="apiCallsLabel">0</span></div>
+  </div>
+</div>
+
+<div class="card" id="logCard" style="display:none;">
+  <h3>Activity Log</h3>
+  <div class="card-sub">Live, timestamped review actions</div>
+  <div class="activity-log" id="activityLog"></div>
+</div>
+
+<div class="card" id="scoreCard" style="display:none;">
+  <h3>Overall Content Score</h3>
+  <div class="card-sub">Live reasoning from Claude, not a formula</div>
+  <div class="overall-hero">
+    <div class="gauge-wrap">
+      <svg viewBox="0 0 130 130" width="130" height="130">
+        <circle cx="65" cy="65" r="54" fill="none" stroke="var(--surface-2)" stroke-width="12"/>
+        <circle id="gaugeArc" cx="65" cy="65" r="54" fill="none" stroke="var(--rose)" stroke-width="12" stroke-linecap="round" transform="rotate(-90 65 65)"/>
+      </svg>
+      <div class="gauge-center"><div class="n" id="overallScoreNum">0</div><div class="l">/ 100</div></div>
+    </div>
+    <div class="category-bars" id="categoryBars"></div>
+  </div>
+</div>
+
+<div class="card" id="reviewersCard" style="display:none;">
+  <h3>Specialist Reviewer Reports</h3>
+  <div class="card-sub">Each card is the literal output of that reviewer's live API call</div>
+  <div id="reviewerCardsRoot"></div>
+</div>
+
+<div class="card" id="finalReportCard" style="display:none;">
+  <h3>Final Report</h3>
+  <div class="card-sub">Executive summary, rewrite, alternatives, and next steps</div>
+  <div id="finalReportRoot"></div>
+</div>
+
+<div class="card" id="beforeAfterCard" style="display:none;">
+  <h3>Before vs. After</h3>
+  <div class="card-sub">Your original post next to the AI rewrite</div>
+  <div class="before-after" id="beforeAfterRoot"></div>
+</div>
+
+<div class="card">
+  <h3>How This Analysis Works</h3>
+  <div class="card-sub">Five specialists, one synthesis — no hardcoded scoring anywhere</div>
+  <p style="font-size:.85rem; color:var(--text-dim); line-height:1.7;">
+    <b>Hook Reviewer</b> evaluates only the portion of your post visible before LinkedIn's "see more" truncation — the single highest-leverage few seconds of attention you get. <b>Structure Reviewer</b> checks formatting and scannability for a mobile feed. <b>Engagement Psychology Reviewer</b> looks for the emotional and curiosity triggers that turn a passive scroll into an active comment. <b>CTA Reviewer</b> judges whether your closing line genuinely invites a response or is generic filler. <b>Content Strategist</b> then reads all four reports plus your original post and synthesizes one decisive final report — every score, sentence, and rewrite you see is that round's literal API response, not a template filled in with your inputs.
+  </p>
+</div>
+
+<div class="card">
+  <h3>Further Prompts for Deeper Optimization</h3>
+  <div id="extraPromptsRoot"><p style="font-size:.83rem; color:var(--text-faint); font-style:italic;">Run an analysis to get prompts tailored to your specific post.</p></div>
+</div>
+
+    </div>
+    <footer>Content Intelligence Studio · Built with Claude · Day 47 / 60 · #60DayClaudeChallenge</footer>
+  </div>
+</div>
+<script>
+(function(){
+"use strict";
+const $ = (id)=>document.getElementById(id);
+
+/* ============================================================
+   AGENT SYSTEM PROMPTS — plain-text output contracts, no JSON
+   ============================================================ */
+const PROMPTS = {
+hook: `You are the Hook & Opening Line Reviewer for a LinkedIn content intelligence platform focused on maximizing engagement. LinkedIn only shows the first 2-3 lines of a post before a "see more" truncation — nearly everything hinges on whether those lines earn the click. Given the post text (and an optional screenshot for visual context), evaluate ONLY the opening portion for its ability to stop someone mid-scroll and make them click "see more." Consider curiosity, specificity, pattern interruption, and whether it promises something the rest of the post actually delivers. Be a genuinely discriminating reviewer — reserve 85+ for openings with no meaningful weakness. Respond in EXACTLY this format, nothing else:
+HOOK_SCORE: <integer 0-100>
+STRENGTH: <1-2 sentences on what's working, quoting the post if relevant>
+WEAKNESS: <1-2 sentences on what's holding it back, quoting the post if relevant>
+FIX: <one concrete, fully rewritten alternative opening line, different from the original>`,
+
+structure: `You are the Structure & Readability Reviewer for a LinkedIn content intelligence platform. Evaluate the post's formatting, line-break rhythm, paragraph length, and scannability specifically for a mobile LinkedIn feed. Consider whether it's broken into digestible chunks, whether white space is used well, and whether a skimming reader can still get the point. Be genuinely discriminating — reserve 85+ for posts with no meaningful formatting issues. Respond in EXACTLY this format, nothing else:
+STRUCTURE_SCORE: <integer 0-100>
+STRENGTH: <1-2 sentences>
+WEAKNESS: <1-2 sentences>
+FIX: <one concrete formatting change to make>`,
+
+engagement: `You are the Engagement Psychology Reviewer, a behavioral specialist for a LinkedIn content intelligence platform. Evaluate the post's emotional pull, relatability, vulnerability, curiosity gaps, and distinctiveness of point of view — specifically whether it's strong enough to make someone stop and comment rather than just scroll past. Generic, safe, or purely informational posts should score lower here even if factually fine, because they rarely drive discussion. Respond in EXACTLY this format, nothing else:
+ENGAGEMENT_SCORE: <integer 0-100>
+STRENGTH: <1-2 sentences>
+WEAKNESS: <1-2 sentences>
+MISSED_OPPORTUNITY: <one specific emotional or psychological lever this post left unused>
+FIX: <one concrete suggestion to raise emotional engagement>`,
+
+cta: `You are the Call-to-Action & Comment-Bait Reviewer for a LinkedIn content intelligence platform. Evaluate the post's ending specifically: does it genuinely invite a response with a real, specific question, or is it generic filler like "Thoughts?" or "Agree?" that rarely drives comments. Judge whether the CTA connects logically to the content above it. Respond in EXACTLY this format, nothing else:
+CTA_SCORE: <integer 0-100>
+STRENGTH: <1-2 sentences>
+WEAKNESS: <1-2 sentences>
+FIX: <one concrete, fully rewritten alternative closing line/CTA>`,
+
+strategist: `You are the Lead Content Strategist for a LinkedIn content intelligence platform, synthesizing four specialist reviews (Hook, Structure, Engagement Psychology, CTA) into one comprehensive, decisive final report for a creator whose stated goal is maximizing engagement. You will receive the original post text, all four specialist reports, and possibly a screenshot for visual context. Produce a complete final report in EXACTLY this format, nothing else, with each label on its own line:
+OVERALL_SCORE: <integer 0-100, your own holistic judgment informed by but not required to average the four sub-scores>
+EXECUTIVE_SUMMARY: <3-4 sentences, single most important takeaway first>
+TOP_STRENGTH: <one sentence>
+TOP_WEAKNESS: <one sentence>
+MISSED_OPPORTUNITIES: <2-3 bullet points, one per line, each starting with "- ">
+PLATFORM_RECOMMENDATIONS: <2-3 bullet points specific to LinkedIn's algorithm and format norms, one per line, each starting with "- ">
+REWRITTEN_POST: <a complete rewritten version of the post, ready to publish, reflecting the fixes from all four specialist reviews>
+ALT_HOOK_1: <alternative opening line>
+ALT_HOOK_2: <alternative opening line, different angle from ALT_HOOK_1>
+ALT_HOOK_3: <alternative opening line, different angle again>
+PUBLISHING_CHECKLIST: <4-5 short checklist items, one per line, each starting with "- ">
+PREDICTED_PERFORMANCE: <1-2 sentences giving a qualitative predicted-performance estimate relative to the original, explicitly framed as an AI estimate and not a guarantee>
+FURTHER_PROMPTS: <2-3 example prompts the user could paste into Claude for deeper optimization, one per line, each starting with "- ">`
+};
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let STATE = { apiCalls:0, retries:0, imageData:null, imageMediaType:null };
+
+/* ============================================================
+   IMAGE UPLOAD
+   ============================================================ */
+$('uploadZone').addEventListener('click', ()=>{ if(!STATE.imageData) $('imageInput').click(); });
+$('imageInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const result = reader.result;
+    const commaIdx = result.indexOf(',');
+    STATE.imageData = result.slice(commaIdx+1);
+    STATE.imageMediaType = file.type;
+    $('uploadZone').classList.add('has-image');
+    $('uploadPrompt').innerHTML = `<img src="${result}" alt="uploaded screenshot"><button class="remove-img-btn" id="removeImgBtn">✕ Remove</button>`;
+    $('removeImgBtn').addEventListener('click', (ev)=>{
+      ev.stopPropagation();
+      STATE.imageData = null; STATE.imageMediaType = null;
+      $('uploadZone').classList.remove('has-image');
+      $('uploadPrompt').innerHTML = '📎 Click to attach a post screenshot or thumbnail';
+      $('imageInput').value = '';
+    });
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ============================================================
+   API CALL WITH RETRY + OPTIONAL IMAGE
+   ============================================================ */
+async function callClaude(systemPrompt, userText, maxTokens, includeImage){
+  const key = $('apiKey').value.trim();
+  const model = $('modelSelect').value;
+  const content = [];
+  if(includeImage && STATE.imageData){
+    content.push({type:'image', source:{type:'base64', media_type:STATE.imageMediaType, data:STATE.imageData}});
+  }
+  content.push({type:'text', text:userText});
+
+  let attempt = 0;
+  while(attempt < 2){
+    attempt++;
+    try{
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'x-api-key': key,
+          'anthropic-version':'2023-06-01',
+          'anthropic-dangerous-direct-browser-access':'true'
+        },
+        body: JSON.stringify({
+          model, max_tokens: maxTokens || 800,
+          system: systemPrompt,
+          messages:[{role:'user', content}]
+        })
+      });
+      STATE.apiCalls++;
+      $('apiCallsLabel').textContent = STATE.apiCalls;
+      if(!resp.ok){
+        const errBody = await resp.json().catch(()=>({}));
+        const msg = errBody?.error?.message || ('HTTP '+resp.status);
+        if((resp.status===429 || resp.status>=500) && attempt<2){
+          STATE.retries++; $('retryLabel').textContent = STATE.retries;
+          logActivity('retry','Retrying after error: '+msg);
+          await new Promise(r=>setTimeout(r, 900));
+          continue;
+        }
+        throw new Error(msg);
+      }
+      const data = await resp.json();
+      const textBlock = (data.content||[]).find(b=>b.type==='text');
+      return textBlock ? textBlock.text : '';
+    }catch(err){
+      if(attempt<2){
+        STATE.retries++; $('retryLabel').textContent = STATE.retries;
+        logActivity('retry','Retrying after network error: '+err.message);
+        await new Promise(r=>setTimeout(r, 900));
+        continue;
+      }
+      throw err;
+    }
+  }
+}
+
+/* ============================================================
+   PARSERS (tolerant regex against plain-text label contracts)
+   ============================================================ */
+function grab(text, label, nextLabels){
+  const pattern = new RegExp(label+':\\s*([\\s\\S]*?)(?=\\n(?:'+nextLabels.join('|')+'):|$)', 'i');
+  const m = text.match(pattern);
+  return m ? m[1].trim() : '';
+}
+function grabScore(text, label){
+  const m = text.match(new RegExp(label+':\\s*(\\d+)', 'i'));
+  return m ? Math.max(0, Math.min(100, parseInt(m[1],10))) : 0;
+}
+function bulletsToArray(text){
+  return text.split('\n').map(l=>l.trim()).filter(l=>l.startsWith('-')).map(l=>l.replace(/^-\s*/,''));
+}
+
+function parseSimpleReviewer(text, scoreLabel, hasMissed){
+  const labels = ['STRENGTH','WEAKNESS','FIX'];
+  if(hasMissed) labels.splice(2,0,'MISSED_OPPORTUNITY');
+  return {
+    score: grabScore(text, scoreLabel),
+    strength: grab(text, 'STRENGTH', labels.filter(l=>l!=='STRENGTH')),
+    weakness: grab(text, 'WEAKNESS', labels.filter(l=>l!=='WEAKNESS')),
+    missed: hasMissed ? grab(text, 'MISSED_OPPORTUNITY', ['FIX']) : null,
+    fix: grab(text, 'FIX', [])
+  };
+}
+
+function parseStrategist(text){
+  const allLabels = ['EXECUTIVE_SUMMARY','TOP_STRENGTH','TOP_WEAKNESS','MISSED_OPPORTUNITIES','PLATFORM_RECOMMENDATIONS','REWRITTEN_POST','ALT_HOOK_1','ALT_HOOK_2','ALT_HOOK_3','PUBLISHING_CHECKLIST','PREDICTED_PERFORMANCE','FURTHER_PROMPTS'];
+  const next = (label)=> allLabels.filter(l=>l!==label);
+  return {
+    overallScore: grabScore(text, 'OVERALL_SCORE'),
+    executiveSummary: grab(text,'EXECUTIVE_SUMMARY', next('EXECUTIVE_SUMMARY')),
+    topStrength: grab(text,'TOP_STRENGTH', next('TOP_STRENGTH')),
+    topWeakness: grab(text,'TOP_WEAKNESS', next('TOP_WEAKNESS')),
+    missedOpportunities: bulletsToArray(grab(text,'MISSED_OPPORTUNITIES', next('MISSED_OPPORTUNITIES'))),
+    platformRecommendations: bulletsToArray(grab(text,'PLATFORM_RECOMMENDATIONS', next('PLATFORM_RECOMMENDATIONS'))),
+    rewrittenPost: grab(text,'REWRITTEN_POST', next('REWRITTEN_POST')),
+    altHooks: [
+      grab(text,'ALT_HOOK_1', next('ALT_HOOK_1')),
+      grab(text,'ALT_HOOK_2', next('ALT_HOOK_2')),
+      grab(text,'ALT_HOOK_3', next('ALT_HOOK_3'))
+    ],
+    checklist: bulletsToArray(grab(text,'PUBLISHING_CHECKLIST', next('PUBLISHING_CHECKLIST'))),
+    predictedPerformance: grab(text,'PREDICTED_PERFORMANCE', next('PREDICTED_PERFORMANCE')),
+    furtherPrompts: bulletsToArray(grab(text,'FURTHER_PROMPTS', next('FURTHER_PROMPTS')))
+  };
+}
+
+/* ============================================================
+   UI HELPERS
+   ============================================================ */
+const NODE_IDS = {hook:'node-hook', structure:'node-structure', engagement:'node-engagement', cta:'node-cta', strategist:'node-strategist'};
+function setActive(key, label){
+  Object.values(NODE_IDS).forEach(id=>{ const el=$(id); if(el) el.classList.remove('active'); });
+  if(key && NODE_IDS[key]){ const el=$(NODE_IDS[key]); if(el){ el.classList.add('active'); el.classList.add('done'); } }
+  $('activeAgentLabel').textContent = label || 'Idle';
+  $('stageLabel').textContent = label ? ('Running '+label) : 'Complete';
+}
+function logActivity(tag, text){
+  const wrap = $('activityLog');
+  const line = document.createElement('div');
+  line.className = 'log-line';
+  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  line.innerHTML = `<span class="t">${time}</span><span class="tag">[${tag.toUpperCase()}]</span><span>${escapeHtml(text)}</span>`;
+  wrap.appendChild(line);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showError(msg){ $('errorText').textContent = msg; $('errorBanner').classList.add('show'); }
+function hideError(){ $('errorBanner').classList.remove('show'); }
+
+function copyText(text, btn){
+  navigator.clipboard && navigator.clipboard.writeText(text).catch(()=>{});
+  const original = btn.textContent;
+  btn.classList.add('copied'); btn.textContent = '✓';
+  setTimeout(()=>{ btn.classList.remove('copied'); btn.textContent = original; }, 1300);
+}
+
+/* ============================================================
+   RENDER: reviewer card
+   ============================================================ */
+const REVIEWER_META = {
+  hook: {name:'Hook & Opening Line', ic:'🎣', color:'var(--rose)'},
+  structure: {name:'Structure & Readability', ic:'📐', color:'var(--teal)'},
+  engagement: {name:'Engagement Psychology', ic:'🧠', color:'var(--amber)'},
+  cta: {name:'Call-to-Action', ic:'💬', color:'var(--green)'}
+};
+function renderReviewerCard(key, parsed){
+  const meta = REVIEWER_META[key];
+  const root = $('reviewerCardsRoot');
+  const card = document.createElement('div');
+  card.className = 'reviewer-card';
+  const missedHtml = parsed.missed ? `<div class="subhead">Missed Opportunity</div><div>${escapeHtml(parsed.missed)}</div>` : '';
+  card.innerHTML = `
+    <div class="reviewer-head" data-key="${key}">
+      <div class="ric" style="background:${meta.color}22; color:${meta.color};">${meta.ic}</div>
+      <h4>${meta.name}</h4>
+      <span class="rscore" style="color:${meta.color};">${parsed.score}/100</span>
+      <span class="chev">▾</span>
+    </div>
+    <div class="reviewer-body" id="revBody-${key}">
+      <div class="reviewer-body-inner">
+        <div class="subhead">Strength</div><div>${escapeHtml(parsed.strength)}</div>
+        <div class="subhead">Weakness</div><div>${escapeHtml(parsed.weakness)}</div>
+        ${missedHtml}
+        <div class="subhead">Suggested Fix</div><div>${escapeHtml(parsed.fix)}</div>
+      </div>
+    </div>
+  `;
+  root.appendChild(card);
+  card.querySelector('.reviewer-head').addEventListener('click', (e)=>{
+    e.currentTarget.classList.toggle('open');
+    $('revBody-'+key).classList.toggle('open');
+  });
+}
+
+function renderCategoryBars(scores){
+  const root = $('categoryBars');
+  root.innerHTML = '';
+  const items = [
+    {label:'Hook Strength', v:scores.hook, color:'var(--rose)'},
+    {label:'Structure', v:scores.structure, color:'var(--teal)'},
+    {label:'Engagement Psychology', v:scores.engagement, color:'var(--amber)'},
+    {label:'Call-to-Action', v:scores.cta, color:'var(--green)'}
+  ];
+  items.forEach(it=>{
+    const row = document.createElement('div');
+    row.className = 'cat-bar-row';
+    row.innerHTML = `<div class="lbl">${it.label}</div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${it.v}%; background:${it.color};"></div></div><div class="sc">${it.v}</div>`;
+    root.appendChild(row);
+  });
+}
+
+function renderGauge(score){
+  const r=54, circ=2*Math.PI*r;
+  const arc = $('gaugeArc');
+  arc.setAttribute('stroke-dasharray', circ);
+  arc.setAttribute('stroke-dashoffset', circ*(1-Math.max(0,Math.min(score,100))/100));
+  $('overallScoreNum').textContent = score;
+}
+
+function renderFinalReport(strat, originalPost){
+  const root = $('finalReportRoot');
+  root.innerHTML = `
+    <div class="subhead">Executive Summary</div>
+    <p style="font-size:.88rem; color:var(--text-dim); line-height:1.7;">${escapeHtml(strat.executiveSummary)}</p>
+
+    <div class="stats-grid" style="margin:14px 0 18px;">
+      <div class="stat-card"><div class="v" style="font-size:.85rem;">${escapeHtml(strat.topStrength).slice(0,60)}${strat.topStrength.length>60?'…':''}</div><div class="l">Top Strength</div></div>
+      <div class="stat-card"><div class="v" style="font-size:.85rem;">${escapeHtml(strat.topWeakness).slice(0,60)}${strat.topWeakness.length>60?'…':''}</div><div class="l">Top Weakness</div></div>
+    </div>
+
+    <div class="subhead">Missed Opportunities</div>
+    ${strat.missedOpportunities.map(m=>`<div class="checklist-item"><span class="ic">○</span><span>${escapeHtml(m)}</span></div>`).join('')}
+
+    <div class="subhead">Platform-Specific Recommendations</div>
+    ${strat.platformRecommendations.map(m=>`<div class="checklist-item"><span class="ic">◈</span><span>${escapeHtml(m)}</span></div>`).join('')}
+
+    <div class="subhead">Rewritten Post</div>
+    <div class="text-block" id="rewrittenBlock">${escapeHtml(strat.rewrittenPost)}<button class="copy-btn" id="copyRewriteBtn">⧉</button></div>
+
+    <div class="subhead">Alternative Hooks</div>
+    ${strat.altHooks.map((h,i)=>`<div class="hook-option">${escapeHtml(h)}<button class="copy-btn" data-copy-hook="${i}">⧉</button></div>`).join('')}
+
+    <div class="subhead">Publishing Checklist</div>
+    ${strat.checklist.map(c=>`<div class="checklist-item"><span class="ic">☐</span><span>${escapeHtml(c)}</span></div>`).join('')}
+
+    <div class="subhead">Predicted Performance</div>
+    <span class="disclaimer-tag">⚠ AI ESTIMATE — NOT A GUARANTEE</span>
+    <p style="font-size:.85rem; color:var(--text-dim); line-height:1.65;">${escapeHtml(strat.predictedPerformance)}</p>
+  `;
+  $('copyRewriteBtn').addEventListener('click', (e)=>copyText(strat.rewrittenPost, e.target));
+  root.querySelectorAll('[data-copy-hook]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>copyText(strat.altHooks[parseInt(btn.dataset.copyHook,10)], e.target));
+  });
+
+  // before/after
+  $('beforeAfterCard').style.display = 'block';
+  $('beforeAfterRoot').innerHTML = `
+    <div class="ba-col before"><h5>Before (Original)</h5><div class="text-block">${escapeHtml(originalPost)}</div></div>
+    <div class="ba-col after"><h5>After (AI Rewrite)</h5><div class="text-block">${escapeHtml(strat.rewrittenPost)}<button class="copy-btn" id="copyAfterBtn">⧉</button></div></div>
+  `;
+  $('copyAfterBtn').addEventListener('click', (e)=>copyText(strat.rewrittenPost, e.target));
+
+  // further prompts
+  $('extraPromptsRoot').innerHTML = strat.furtherPrompts.map(p=>`<div class="text-block" style="margin-bottom:8px;">${escapeHtml(p)}</div>`).join('');
+}
+
+/* ============================================================
+   MAIN ORCHESTRATION
+   ============================================================ */
+async function runAnalysis(){
+  const key = $('apiKey').value.trim();
+  if(!key){ showError('Add your Claude API key in the sidebar first.'); return; }
+  const post = $('postInput').value.trim();
+  if(!post){ showError('Paste your LinkedIn post text in the sidebar first.'); return; }
+
+  hideError();
+  resetUI();
+  STATE.apiCalls = 0; STATE.retries = 0;
+  $('startBtn').disabled = true;
+  ['orchestrationCard','logCard','scoreCard','reviewersCard','finalReportCard'].forEach(id=>$(id).style.display='block');
+  $('emptyStateCard').style.display = 'none';
+
+  try{
+    const hasImg = !!STATE.imageData;
+    const scores = {};
+
+    setActive('hook','Hook Reviewer');
+    logActivity('hook','Evaluating the opening lines for scroll-stopping power…');
+    const hookRaw = await callClaude(PROMPTS.hook, `Post text:\n${post}`, 500, hasImg);
+    const hookParsed = parseSimpleReviewer(hookRaw, 'HOOK_SCORE', false);
+    scores.hook = hookParsed.score;
+    renderReviewerCard('hook', hookParsed);
+    logActivity('hook', `Scored ${hookParsed.score}/100.`);
+
+    setActive('structure','Structure Reviewer');
+    logActivity('structure','Checking formatting and mobile-feed scannability…');
+    const structRaw = await callClaude(PROMPTS.structure, `Post text:\n${post}`, 500, hasImg);
+    const structParsed = parseSimpleReviewer(structRaw, 'STRUCTURE_SCORE', false);
+    scores.structure = structParsed.score;
+    renderReviewerCard('structure', structParsed);
+    logActivity('structure', `Scored ${structParsed.score}/100.`);
+
+    setActive('engagement','Engagement Psychology Reviewer');
+    logActivity('engage','Analyzing emotional triggers and comment-worthiness…');
+    const engRaw = await callClaude(PROMPTS.engagement, `Post text:\n${post}`, 550, false);
+    const engParsed = parseSimpleReviewer(engRaw, 'ENGAGEMENT_SCORE', true);
+    scores.engagement = engParsed.score;
+    renderReviewerCard('engagement', engParsed);
+    logActivity('engage', `Scored ${engParsed.score}/100.`);
+
+    setActive('cta','CTA Reviewer');
+    logActivity('cta','Evaluating the closing line and comment-bait quality…');
+    const ctaRaw = await callClaude(PROMPTS.cta, `Post text:\n${post}`, 450, false);
+    const ctaParsed = parseSimpleReviewer(ctaRaw, 'CTA_SCORE', false);
+    scores.cta = ctaParsed.score;
+    renderReviewerCard('cta', ctaParsed);
+    logActivity('cta', `Scored ${ctaParsed.score}/100.`);
+
+    renderCategoryBars(scores);
+
+    setActive('strategist','Content Strategist');
+    logActivity('strategist','Synthesizing all four reports into the final decision…');
+    const combinedReports = `HOOK REVIEWER:\n${hookRaw}\n\nSTRUCTURE REVIEWER:\n${structRaw}\n\nENGAGEMENT PSYCHOLOGY REVIEWER:\n${engRaw}\n\nCTA REVIEWER:\n${ctaRaw}`;
+    const stratRaw = await callClaude(PROMPTS.strategist, `Original post:\n${post}\n\nSpecialist reports:\n${combinedReports}`, 1800, hasImg);
+    const stratParsed = parseStrategist(stratRaw);
+    renderGauge(stratParsed.overallScore);
+    renderFinalReport(stratParsed, post);
+    logActivity('strategist', `Final report ready. Overall score: ${stratParsed.overallScore}/100.`);
+
+    setActive(null);
+    $('finalReportCard').scrollIntoView({behavior:'smooth', block:'nearest'});
+  }catch(err){
+    showError('Analysis halted: ' + err.message);
+    logActivity('error', err.message);
+    setActive(null);
+  }finally{
+    $('startBtn').disabled = false;
+  }
+}
+
+function resetUI(){
+  $('activityLog').innerHTML = '';
+  $('reviewerCardsRoot').innerHTML = '';
+  $('finalReportRoot').innerHTML = '';
+  $('beforeAfterCard').style.display = 'none';
+  $('extraPromptsRoot').innerHTML = '<p style="font-size:.83rem; color:var(--text-faint); font-style:italic;">Run an analysis to get prompts tailored to your specific post.</p>';
+  $('retryLabel').textContent = '0';
+  $('apiCallsLabel').textContent = '0';
+  Object.values(NODE_IDS).forEach(id=>{ const el=$(id); if(el) el.classList.remove('active','done'); });
+  hideError();
+}
+
+$('startBtn').addEventListener('click', runAnalysis);
+$('resetBtn').addEventListener('click', ()=>{
+  resetUI();
+  $('orchestrationCard').style.display='none'; $('logCard').style.display='none';
+  $('scoreCard').style.display='none'; $('reviewersCard').style.display='none'; $('finalReportCard').style.display='none';
+  $('emptyStateCard').style.display='block';
+});
+
+$('apiKey').addEventListener('input', ()=>{
+  const has = $('apiKey').value.trim().length>0;
+  $('connDot').className = 'status-dot'+(has?' ok':'');
+  $('connText').textContent = has ? 'Key set — ready' : 'Not connected';
+});
+
+$('themeBtn').addEventListener('click', ()=>{
+  const isLight = document.body.getAttribute('data-theme')==='light';
+  document.body.setAttribute('data-theme', isLight?'dark':'light');
+  $('themeBtn').textContent = isLight ? '☀' : '☾';
+});
+
+})();
+</script>
+
+</body>
+</html>
