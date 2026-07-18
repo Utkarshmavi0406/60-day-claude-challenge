@@ -1,0 +1,22 @@
+{
+  "favorites": {
+    "raw-findings-memo": true
+  },
+  "customWorkflows": [
+    {
+      "id": "custom_2jmywfoh",
+      "category": "custom",
+      "icon": "🔁",
+      "name": "Test Saved Loop",
+      "desc": "Custom autonomous loop built in the Loop Builder.",
+      "tags": [
+        "custom",
+        "loop-builder"
+      ],
+      "template": "BASE TASK:\nDraft a committee-ready risk memo summarizing this month's delinquency trend findings.\n\nAUTONOMOUS LOOP INSTRUCTIONS:\nRepeat the following cycle — produce a draft, evaluate it, and revise — until a stop condition below is met. Report which stop condition fired.\n\nGOAL:\nProduce a risk memo that a committee member could act on without needing clarifying questions.\n\nEVALUATION CRITERIA:\nScore 0-100 on: clarity for a non-technical reader (50%), and whether the recommendation is directly supported by the data given (50%).\n\nSTOP CONDITIONS:\nStop when the combined score reaches 90+, OR when improvement is under 3 points for two rounds in a row, OR after 5 rounds regardless (safety cap).\n\nSAFETY RULES:\nNever invent data not present in the original findings. Never remove a caveat about data limitations just to sound more confident.",
+      "variables": [],
+      "bestPractices": []
+    }
+  ],
+  "exportedAt": "2026-07-18T22:47:01.392Z"
+}
