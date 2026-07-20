@@ -1,0 +1,39 @@
+68
+/ 100
+You defended the disbursal-rate claim well once pushed for specifics, showing you can isolate causal mechanisms when asked directly. Your first response to any metric claim tends to start vague, which costs you credibility in the first 10 seconds of an answer. The leadership claim was not yet tested deeply enough to assess.
+CLAIM-BY-CLAIM STATUS
+Not Yet Tested
+Led a 4-member team delivering credit models at Bajaj Finserv
+The team leadership question was asked but not yet answered before the session ended.
+Well Defended
+Achieved a +26% increase in disbursal rates and -8% reduction in bad rates
+After an initial vague pass, you provided a specific policy change and comparison methodology that held up to scrutiny.
+Not Yet Tested
+Developed a BERT-based narration tagging model with 98.6% accuracy
+Not probed in this session.
+Not Yet Tested
+2025 SAS Hackathon Regional Winner
+Not probed in this session.
+Not Yet Tested
+Designed dynamic risk strategies including swap-in/swap-out and CHAID-based overlays
+Not probed in this session.
+Not Yet Tested
+Reduced model build time by 50% through a modular feature framework
+Not probed in this session.
+WEAK MOMENTS
+WEAK MOMENT 1
+"I improved the process and it led to better numbers overall."
+This restates the resume claim without adding any new specific mechanism, evidence, or way to isolate your contribution from external factors.
+STRENGTHEN THIS ANSWER
+ORIGINAL
+"I improved the process and it led to better numbers overall."
+STRONGER VERSION
+I redesigned the swap-in/swap-out policy thresholds and ran a controlled before/after comparison across matched cohorts over two quarters, which isolated a +26% disbursal lift attributable specifically to the policy change rather than seasonal demand.
+PREP RECOMMENDATIONS BEFORE A REAL INTERVIEW
+▸
+Lead metric claims with the specific mechanism, not the headline number — state what you changed before stating the result
+▸
+Prepare a one-line causal-isolation answer for every metric claim on your resume (what comparison proves it wasn't just market conditions)
+▸
+Practice the team-leadership story specifically, since it was never fully tested this session
+✓ Copied
