@@ -80,6 +80,7 @@ Each day I will:
 | 48 | July 17, 2026 | The Verdict Engine — AWS vs Azure vs GCP ML Certification Comparison with Live Weighting | ✅ |
 | 49 | July 18, 2026 | Personal AI Playbook — Modular Prompt & Loop Building System for Credit Risk Work | ✅ |
 | 50 | July 19, 2026 | Defend Your Experience — Adaptive AI Interview Simulator Testing My Real Resume | ✅ |
+| 51 | July 20, 2026 | Capstone Kickoff — RiskLens Product Discovery, PRD, Implementation Blueprint & Pitch Deck | ✅ |
 
 *(I'll update this table as I go.)*
 
