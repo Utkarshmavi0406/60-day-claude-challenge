@@ -81,6 +81,7 @@ Each day I will:
 | 49 | July 18, 2026 | Personal AI Playbook — Modular Prompt & Loop Building System for Credit Risk Work | ✅ |
 | 50 | July 19, 2026 | Defend Your Experience — Adaptive AI Interview Simulator Testing My Real Resume | ✅ |
 | 51 | July 20, 2026 | Capstone Kickoff — RiskLens Product Discovery, PRD, Implementation Blueprint & Pitch Deck | ✅ |
+| 52 | July 21, 2026 | RiskLens Capstone Day 2 — System Design (Architecture, Schema, API Contract, UI Wireframes) | ✅ |
 
 *(I'll update this table as I go.)*
 
