@@ -83,6 +83,7 @@ Each day I will:
 | 51 | July 20, 2026 | Capstone Kickoff — RiskLens Product Discovery, PRD, Implementation Blueprint & Pitch Deck | ✅ |
 | 52 | July 21, 2026 | RiskLens Capstone Day 2 — System Design (Architecture, Schema, API Contract, UI Wireframes) | ✅ |
 | 53 | July 22, 2026 | RiskLens Capstone Day 3 — Environment & Repository Setup (Conda, Dependencies, Verified) | ✅ |
+| 54 | July 23, 2026 | RiskLens Capstone Day 4 — Data Exploration & Cleaning Pipeline (Real LendingClub Data, 39,252 Loans) | ✅ |
 
 *(I'll update this table as I go.)*
 
