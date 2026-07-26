@@ -85,6 +85,7 @@ Each day I will:
 | 53 | July 22, 2026 | RiskLens Capstone Day 3 — Environment & Repository Setup (Conda, Dependencies, Verified) | ✅ |
 | 54 | July 23, 2026 | RiskLens Capstone Day 4 — Data Exploration & Cleaning Pipeline (Real LendingClub Data, 39,252 Loans) | ✅ |
 | 55 | July 24, 2026 | RiskLens Capstone Day 5 — Baseline Model & Evaluation Framework (Logistic Regression, AUC 0.6998) | ✅ |
+| 56 | July 25, 2026 | RiskLens Capstone Day 6 — XGBoost Model & Model Selection (AUC 0.7057 vs Baseline 0.6998) | ✅ |
 
 *(I'll update this table as I go.)*
 
