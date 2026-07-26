@@ -86,6 +86,7 @@ Each day I will:
 | 54 | July 23, 2026 | RiskLens Capstone Day 4 — Data Exploration & Cleaning Pipeline (Real LendingClub Data, 39,252 Loans) | ✅ |
 | 55 | July 24, 2026 | RiskLens Capstone Day 5 — Baseline Model & Evaluation Framework (Logistic Regression, AUC 0.6998) | ✅ |
 | 56 | July 25, 2026 | RiskLens Capstone Day 6 — XGBoost Model & Model Selection (AUC 0.7057 vs Baseline 0.6998) | ✅ |
+| 57 | July 26, 2026 | RiskLens Capstone Day 7 — SHAP Explainability & FastAPI Backend (Real HTTP-Tested API) | ✅ |
 
 *(I'll update this table as I go.)*
 
