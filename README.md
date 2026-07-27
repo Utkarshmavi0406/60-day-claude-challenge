@@ -87,6 +87,7 @@ Each day I will:
 | 55 | July 24, 2026 | RiskLens Capstone Day 5 — Baseline Model & Evaluation Framework (Logistic Regression, AUC 0.6998) | ✅ |
 | 56 | July 25, 2026 | RiskLens Capstone Day 6 — XGBoost Model & Model Selection (AUC 0.7057 vs Baseline 0.6998) | ✅ |
 | 57 | July 26, 2026 | RiskLens Capstone Day 7 — SHAP Explainability & FastAPI Backend (Real HTTP-Tested API) | ✅ |
+| 58 | July 27, 2026 | RiskLens Capstone Day 8 — Testing, Debugging & Production Optimization (2 Bugs Fixed, Rate Limiting Added) | ✅ |
 
 *(I'll update this table as I go.)*
 
