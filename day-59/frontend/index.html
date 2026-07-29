@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RiskLens — Explainable Loan Default Predictor</title>
+<meta name="description" content="Submit a loan applicant's profile and get a real, explainable default risk prediction — trained on real LendingClub data, powered by SHAP.">
+<meta property="og:title" content="RiskLens — Explainable Loan Default Predictor">
+<meta property="og:description" content="A real, deployed ML system that predicts loan default risk and explains exactly why — trained on real LendingClub data.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%231E2761%22/><text x=%2250%22 y=%2266%22 font-size=%2255%22 font-family=%22Georgia,serif%22 font-weight=%22bold%22 fill=%22%2302C39A%22 text-anchor=%22middle%22>R</text></svg>">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cambria&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root{
+  --navy:#1E2761;
+  --navy-deep:#141B4D;
+  --ice:#CADCFC;
+  --white:#FFFFFF;
+  --teal:#02C39A;
+  --teal-deep:#019876;
+  --amber:#D9860A;
+  --amber-soft:#FCEFD9;
+  --red:#C23B3B;
+  --red-soft:#FBE6E6;
+  --green-soft:#E1F5EE;
+  --bg:#F6F8FC;
+  --surface:#FFFFFF;
+  --border:#E1E6F2;
+  --text:#181D3A;
+  --text-dim:#5B6178;
+  --text-faint:#9098B0;
+  --radius:14px;
+  --shadow:0 20px 50px rgba(20,27,77,.10);
+  --display:'Cambria', Georgia, serif;
+  --body:-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:
+    radial-gradient(900px 500px at 100% -10%, var(--ice) 0%, transparent 60%),
+    var(--bg);
+  color:var(--text); font-family:var(--body); min-height:100vh; -webkit-font-smoothing:antialiased; line-height:1.5;
+}
+button{ font-family:inherit; }
+::selection{ background:var(--teal); color:#fff; }
+a{ color:var(--teal-deep); }
+:focus-visible{ outline:2.5px solid var(--teal); outline-offset:2px; border-radius:4px; }
+
+.wrap{ max-width:1180px; margin:0 auto; padding:0 22px 70px; }
+
+header{ padding:26px 0 22px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; }
+.brand{ display:flex; align-items:center; gap:12px; }
+.brand-mark{ width:42px; height:42px; border-radius:10px; background:linear-gradient(150deg,var(--navy),var(--navy-deep)); display:flex; align-items:center; justify-content:center; color:var(--teal); font-family:var(--display); font-weight:700; font-size:1.3rem; flex-shrink:0; }
+.brand-text h1{ font-family:var(--display); font-size:1.35rem; font-weight:700; margin:0; color:var(--navy); }
+.brand-text span{ font-family:var(--mono); font-size:.68rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em; }
+.header-links{ display:flex; gap:10px; }
+.header-links a{ font-family:var(--mono); font-size:.76rem; color:var(--text-dim); text-decoration:none; padding:8px 14px; border-radius:9px; border:1px solid var(--border); background:var(--surface); }
+.header-links a:hover{ color:var(--navy); border-color:var(--teal); }
+
+.intro{ margin:6px 0 30px; max-width:720px; }
+.intro h2{ font-family:var(--display); font-size:1.9rem; color:var(--navy); margin:0 0 10px; line-height:1.25; }
+.intro p{ font-size:1rem; color:var(--text-dim); margin:0; }
+.about-tag{ display:inline-flex; align-items:center; gap:7px; margin-top:14px; font-family:var(--mono); font-size:.72rem; color:var(--text-faint); background:var(--surface); border:1px solid var(--border); padding:6px 12px; border-radius:20px; }
+
+.main-grid{ display:grid; grid-template-columns:1.15fr 1fr; gap:22px; align-items:start; }
+@media (max-width:880px){ .main-grid{ grid-template-columns:1fr; } }
+
+.card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px; }
+
+.sample-row{ display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.sample-btn{ flex:1; min-width:140px; background:var(--surface); border:1.5px solid var(--border); border-radius:11px; padding:11px 14px; cursor:pointer; text-align:left; transition:all .15s ease; }
+.sample-btn:hover{ border-color:var(--teal); transform:translateY(-1px); }
+.sample-btn.active{ border-color:var(--navy); background:var(--ice); }
+.sample-btn .sb-label{ font-family:var(--mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); display:block; margin-bottom:2px; }
+.sample-btn .sb-name{ font-weight:700; font-size:.87rem; color:var(--navy); }
+
+.form-section-title{ font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-faint); margin:20px 0 12px; }
+.form-section-title:first-of-type{ margin-top:0; }
+.field-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media (max-width:520px){ .field-grid{ grid-template-columns:1fr; } }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:.78rem; font-weight:600; color:var(--text); }
+.field .hint{ font-size:.68rem; color:var(--text-faint); font-weight:400; }
+.field input, .field select{
+  border:1.5px solid var(--border); border-radius:9px; padding:10px 12px; font-size:.88rem; color:var(--text);
+  background:var(--surface); font-family:var(--body);
+}
+.field input:focus, .field select:focus{ border-color:var(--teal); outline:none; box-shadow:0 0 0 3px rgba(2,195,154,.15); }
+.field-error{ font-size:.7rem; color:var(--red); min-height:14px; }
+
+.submit-row{ margin-top:24px; display:flex; align-items:center; gap:14px; }
+.submit-btn{
+  background:var(--navy); color:#fff; border:none; padding:13px 26px; border-radius:10px; font-weight:700; font-size:.92rem;
+  cursor:pointer; transition:all .15s ease; font-family:var(--body);
+}
+.submit-btn:hover{ background:var(--navy-deep); }
+.submit-btn:disabled{ opacity:.5; cursor:not-allowed; }
+.form-status{ font-size:.78rem; color:var(--text-faint); }
+
+.results-card{ position:sticky; top:20px; min-height:420px; display:flex; flex-direction:column; }
+.empty-state{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px 10px; color:var(--text-faint); }
+.empty-state .ic{ font-size:2.1rem; margin-bottom:12px; opacity:.6; }
+.empty-state h4{ font-family:var(--display); color:var(--text-dim); font-size:1.05rem; margin:0 0 6px; }
+.empty-state p{ font-size:.85rem; max-width:280px; margin:0; }
+
+.loading-state{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:30px; }
+.spinner{ width:34px; height:34px; border:3px solid var(--ice); border-top-color:var(--navy); border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.loading-state p{ font-size:.85rem; color:var(--text-faint); }
+
+.error-state{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:26px; gap:10px; }
+.error-state .ic{ font-size:1.8rem; }
+.error-state h4{ font-family:var(--display); color:var(--red); margin:0; font-size:1.05rem; }
+.error-state p{ font-size:.83rem; color:var(--text-dim); margin:0; max-width:280px; }
+.retry-btn{ margin-top:8px; background:var(--surface); border:1.5px solid var(--border); color:var(--text); padding:8px 18px; border-radius:9px; cursor:pointer; font-size:.8rem; font-weight:600; }
+.retry-btn:hover{ border-color:var(--navy); }
+
+.result-content{ display:none; flex-direction:column; gap:20px; }
+.result-content.show{ display:flex; }
+.tier-row{ display:flex; align-items:center; gap:16px; }
+.gauge-wrap{ position:relative; width:96px; height:96px; flex-shrink:0; }
+.gauge-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.gauge-center .n{ font-family:var(--mono); font-weight:700; font-size:1.35rem; color:var(--navy); }
+.gauge-center .l{ font-family:var(--mono); font-size:.55rem; color:var(--text-faint); }
+.tier-badge{ display:inline-block; font-family:var(--mono); font-size:.72rem; font-weight:700; padding:6px 14px; border-radius:20px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+.tier-badge.low{ background:var(--green-soft); color:var(--teal-deep); }
+.tier-badge.medium{ background:var(--amber-soft); color:var(--amber); }
+.tier-badge.high{ background:var(--red-soft); color:var(--red); }
+.tier-sub{ font-size:.82rem; color:var(--text-dim); }
+
+.factors-title{ font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-faint); }
+.factor-row{ display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-bottom:1px solid var(--border); }
+.factor-row:last-child{ border-bottom:none; }
+.factor-icon{ width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:.85rem; font-weight:700; margin-top:1px; }
+.factor-icon.up{ background:var(--red-soft); color:var(--red); }
+.factor-icon.down{ background:var(--green-soft); color:var(--teal-deep); }
+.factor-text{ font-size:.85rem; color:var(--text); line-height:1.5; }
+
+.disclaimer{ font-size:.7rem; color:var(--text-faint); border-top:1px solid var(--border); padding-top:14px; line-height:1.5; }
+
+footer{ margin-top:50px; padding-top:22px; border-top:1px solid var(--border); text-align:center; }
+footer p{ font-family:var(--mono); font-size:.72rem; color:var(--text-faint); margin:4px 0; }
+footer a{ color:var(--text-dim); }
+
+@media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark">R</div>
+      <div class="brand-text"><h1>RiskLens</h1><span>Explainable Loan Default Predictor</span></div>
+    </div>
+    <div class="header-links">
+      <a href="https://github.com/Utkarshmavi0406/risklens" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </header>
+
+  <div class="intro">
+    <h2>Predict default risk — and see exactly why.</h2>
+    <p>Enter a loan applicant's financial profile and get a real, calibrated default probability, a risk tier, and a ranked, plain-English explanation of what drove that score — powered by a model trained on real LendingClub loan outcomes.</p>
+    <span class="about-tag">Portfolio project — trained on public historical data, not a real lending decision</span>
+  </div>
+
+  <div class="main-grid">
+    <div class="card">
+      <div class="sample-row" id="sampleRow"></div>
+
+      <form id="applicantForm">
+        <div class="form-section-title">Loan Details</div>
+        <div class="field-grid">
+          <div class="field"><label for="loan_amount">Loan amount ($)</label><input type="number" id="loan_amount" min="1" step="1" required></div>
+          <div class="field"><label for="term_60_months">Term</label>
+            <select id="term_60_months"><option value="false">36 months</option><option value="true">60 months</option></select>
+          </div>
+          <div class="field"><label for="interest_rate">Interest rate (%)</label><input type="number" id="interest_rate" min="0" max="40" step="0.01" required></div>
+          <div class="field"><label for="purpose">Loan purpose</label>
+            <select id="purpose">
+              <option value="debt_consolidation">Debt consolidation</option>
+              <option value="credit_card">Credit card</option>
+              <option value="home_improvement">Home improvement</option>
+              <option value="major_purchase">Major purchase</option>
+              <option value="small_business">Small business</option>
+              <option value="car">Car</option>
+              <option value="medical">Medical</option>
+              <option value="moving">Moving</option>
+              <option value="vacation">Vacation</option>
+              <option value="house">House</option>
+              <option value="wedding">Wedding</option>
+              <option value="renewable_energy">Renewable energy</option>
+              <option value="educational">Educational</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-section-title">Financial Profile</div>
+        <div class="field-grid">
+          <div class="field"><label for="annual_income">Annual income ($)</label><input type="number" id="annual_income" min="1" step="1" required></div>
+          <div class="field"><label for="employment_length_years">Employment length (yrs)</label><input type="number" id="employment_length_years" min="0" max="10" step="1" required><span class="hint">10 = "10+ years"</span></div>
+          <div class="field"><label for="dti">Debt-to-income ratio (%)</label><input type="number" id="dti" min="0" max="100" step="0.01" required></div>
+          <div class="field"><label for="home_ownership">Home ownership</label>
+            <select id="home_ownership"><option value="RENT">Rent</option><option value="MORTGAGE">Mortgage</option><option value="OWN">Own</option><option value="OTHER">Other</option><option value="NONE">None</option></select>
+          </div>
+          <div class="field"><label for="verification_status">Income verification</label>
+            <select id="verification_status"><option value="Verified">Verified</option><option value="Source Verified">Source verified</option><option value="Not Verified">Not verified</option></select>
+          </div>
+          <div class="field"><label for="fico_score">FICO score</label><input type="number" id="fico_score" min="300" max="850" step="1" required></div>
+        </div>
+
+        <div class="form-section-title">Credit History</div>
+        <div class="field-grid">
+          <div class="field"><label for="open_accounts">Open credit accounts</label><input type="number" id="open_accounts" min="0" max="60" step="1" required></div>
+          <div class="field"><label for="total_credit_lines">Total credit lines ever</label><input type="number" id="total_credit_lines" min="0" max="120" step="1" required></div>
+          <div class="field"><label for="revolving_utilization">Revolving utilization (%)</label><input type="number" id="revolving_utilization" min="0" max="100" step="0.01" required></div>
+          <div class="field"><label for="delinquencies_2yrs">Delinquencies (2yr)</label><input type="number" id="delinquencies_2yrs" min="0" max="20" step="1" required></div>
+          <div class="field"><label for="public_records">Public records</label><input type="number" id="public_records" min="0" max="10" step="1" required></div>
+        </div>
+        <div class="field-error" id="formError"></div>
+
+        <div class="submit-row">
+          <button type="submit" class="submit-btn" id="submitBtn">Predict Risk</button>
+          <span class="form-status" id="formStatus"></span>
+        </div>
+      </form>
+    </div>
+
+    <div class="card results-card">
+      <div class="empty-state" id="emptyState">
+        <div class="ic">◎</div>
+        <h4>No prediction yet</h4>
+        <p>Fill in an applicant's details, or pick a sample profile, then click Predict Risk to see a result here.</p>
+      </div>
+
+      <div class="loading-state" id="loadingState" style="display:none;">
+        <div class="spinner" role="status" aria-label="Loading prediction"></div>
+        <p>Scoring applicant…</p>
+      </div>
+
+      <div class="error-state" id="errorState" style="display:none;">
+        <div class="ic">⚠</div>
+        <h4>Prediction failed</h4>
+        <p id="errorMessage">Something went wrong reaching the prediction service.</p>
+        <button class="retry-btn" id="retryBtn">Try Again</button>
+      </div>
+
+      <div class="result-content" id="resultContent">
+        <div class="tier-row">
+          <div class="gauge-wrap">
+            <svg viewBox="0 0 96 96" width="96" height="96">
+              <circle cx="48" cy="48" r="40" fill="none" stroke="#EEF1F9" stroke-width="10"/>
+              <circle id="gaugeArc" cx="48" cy="48" r="40" fill="none" stroke="var(--navy)" stroke-width="10" stroke-linecap="round" transform="rotate(-90 48 48)"/>
+            </svg>
+            <div class="gauge-center"><div class="n" id="probabilityNum">0%</div><div class="l">RISK</div></div>
+          </div>
+          <div>
+            <span class="tier-badge" id="tierBadge">—</span>
+            <div class="tier-sub" id="tierSub">Predicted probability of default</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="factors-title">Why this score</div>
+          <div id="factorsList"></div>
+        </div>
+
+        <div class="disclaimer">This is an AI estimate from a portfolio project trained on historical public data — not financial advice and not a real lending decision.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Built with Claude as part of the AB Talks 60-Day Claude AI Challenge.</p>
+    <p><a href="https://github.com/Utkarshmavi0406/risklens" target="_blank" rel="noopener">View source on GitHub</a></p>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+const API_BASE = (location.protocol === "file:" || location.port === "5500")
+  ? "http://127.0.0.1:8000"
+  : "";
+
+const $ = (id) => document.getElementById(id);
+
+const FIELD_IDS = [
+  "loan_amount","term_60_months","interest_rate","fico_score","annual_income","dti",
+  "employment_length_years","home_ownership","purpose","open_accounts",
+  "total_credit_lines","revolving_utilization","delinquencies_2yrs","public_records",
+  "verification_status"
+];
+
+let samples = {};
+
+async function loadSamples(){
+  try{
+    const res = await fetch("data/sample_applicants.json");
+    if(res.ok) samples = await res.json();
+  }catch(e){ }
+  renderSampleButtons();
+}
+
+function renderSampleButtons(){
+  const row = $("sampleRow");
+  const labels = {low_risk:"Low Risk", high_risk:"High Risk", medium_risk:"Medium Risk"};
+  row.innerHTML = Object.keys(samples).map(key => `
+    <button type="button" class="sample-btn" data-sample="${key}">
+      <span class="sb-label">Sample</span>
+      <span class="sb-name">${labels[key] || key}</span>
+    </button>
+  `).join("");
+  row.querySelectorAll("[data-sample]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      row.querySelectorAll(".sample-btn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      fillForm(samples[btn.dataset.sample]);
+    });
+  });
+}
+
+function fillForm(profile){
+  FIELD_IDS.forEach(id=>{
+    const el = $(id);
+    if(!el || !(id in profile)) return;
+    if(el.tagName === "SELECT"){
+      el.value = String(profile[id]);
+    } else {
+      el.value = profile[id];
+    }
+  });
+}
+
+function readForm(){
+  const payload = {};
+  FIELD_IDS.forEach(id=>{
+    const el = $(id);
+    if(el.type === "number"){
+      payload[id] = parseFloat(el.value);
+    } else if(id === "term_60_months"){
+      payload[id] = el.value === "true";
+    } else {
+      payload[id] = el.value;
+    }
+  });
+  return payload;
+}
+
+function showState(name){
+  // name must be one of: "emptyState", "loadingState", "errorState", "result"
+  // (Bug found during Day 9 browser testing: previously called with short
+  // names like "loading"/"error" that never matched the actual element IDs
+  // in this comparison, silently breaking both the loading spinner and the
+  // error state. Fixed by using the exact ID strings everywhere.)
+  ["emptyState","loadingState","errorState"].forEach(id=>{
+    $(id).style.display = (id === name) ? "flex" : "none";
+  });
+  $("resultContent").classList.toggle("show", name === "result");
+}
+
+function riskTierClass(tier){
+  return { Low:"low", Medium:"medium", High:"high" }[tier] || "low";
+}
+
+function renderResult(data){
+  const pct = Math.round(data.probability * 100);
+  $("probabilityNum").textContent = pct + "%";
+  const circ = 2 * Math.PI * 40;
+  const arc = $("gaugeArc");
+  arc.style.strokeDasharray = circ;
+  arc.style.strokeDashoffset = circ * (1 - data.probability);
+  const tierColor = { Low:"var(--teal-deep)", Medium:"var(--amber)", High:"var(--red)" }[data.risk_tier] || "var(--navy)";
+  arc.style.stroke = tierColor;
+
+  const badge = $("tierBadge");
+  badge.textContent = data.risk_tier + " Risk";
+  badge.className = "tier-badge " + riskTierClass(data.risk_tier);
+  $("tierSub").textContent = `Predicted probability of default: ${pct}%`;
+
+  $("factorsList").innerHTML = data.top_factors.map(f=>{
+    const up = f.direction === "increased_risk";
+    return `
+      <div class="factor-row">
+        <div class="factor-icon ${up?'up':'down'}">${up?'↑':'↓'}</div>
+        <div class="factor-text">${escapeHtml(f.explanation)}</div>
+      </div>
+    `;
+  }).join("");
+
+  showState("result");
+}
+
+function escapeHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+let lastPayload = null;
+
+async function submitPrediction(payload){
+  lastPayload = payload;
+  showState("loadingState");
+  $("submitBtn").disabled = true;
+  $("formStatus").textContent = "";
+
+  try{
+    const res = await fetch(`${API_BASE}/predict`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
+
+    if(res.status === 429){
+      throw new Error("Too many requests right now — please wait a moment and try again.");
+    }
+    if(res.status === 422){
+      const body = await res.json().catch(()=>({}));
+      const detail = Array.isArray(body.detail) ? body.detail[0]?.msg : body.detail;
+      throw new Error(detail || "Please check the values you entered.");
+    }
+    if(!res.ok){
+      throw new Error("The prediction service returned an unexpected error.");
+    }
+
+    const data = await res.json();
+    renderResult(data);
+  }catch(err){
+    $("errorMessage").textContent = err.message.includes("fetch")
+      ? "Couldn't reach the prediction service. Check your connection and try again."
+      : err.message;
+    showState("errorState");
+  }finally{
+    $("submitBtn").disabled = false;
+  }
+}
+
+$("applicantForm").addEventListener("submit", (e)=>{
+  e.preventDefault();
+  if(!e.target.checkValidity()){
+    $("formError").textContent = "Please fill in every field with a valid value.";
+    e.target.reportValidity();
+    return;
+  }
+  $("formError").textContent = "";
+  submitPrediction(readForm());
+});
+
+$("retryBtn").addEventListener("click", ()=>{
+  if(lastPayload) submitPrediction(lastPayload);
+});
+
+loadSamples();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+{
+  "low_risk": {
+    "loan_amount": 6500.0,
+    "term_60_months": false,
+    "interest_rate": 5.42,
+    "fico_score": 824,
+    "annual_income": 480000.0,
+    "dti": 0.09,
+    "employment_length_years": 6,
+    "home_ownership": "MORTGAGE",
+    "purpose": "home_improvement",
+    "open_accounts": 7,
+    "total_credit_lines": 19,
+    "revolving_utilization": 19.6,
+    "delinquencies_2yrs": 0,
+    "public_records": 0,
+    "verification_status": "Source Verified"
+  },
+  "high_risk": {
+    "loan_amount": 35000.0,
+    "term_60_months": true,
+    "interest_rate": 22.48,
+    "fico_score": 674,
+    "annual_income": 110000.0,
+    "dti": 1.22,
+    "employment_length_years": 8,
+    "home_ownership": "MORTGAGE",
+    "purpose": "small_business",
+    "open_accounts": 2,
+    "total_credit_lines": 7,
+    "revolving_utilization": 57.2,
+    "delinquencies_2yrs": 0,
+    "public_records": 1,
+    "verification_status": "Verified"
+  },
+  "medium_risk": {
+    "loan_amount": 22000.0,
+    "term_60_months": false,
+    "interest_rate": 6.54,
+    "fico_score": 754,
+    "annual_income": 85000.0,
+    "dti": 11.72,
+    "employment_length_years": 10,
+    "home_ownership": "OWN",
+    "purpose": "credit_card",
+    "open_accounts": 13,
+    "total_credit_lines": 28,
+    "revolving_utilization": 30.2,
+    "delinquencies_2yrs": 0,
+    "public_records": 0,
+    "verification_status": "Verified"
+  }
+}
