@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Certificate of Completion — RiskLens v1.0.0</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cambria&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@page{ size: 11in 8.5in; margin: 0; }
+*{ box-sizing:border-box; }
+body{ margin:0; background:#e8ecf5; font-family:-apple-system,'Segoe UI',sans-serif; }
+.print-hint{ text-align:center; padding:14px; font-family:'JetBrains Mono',monospace; font-size:.8rem; color:#5B6178; background:#fff; border-bottom:1px solid #E1E6F2; }
+.print-hint b{ color:#1E2761; }
+@media print{ .print-hint{ display:none; } body{ background:#fff; } }
+
+.certificate{
+  width:11in; height:8.5in; margin:24px auto; position:relative; overflow:hidden;
+  background:
+    radial-gradient(600px 400px at 100% 0%, #CADCFC 0%, transparent 55%),
+    radial-gradient(500px 350px at 0% 100%, #E1F5EE 0%, transparent 55%),
+    #FFFFFF;
+  box-shadow:0 30px 70px rgba(20,27,77,.18);
+}
+@media print{ .certificate{ margin:0; box-shadow:none; } }
+
+.border-frame{ position:absolute; inset:22px; border:2px solid #1E2761; pointer-events:none; }
+.border-frame::before{ content:''; position:absolute; inset:8px; border:1px solid #02C39A; }
+
+.content{ position:relative; z-index:2; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:60px 90px; }
+
+.ab-brand{ font-family:'JetBrains Mono',monospace; font-size:.85rem; font-weight:700; letter-spacing:.12em; color:#1E2761; text-transform:uppercase; margin-bottom:6px; }
+.ab-brand span{ color:#02C39A; }
+.challenge-name{ font-family:'JetBrains Mono',monospace; font-size:.7rem; color:#5B6178; text-transform:uppercase; letter-spacing:.08em; margin-bottom:28px; }
+
+.cert-title{ font-family:'Cambria',Georgia,serif; font-size:2.5rem; color:#1E2761; font-weight:700; margin:0 0 6px; letter-spacing:.01em; }
+.cert-subtitle{ font-family:'JetBrains Mono',monospace; font-size:.78rem; color:#D9860A; text-transform:uppercase; letter-spacing:.15em; margin-bottom:34px; }
+
+.presented-to{ font-size:.9rem; color:#5B6178; margin-bottom:8px; }
+.recipient-name{ font-family:'Cambria',Georgia,serif; font-size:2.1rem; color:#141B4D; font-weight:700; margin-bottom:26px; border-bottom:2px solid #CADCFC; padding-bottom:10px; display:inline-block; min-width:420px; }
+
+.description{ font-size:.95rem; color:#181D3A; line-height:1.75; max-width:680px; margin-bottom:8px; }
+.project-line{ font-family:'JetBrains Mono',monospace; font-size:.92rem; color:#1E2761; font-weight:700; margin:14px 0 30px; }
+.project-line .v{ color:#02C39A; }
+
+.meta-row{ display:flex; gap:60px; margin-bottom:30px; }
+.meta-item{ text-align:center; }
+.meta-item .l{ font-family:'JetBrains Mono',monospace; font-size:.62rem; text-transform:uppercase; letter-spacing:.08em; color:#9098B0; margin-bottom:4px; }
+.meta-item .v{ font-family:'Cambria',Georgia,serif; font-size:1.05rem; color:#1E2761; font-weight:700; }
+
+.credit-line{ font-size:.78rem; color:#5B6178; max-width:600px; line-height:1.6; margin-bottom:22px; }
+.credit-line b{ color:#1E2761; }
+
+.links-row{ font-family:'JetBrains Mono',monospace; font-size:.72rem; color:#5B6178; }
+.links-row a{ color:#02C39A; text-decoration:none; font-weight:600; }
+
+.signature-row{ position:absolute; bottom:56px; left:90px; right:90px; display:flex; justify-content:space-between; align-items:flex-end; }
+.sig-block{ text-align:center; }
+.sig-line{ width:180px; border-top:1.5px solid #9098B0; margin-bottom:6px; }
+.sig-label{ font-family:'JetBrains Mono',monospace; font-size:.62rem; color:#9098B0; text-transform:uppercase; letter-spacing:.06em; }
+.seal{ width:64px; height:64px; border-radius:50%; background:linear-gradient(150deg,#1E2761,#141B4D); display:flex; align-items:center; justify-content:center; color:#02C39A; font-family:'Cambria',Georgia,serif; font-weight:700; font-size:1.5rem; box-shadow:0 8px 20px rgba(20,27,77,.3); }
+</style>
+</head>
+<body>
+<div class="print-hint">To save as PDF: <b>File → Print → Destination: Save as PDF → Layout: Landscape</b></div>
+
+<div class="certificate">
+  <div class="border-frame"></div>
+  <div class="content">
+    <div class="ab-brand">AB <span>Talks</span></div>
+    <div class="challenge-name">60-Day Claude AI Challenge — 10-Day Capstone Sprint</div>
+
+    <div class="cert-title">Certificate of Completion</div>
+    <div class="cert-subtitle">10-Day Capstone Sprint</div>
+
+    <div class="presented-to">This certifies that</div>
+    <div class="recipient-name">Utkarsh Mavi</div>
+
+    <div class="description">has successfully completed the AB Talks 10-Day Capstone Sprint, part of the 60-Day Claude AI Challenge, by taking a real product from discovery through a production-ready public release.</div>
+
+    <div class="project-line">Project: RiskLens &nbsp;·&nbsp; Version <span class="v">v1.0.0</span></div>
+
+    <div class="meta-row">
+      <div class="meta-item"><div class="l">Completion Date</div><div class="v">July 29, 2026</div></div>
+      <div class="meta-item"><div class="l">Sprint Duration</div><div class="v">10 Days</div></div>
+      <div class="meta-item"><div class="l">Deliverable</div><div class="v">Live Deployed App</div></div>
+    </div>
+
+    <div class="credit-line">Built in collaboration with <b>Claude (free tier)</b>, acting as project mentor and AI pair programmer throughout requirements, design, implementation, testing, and deployment.</div>
+
+    <div class="links-row"><a href="https://www.abtalks.in/">www.abtalks.in</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/company/abtalks-on-ai/">linkedin.com/company/abtalks-on-ai</a></div>
+  </div>
+
+  <div class="signature-row">
+    <div class="sig-block">
+      <div class="sig-line"></div>
+      <div class="sig-label">AB Talks — 60-Day Claude AI Challenge</div>
+    </div>
+    <div class="seal">AB</div>
+    <div class="sig-block">
+      <div class="sig-line"></div>
+      <div class="sig-label">Claude — AI Pair Programmer</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
